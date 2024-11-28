@@ -13,7 +13,6 @@ export const fallbackApplications: Application[] = [
   // Streaming Musical
   { name: "Spotify", price: 10.99, category: "Streaming Musical", description: "Musique et podcasts en streaming" },
   { name: "Apple Music", price: 10.99, category: "Streaming Musical", description: "Service de streaming musical d'Apple" },
-  { name: "Deezer", price: 10.99, category: "Streaming Musical", description: "Musique en streaming haute qualité" },
   { name: "Amazon Music", price: 9.99, category: "Streaming Musical", description: "Service musical d'Amazon" },
   { name: "YouTube Music", price: 9.99, category: "Streaming Musical", description: "Musique et clips en streaming" },
   { name: "Tidal", price: 19.99, category: "Streaming Musical", description: "Streaming musical haute-fidélité" },
