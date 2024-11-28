@@ -27,7 +27,7 @@ const fetchApplications = async () => {
       return updatedData || fallbackApplications;
     }
 
-    // Amélioration de la déduplication
+    // Amélioration de la déduplication en utilisant le nom comme identifiant unique
     const uniqueApps = data.reduce((acc: Application[], current) => {
       const exists = acc.find(app => 
         app.name.toLowerCase() === current.name.toLowerCase()
