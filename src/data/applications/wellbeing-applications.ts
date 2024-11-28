@@ -27,6 +27,6 @@ export const wellbeingApplications: Application[] = [
     pros: ["Contenu de qualité", "Voix apaisantes", "Variété des programmes", "Interface zen"],
     cons: ["Prix élevé", "Contenu français limité", "Certains contenus répétitifs", "Téléchargements limités"],
     website_url: "https://www.calm.com",
-    logo_url: "https://images.ctfassets.net/v3n26e09qg2r/1MqMYscK4W8SaP5ZP3yTwB/cd529475c26c531f25db13ad71f3e0c6/calm-app-icon.png"
+    logo_url: "https://logo.clearbit.com/calm.com"
   }
 ];

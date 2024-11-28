@@ -32,6 +32,6 @@ export const productivityApplications: Application[] = [
     pros: ["Suite complète", "Stockage généreux", "Standard professionnel", "Multi-plateforme"],
     cons: ["Prix élevé pour usage personnel", "Fonctionnalités complexes", "Nécessite apprentissage", "Interface parfois lourde"],
     website_url: "https://www.microsoft.com/microsoft-365",
-    logo_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Microsoft_365_%282022%29.svg/2048px-Microsoft_365_%282022%29.svg.png"
+    logo_url: "https://logo.clearbit.com/microsoft.com"
   }
 ];
