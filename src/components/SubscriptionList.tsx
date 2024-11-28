@@ -9,6 +9,7 @@ import { Label } from "./ui/label";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { SubscriptionCard } from "./subscription/SubscriptionCard";
+import RecommendationList from "./recommendations/RecommendationList";
 
 interface Subscription {
   id: number;
@@ -148,6 +149,9 @@ const SubscriptionList = () => {
           </div>
         )}
       </Card>
+
+      {/* Section des recommandations */}
+      <RecommendationList />
 
       <Dialog open={!!editingSubscription} onOpenChange={() => setEditingSubscription(null)}>
         <DialogContent>
