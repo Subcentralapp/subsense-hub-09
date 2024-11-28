@@ -4,11 +4,20 @@ const supabaseUrl = Deno.env.get('SUPABASE_URL')!
 const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 const supabase = createClient(supabaseUrl, supabaseKey)
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
+
 Deno.serve(async (req) => {
+  // Handle CORS preflight requests
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders })
+  }
+
   try {
     console.log('Starting logo update process...')
     
-    // Récupérer toutes les applications sans logo
     const { data: apps, error: fetchError } = await supabase
       .from('applications')
       .select('name, website_url')
@@ -18,7 +27,6 @@ Deno.serve(async (req) => {
     
     console.log(`Found ${apps?.length} applications without logos`)
     
-    // Mettre à jour chaque application
     for (const app of apps || []) {
       try {
         const companyDomain = app.website_url 
@@ -26,12 +34,12 @@ Deno.serve(async (req) => {
           : `${app.name.toLowerCase().replace(/\s+/g, '')}.com`
         
         const logoUrl = `https://logo.clearbit.com/${companyDomain}`
+        console.log(`Trying to fetch logo for ${app.name} from: ${logoUrl}`)
         
-        // Vérifier si le logo existe
         const logoCheck = await fetch(logoUrl, { method: 'HEAD' })
         
         if (logoCheck.ok) {
-          console.log(`Updating logo for ${app.name} with URL: ${logoUrl}`)
+          console.log(`Logo found for ${app.name}, updating database...`)
           
           const { error: updateError } = await supabase
             .from('applications')
@@ -40,6 +48,8 @@ Deno.serve(async (req) => {
           
           if (updateError) {
             console.error(`Error updating ${app.name}:`, updateError)
+          } else {
+            console.log(`Successfully updated logo for ${app.name}`)
           }
         } else {
           console.log(`No logo found for ${app.name} at ${logoUrl}`)
@@ -52,13 +62,16 @@ Deno.serve(async (req) => {
     
     return new Response(
       JSON.stringify({ message: 'Logo update process completed' }),
-      { headers: { 'Content-Type': 'application/json' } }
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   } catch (error) {
     console.error('Error in logo update process:', error)
     return new Response(
       JSON.stringify({ error: error.message }),
-      { status: 500, headers: { 'Content-Type': 'application/json' } }
+      { 
+        status: 500, 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      }
     )
   }
 })

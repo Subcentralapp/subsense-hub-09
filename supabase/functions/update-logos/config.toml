@@ -1,0 +1,4 @@
+project_id = "qhidxbdxcymhuyquyqgk"
+
+[functions.update-logos]
+verify_jwt = false
