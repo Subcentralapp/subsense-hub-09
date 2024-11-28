@@ -3,4 +3,14 @@ export type Application = {
   price: number;
   category: string;
   description: string | null;
+  features?: string[];
+  pricing_plans?: Array<{
+    name: string;
+    price: number;
+    features: string[];
+  }>;
+  pros?: string[];
+  cons?: string[];
+  website_url?: string;
+  logo_url?: string;
 };
