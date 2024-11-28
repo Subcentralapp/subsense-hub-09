@@ -31,6 +31,7 @@ const SubscriptionList = () => {
       const { data, error } = await supabase
         .from('subscriptions')
         .select('*')
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false });
 
       if (error) {
@@ -40,7 +41,9 @@ const SubscriptionList = () => {
 
       console.log("Fetched subscriptions:", data);
       return data as Subscription[];
-    }
+    },
+    refetchInterval: 1000, // Rafraîchit toutes les secondes
+    refetchOnWindowFocus: true, // Rafraîchit quand la fenêtre reprend le focus
   });
 
   const handleDelete = async (id: number) => {
@@ -57,7 +60,7 @@ const SubscriptionList = () => {
         description: "L'abonnement a été supprimé avec succès",
       });
 
-      refetch();
+      refetch(); // Force le rafraîchissement après la suppression
     } catch (error) {
       console.error("Error deleting subscription:", error);
       toast({
@@ -85,7 +88,7 @@ const SubscriptionList = () => {
         Mes Abonnements Actifs
       </h2>
       
-      <div className="space-y-4 fade-in">
+      <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
         {subscriptions && subscriptions.length > 0 ? (
           subscriptions.map((sub) => (
             <div
