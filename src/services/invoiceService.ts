@@ -1,93 +1,36 @@
 import { create } from 'zustand';
-import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
-import { collection, addDoc, getDocs, deleteDoc, doc } from 'firebase/firestore';
-import { storage, db } from './firebaseConfig';
 
 interface Invoice {
   id: string;
   name: string;
   date: Date;
-  fileUrl: string;
+  file: File;
 }
 
 interface InvoiceStore {
   invoices: Invoice[];
-  isLoading: boolean;
-  fetchInvoices: () => Promise<void>;
-  addInvoice: (file: File) => Promise<void>;
-  removeInvoice: (id: string, fileUrl: string) => Promise<void>;
+  addInvoice: (file: File) => void;
+  removeInvoice: (id: string) => void;
 }
 
 export const useInvoiceStore = create<InvoiceStore>((set) => ({
   invoices: [],
-  isLoading: false,
-
-  fetchInvoices: async () => {
-    try {
-      set({ isLoading: true });
-      const querySnapshot = await getDocs(collection(db, 'invoices'));
-      const invoices = querySnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data(),
-        date: new Date(doc.data().date)
-      })) as Invoice[];
-      set({ invoices });
-      console.log('Invoices fetched:', invoices);
-    } catch (error) {
-      console.error('Error fetching invoices:', error);
-    } finally {
-      set({ isLoading: false });
-    }
+  addInvoice: (file: File) => {
+    const newInvoice: Invoice = {
+      id: crypto.randomUUID(),
+      name: file.name,
+      date: new Date(),
+      file: file,
+    };
+    set((state) => ({
+      invoices: [...state.invoices, newInvoice],
+    }));
+    console.log('Invoice added:', newInvoice);
   },
-
-  addInvoice: async (file: File) => {
-    try {
-      set({ isLoading: true });
-      const storageRef = ref(storage, `invoices/${file.name}_${Date.now()}`);
-      const snapshot = await uploadBytes(storageRef, file);
-      const fileUrl = await getDownloadURL(snapshot.ref);
-
-      const docRef = await addDoc(collection(db, 'invoices'), {
-        name: file.name,
-        date: new Date().toISOString(),
-        fileUrl
-      });
-
-      const newInvoice = {
-        id: docRef.id,
-        name: file.name,
-        date: new Date(),
-        fileUrl
-      };
-
-      set(state => ({
-        invoices: [...state.invoices, newInvoice]
-      }));
-      console.log('Invoice added:', newInvoice);
-    } catch (error) {
-      console.error('Error adding invoice:', error);
-      throw error;
-    } finally {
-      set({ isLoading: false });
-    }
+  removeInvoice: (id: string) => {
+    set((state) => ({
+      invoices: state.invoices.filter((invoice) => invoice.id !== id),
+    }));
+    console.log('Invoice removed:', id);
   },
-
-  removeInvoice: async (id: string, fileUrl: string) => {
-    try {
-      set({ isLoading: true });
-      await deleteDoc(doc(db, 'invoices', id));
-      const storageRef = ref(storage, fileUrl);
-      await deleteObject(storageRef);
-
-      set(state => ({
-        invoices: state.invoices.filter(invoice => invoice.id !== id)
-      }));
-      console.log('Invoice removed:', id);
-    } catch (error) {
-      console.error('Error removing invoice:', error);
-      throw error;
-    } finally {
-      set({ isLoading: false });
-    }
-  }
 }));
