@@ -1,10 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { FileText, Trash2, Loader2, DollarSign, Calendar, PenLine } from "lucide-react";
+import { FileText, Trash2, Loader2, DollarSign, Calendar, PenLine, Search } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 
 interface Invoice {
   id: string;
@@ -22,6 +23,8 @@ interface InvoiceListProps {
 const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
   const { toast } = useToast();
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [sortBy, setSortBy] = useState<"date" | "name" | "price">("date");
   const [editForm, setEditForm] = useState({
     price: "",
     date: "",
@@ -94,11 +97,54 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
     }
   };
 
+  // Filtrer et trier les factures
+  const filteredInvoices = invoices.filter(invoice => {
+    const matchesSearch = invoice.name.toLowerCase().includes(searchTerm.toLowerCase());
+    return matchesSearch;
+  }).sort((a, b) => {
+    const metadataA = metadata?.find(m => m.Name === a.id);
+    const metadataB = metadata?.find(m => m.Name === b.id);
+
+    switch (sortBy) {
+      case "date":
+        return new Date(metadataB?.date || 0).getTime() - new Date(metadataA?.date || 0).getTime();
+      case "name":
+        return a.name.localeCompare(b.name);
+      case "price":
+        return (metadataB?.Price || 0) - (metadataA?.Price || 0);
+      default:
+        return 0;
+    }
+  });
+
   return (
     <div className="space-y-4">
       <h3 className="font-medium text-lg">Factures enregistrées</h3>
+      
+      <div className="flex gap-4 items-center">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Input
+            type="text"
+            placeholder="Rechercher une facture..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        <select
+          value={sortBy}
+          onChange={(e) => setSortBy(e.target.value as "date" | "name" | "price")}
+          className="border rounded-md p-2"
+        >
+          <option value="date">Trier par date</option>
+          <option value="name">Trier par nom</option>
+          <option value="price">Trier par prix</option>
+        </select>
+      </div>
+
       <div className="grid gap-4">
-        {invoices.map((invoice) => {
+        {filteredInvoices.map((invoice) => {
           const invoiceMetadata = metadata?.find(m => m.Name === invoice.id);
           const isEditing = editingId === invoice.id;
           
