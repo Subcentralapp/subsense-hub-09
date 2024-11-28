@@ -23,21 +23,42 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
   fetchInvoices: async () => {
     try {
       set({ isLoading: true });
+      
+      // Vérifier si la table existe
+      const { error: tableError } = await supabase
+        .from('invoices')
+        .select('count')
+        .limit(1)
+        .single();
+
+      // Si la table n'existe pas, on retourne un tableau vide
+      if (tableError?.message?.includes('does not exist')) {
+        console.log('La table invoices n\'existe pas encore');
+        set({ invoices: [] });
+        return;
+      }
+
       const { data: invoices, error } = await supabase
         .from('invoices')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Erreur lors de la récupération des factures:', error);
+        throw error;
+      }
 
+      console.log('Factures récupérées:', invoices);
+      
       set({ 
-        invoices: invoices.map(inv => ({
+        invoices: invoices?.map(inv => ({
           ...inv,
           date: new Date(inv.created_at)
-        }))
+        })) || []
       });
     } catch (error) {
       console.error('Erreur lors du chargement des factures:', error);
+      set({ invoices: [] });
     } finally {
       set({ isLoading: false });
     }
@@ -46,6 +67,22 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
   addInvoice: async (file: File) => {
     try {
       set({ isLoading: true });
+      
+      // Vérifier si le bucket existe
+      const { data: buckets } = await supabase
+        .storage
+        .listBuckets();
+
+      const invoicesBucket = buckets?.find(b => b.name === 'invoices');
+      
+      if (!invoicesBucket) {
+        console.log('Création du bucket invoices...');
+        const { error: bucketError } = await supabase
+          .storage
+          .createBucket('invoices', { public: true });
+
+        if (bucketError) throw bucketError;
+      }
       
       // Upload du fichier dans le bucket 'invoices'
       const fileName = `${Date.now()}-${file.name}`;
@@ -59,6 +96,19 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
       const { data: { publicUrl } } = supabase.storage
         .from('invoices')
         .getPublicUrl(fileName);
+
+      // Vérifier si la table existe et la créer si nécessaire
+      const { error: tableError } = await supabase
+        .from('invoices')
+        .select('count')
+        .limit(1)
+        .single();
+
+      if (tableError?.message?.includes('does not exist')) {
+        console.log('Création de la table invoices...');
+        const { error: createError } = await supabase.rpc('create_invoices_table');
+        if (createError) throw createError;
+      }
 
       // Ajout de l'enregistrement dans la table invoices
       const { data: invoice, error: dbError } = await supabase
@@ -76,6 +126,8 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
 
       if (dbError) throw dbError;
 
+      console.log('Facture ajoutée avec succès:', invoice);
+
       // Mise à jour du state
       const { invoices } = get();
       set({
@@ -89,8 +141,6 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
           ...invoices
         ]
       });
-
-      console.log('Facture ajoutée avec succès:', invoice);
     } catch (error) {
       console.error('Erreur lors de l\'ajout de la facture:', error);
     } finally {
