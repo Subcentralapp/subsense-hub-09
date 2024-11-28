@@ -4,16 +4,19 @@ export const uploadInvoiceFile = async (file: File) => {
   try {
     console.log('Starting invoice upload process:', file.name);
     
-    // Générer un nom de fichier unique en retirant les caractères spéciaux
+    // Clean the filename
     const cleanFileName = file.name.replace(/[^a-zA-Z0-9.]/g, '-');
     const fileName = `${Date.now()}-${cleanFileName}`;
     
     console.log('Generated file name:', fileName);
     
-    // Upload du fichier dans le bucket Supabase avec des options minimales
+    // Upload the file
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('invoices')
-      .upload(fileName, file);
+      .upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
 
     if (uploadError) {
       console.error('Storage upload error:', uploadError);
@@ -22,7 +25,7 @@ export const uploadInvoiceFile = async (file: File) => {
 
     console.log('File uploaded successfully:', uploadData);
 
-    // Récupérer l'URL publique du fichier
+    // Get the public URL
     const { data: urlData } = supabase.storage
       .from('invoices')
       .getPublicUrl(fileName);
@@ -33,7 +36,7 @@ export const uploadInvoiceFile = async (file: File) => {
 
     console.log('Generated public URL:', urlData.publicUrl);
 
-    // Enregistrer les informations dans la base de données
+    // Save to database
     const { data: invoice, error: dbError } = await supabase
       .from('Invoices')
       .insert([
@@ -64,7 +67,7 @@ export const deleteInvoiceFile = async (filePath: string) => {
   try {
     console.log('Starting invoice deletion:', filePath);
     
-    // Supprimer le fichier du stockage
+    // Delete from storage
     const { error: storageError } = await supabase.storage
       .from('invoices')
       .remove([filePath]);
@@ -76,7 +79,7 @@ export const deleteInvoiceFile = async (filePath: string) => {
 
     console.log('File deleted from storage successfully');
 
-    // Supprimer l'entrée de la base de données
+    // Delete from database
     const { error: dbError } = await supabase
       .from('Invoices')
       .delete()
