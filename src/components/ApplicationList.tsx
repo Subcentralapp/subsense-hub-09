@@ -12,27 +12,29 @@ type Application = {
   description: string | null;
 };
 
+const fetchApplications = async () => {
+  console.log("Fetching applications from Supabase...");
+  const { data, error } = await supabase
+    .from("Applications")
+    .select("*")
+    .order("name");
+
+  if (error) {
+    console.error("Supabase error:", error);
+    throw error;
+  }
+
+  console.log("Applications fetched:", data);
+  return data as Application[];
+};
+
 const ApplicationList = () => {
   const { toast } = useToast();
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
 
   const { data: applications, isLoading, error } = useQuery({
     queryKey: ["applications"],
-    queryFn: async () => {
-      console.log("Fetching applications from Supabase...");
-      const { data, error } = await supabase
-        .from("Applications")  // Utilisation de la majuscule comme dans la base de données
-        .select("*")
-        .order("name");
-
-      if (error) {
-        console.error("Supabase error:", error);
-        throw error;
-      }
-
-      console.log("Applications fetched:", data);
-      return data || [];
-    },
+    queryFn: fetchApplications
   });
 
   const handleAddSubscription = async (app: Application) => {
