@@ -84,27 +84,24 @@ const ApplicationDialog = ({ applications, isLoading, onAddSubscription }: Appli
         </DialogHeader>
         
         <div className="space-y-6 py-4">
-          <ApplicationSearch 
-            applications={applications} 
-            onSearch={handleSearch}
-          />
-          <ApplicationGrid 
-            applications={filteredApplications} 
-            isLoading={isLoading} 
-            onAddSubscription={onAddSubscription} 
-          />
-
-          <div className="border-t border-gray-200 pt-6">
+          <div className="flex justify-between items-start gap-4">
+            <ApplicationSearch 
+              applications={applications} 
+              onSearch={handleSearch}
+              className="flex-1"
+            />
             <button
               onClick={() => setShowCustomForm(!showCustomForm)}
-              className="w-full flex items-center justify-center gap-2 p-4 text-lg font-medium text-primary hover:text-primary/80 transition-colors bg-neutral-light rounded-lg hover:bg-neutral-light/80"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors bg-neutral-light rounded-lg hover:bg-neutral-light/80 whitespace-nowrap"
             >
-              <ChevronDown className={`h-5 w-5 transition-transform ${showCustomForm ? 'rotate-180' : ''}`} />
-              Je ne trouve pas mon abonnement
+              <Plus className="h-4 w-4" />
+              Ajouter manuellement
             </button>
+          </div>
 
-            {showCustomForm && (
-              <form onSubmit={handleCustomSubmit} className="mt-6 space-y-4 animate-fade-in bg-white p-6 rounded-lg shadow-sm">
+          {showCustomForm && (
+            <form onSubmit={handleCustomSubmit} className="animate-fade-in bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+              <div className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="name" className="text-sm font-medium">Nom de l'application *</Label>
                   <Input
@@ -154,12 +151,18 @@ const ApplicationDialog = ({ applications, isLoading, onAddSubscription }: Appli
                   />
                 </div>
 
-                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 mt-4">
+                <Button type="submit" className="w-full bg-primary hover:bg-primary/90">
                   Ajouter mon abonnement
                 </Button>
-              </form>
-            )}
-          </div>
+              </div>
+            </form>
+          )}
+
+          <ApplicationGrid 
+            applications={filteredApplications} 
+            isLoading={isLoading} 
+            onAddSubscription={onAddSubscription} 
+          />
         </div>
       </DialogContent>
     </Dialog>
