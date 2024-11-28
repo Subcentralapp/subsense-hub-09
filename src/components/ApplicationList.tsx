@@ -16,12 +16,12 @@ const ApplicationList = () => {
   const { toast } = useToast();
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
 
-  const { data: applications, isLoading } = useQuery({
+  const { data: applications, isLoading, error } = useQuery({
     queryKey: ["applications"],
     queryFn: async () => {
       console.log("Fetching applications...");
       const { data, error } = await supabase
-        .from("applications")
+        .from("Applications")  // Changed to match the exact table name with capital A
         .select("*")
         .order("name");
 
@@ -69,6 +69,11 @@ const ApplicationList = () => {
 
   if (isLoading) {
     return <div>Chargement des applications...</div>;
+  }
+
+  if (error) {
+    console.error("Error in applications query:", error);
+    return <div>Erreur lors du chargement des applications.</div>;
   }
 
   return (
