@@ -19,9 +19,9 @@ const ApplicationList = () => {
   const { data: applications, isLoading, error } = useQuery({
     queryKey: ["applications"],
     queryFn: async () => {
-      console.log("Starting applications fetch...");
+      console.log("Fetching applications from Supabase...");
       const { data, error } = await supabase
-        .from("applications")
+        .from("Applications")  // Utilisation de la majuscule comme dans la base de données
         .select("*")
         .order("name");
 
@@ -30,6 +30,7 @@ const ApplicationList = () => {
         throw error;
       }
 
+      console.log("Applications fetched:", data);
       return data || [];
     },
   });
