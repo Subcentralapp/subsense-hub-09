@@ -4,10 +4,16 @@ export const uploadInvoiceFile = async (file: File) => {
   try {
     console.log('Starting invoice upload:', file.name);
     
+    // Générer un nom de fichier unique
     const fileName = `${Date.now()}-${file.name}`;
+    
+    // Upload du fichier dans le bucket Supabase
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('invoices')
-      .upload(fileName, file);
+      .upload(fileName, file, {
+        cacheControl: '3600',
+        upsert: false
+      });
 
     if (uploadError) {
       console.error('Error uploading file:', uploadError);
@@ -16,19 +22,22 @@ export const uploadInvoiceFile = async (file: File) => {
 
     console.log('File uploaded successfully:', fileName);
 
+    // Récupérer l'URL publique du fichier
     const { data: { publicUrl } } = supabase.storage
       .from('invoices')
       .getPublicUrl(fileName);
 
     console.log('Generated public URL:', publicUrl);
 
+    // Enregistrer les informations dans la base de données
     const { data: invoice, error: dbError } = await supabase
       .from('Invoices')
       .insert([
         {
           Names: file.name,
           file_path: fileName,
-          url: publicUrl
+          url: publicUrl,
+          created_at: new Date().toISOString()
         }
       ])
       .select()
@@ -51,6 +60,7 @@ export const deleteInvoiceFile = async (filePath: string) => {
   try {
     console.log('Starting invoice deletion:', filePath);
     
+    // Supprimer le fichier du stockage
     const { error: storageError } = await supabase.storage
       .from('invoices')
       .remove([filePath]);
@@ -62,6 +72,7 @@ export const deleteInvoiceFile = async (filePath: string) => {
 
     console.log('File deleted from storage successfully');
 
+    // Supprimer l'entrée de la base de données
     const { error: dbError } = await supabase
       .from('Invoices')
       .delete()
