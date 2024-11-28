@@ -2,13 +2,14 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { BarChart, DollarSign, Plus, ArrowRightLeft, Lightbulb, Receipt } from "lucide-react";
+import { BarChart, DollarSign, Plus, ArrowRightLeft, Lightbulb, Receipt, Import } from "lucide-react";
 import DashboardStats from "@/components/DashboardStats";
 import SubscriptionList from "@/components/SubscriptionList";
 import ComparisonSection from "@/components/ComparisonSection";
 import RecommendationSection from "@/components/RecommendationSection";
 import PaymentSection from "@/components/PaymentSection";
 import RandomAd from "@/components/RandomAd";
+import ApplicationImport from "@/components/ApplicationImport";
 
 const Index = () => {
   const { toast } = useToast();
@@ -27,6 +28,7 @@ const Index = () => {
         return (
           <div className="space-y-6 fade-in">
             <DashboardStats />
+            <ApplicationImport />
             <RandomAd />
             <SubscriptionList />
           </div>
