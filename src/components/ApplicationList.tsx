@@ -15,7 +15,7 @@ type Application = {
 const fetchApplications = async () => {
   console.log("Fetching applications from Supabase...");
   const { data, error } = await supabase
-    .from("Applications")
+    .from("applications")
     .select("*")
     .order("name");
 
