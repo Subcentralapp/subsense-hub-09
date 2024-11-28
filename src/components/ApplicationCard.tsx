@@ -1,4 +1,4 @@
-import { Tv, Music, Play, Book, Heart, Globe, Zap, Gamepad, Video, BookOpen, Smile, Headphones } from "lucide-react";
+import { MessageSquare, Music, Play, Book, Heart, Globe, Zap, Gamepad, Video, BookOpen, Smile, Headphones } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import SubscriptionCustomizeDialog from "./dialog/SubscriptionCustomizeDialog";
@@ -21,8 +21,13 @@ interface ApplicationCardProps {
   onAdd: (app: Application, customPrice?: number, nextBilling?: Date) => void;
 }
 
-const getAppIcon = (category: string | null) => {
+const getAppIcon = (category: string | null, name: string) => {
   const categoryLower = category?.toLowerCase() || '';
+  const nameLower = name.toLowerCase();
+  
+  if (categoryLower === "intelligence artificielle") {
+    return <MessageSquare className="h-6 w-6 text-violet-500" />;
+  }
   
   switch (categoryLower) {
     case "streaming vidéo":
@@ -59,7 +64,7 @@ export const ApplicationCard = ({ app, onAdd }: ApplicationCardProps) => {
     <>
       <div className="flex flex-col p-4 bg-white rounded-lg border border-gray-100 hover:border-primary/20 transition-all hover:shadow-md">
         <div className="flex items-center gap-3 mb-3">
-          {getAppIcon(app.category)}
+          {getAppIcon(app.category, app.name)}
           <div>
             <h4 className="font-medium text-gray-900">{app.name}</h4>
             <p className="text-sm text-gray-500">{app.category || 'Non catégorisé'}</p>
@@ -71,38 +76,16 @@ export const ApplicationCard = ({ app, onAdd }: ApplicationCardProps) => {
         )}
 
         {app.pricing_plans && app.pricing_plans.length > 0 ? (
-          <Accordion type="single" collapsible className="w-full">
-            <AccordionItem value="plans">
-              <AccordionTrigger className="text-sm">Voir les plans</AccordionTrigger>
-              <AccordionContent>
-                <div className="space-y-3 mt-2">
-                  {app.pricing_plans.map((plan, index) => (
-                    <div key={index} className="p-3 bg-gray-50 rounded-lg">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="font-medium text-sm">{plan.name}</span>
-                        <span className="text-primary font-bold">{plan.price}€/mois</span>
-                      </div>
-                      <div className="space-y-1">
-                        {plan.features.map((feature, idx) => (
-                          <p key={idx} className="text-xs text-gray-600 flex items-center gap-1">
-                            <span className="w-1 h-1 bg-primary rounded-full"></span>
-                            {feature}
-                          </p>
-                        ))}
-                      </div>
-                      <Button 
-                        onClick={() => handlePlanSelect(plan)}
-                        size="sm"
-                        className="w-full mt-2 bg-primary/10 text-primary hover:bg-primary/20"
-                      >
-                        Choisir
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
+          <div className="mt-auto">
+            <p className="font-medium text-primary mb-2">{app.pricing_plans[0].price}€/mois</p>
+            <Button 
+              onClick={() => handlePlanSelect(app.pricing_plans[0])}
+              size="sm"
+              className="w-full bg-primary/10 text-primary hover:bg-primary/20"
+            >
+              Ajouter
+            </Button>
+          </div>
         ) : (
           <div className="mt-auto">
             <p className="font-medium text-primary mb-2">{app.price}€/mois</p>
