@@ -42,8 +42,8 @@ const SubscriptionList = () => {
       console.log("Fetched subscriptions:", data);
       return data as Subscription[];
     },
-    refetchInterval: 1000, // Rafraîchit toutes les secondes
-    refetchOnWindowFocus: true, // Rafraîchit quand la fenêtre reprend le focus
+    refetchInterval: 1000,
+    refetchOnWindowFocus: true,
   });
 
   const handleDelete = async (id: number) => {
@@ -60,7 +60,7 @@ const SubscriptionList = () => {
         description: "L'abonnement a été supprimé avec succès",
       });
 
-      refetch(); // Force le rafraîchissement après la suppression
+      refetch();
     } catch (error) {
       console.error("Error deleting subscription:", error);
       toast({
@@ -88,56 +88,54 @@ const SubscriptionList = () => {
         Mes Abonnements Actifs
       </h2>
       
-      <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
-        {subscriptions && subscriptions.length > 0 ? (
-          subscriptions.map((sub) => (
+      {subscriptions && subscriptions.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {subscriptions.map((sub) => (
             <div
               key={sub.id}
-              className="group relative overflow-hidden p-6 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02] hover:bg-gradient-to-r hover:from-primary/5 hover:to-transparent"
+              className="group relative p-6 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02] hover:bg-gradient-to-r hover:from-primary/5 hover:to-transparent"
             >
-              <div className="flex items-center justify-between">
+              <div className="space-y-4">
                 <div>
                   <h3 className="text-lg font-semibold text-gray-800">{sub.name}</h3>
-                  <p className="text-sm text-gray-500 mt-1">{sub.category}</p>
+                  <p className="text-sm text-gray-500">{sub.category}</p>
                 </div>
-                <div className="flex items-center space-x-6">
-                  <div className="text-right">
-                    <p className="text-xl font-bold text-primary">
-                      {sub.price} €<span className="text-sm font-normal text-gray-500">/mois</span>
-                    </p>
-                    <p className="text-sm text-gray-500 mt-1">
-                      Prochain paiement: {new Date(sub.next_billing).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <Button 
-                      variant="ghost" 
-                      size="icon"
-                      className="hover:bg-primary/10 hover:text-primary"
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button 
-                      variant="ghost" 
-                      size="icon"
-                      onClick={() => handleDelete(sub.id)}
-                      className="hover:bg-red-50 hover:text-red-500"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                <div>
+                  <p className="text-xl font-bold text-primary">
+                    {sub.price} €<span className="text-sm font-normal text-gray-500">/mois</span>
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    Prochain paiement: {new Date(sub.next_billing).toLocaleDateString()}
+                  </p>
+                </div>
+                <div className="flex justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    className="hover:bg-primary/10 hover:text-primary"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={() => handleDelete(sub.id)}
+                    className="hover:bg-red-50 hover:text-red-500"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
             </div>
-          ))
-        ) : (
-          <div className="text-center py-12 bg-neutral-light rounded-xl border border-gray-100">
-            <p className="text-gray-500">
-              Aucun abonnement actif pour le moment
-            </p>
-          </div>
-        )}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-12 bg-neutral-light rounded-xl border border-gray-100">
+          <p className="text-gray-500">
+            Aucun abonnement actif pour le moment
+          </p>
+        </div>
+      )}
     </Card>
   );
 };
