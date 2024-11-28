@@ -72,6 +72,36 @@ export type Database = {
         }
         Relationships: []
       }
+      subscriptions: {
+        Row: {
+          category: string | null
+          created_at: string | null
+          description: string | null
+          id: number
+          name: string
+          next_billing: string | null
+          price: number
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: number
+          name: string
+          next_billing?: string | null
+          price: number
+        }
+        Update: {
+          category?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: number
+          name?: string
+          next_billing?: string | null
+          price?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
