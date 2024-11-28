@@ -6,7 +6,7 @@ import { BarChart, DollarSign, Plus, ArrowRightLeft, Lightbulb, Receipt, Import 
 import DashboardStats from "@/components/DashboardStats";
 import SubscriptionList from "@/components/SubscriptionList";
 import ComparisonSection from "@/components/ComparisonSection";
-import RecommendationSection from "@/components/RecommendationSection";
+import RecommendationList from "@/components/recommendations/RecommendationList";
 import PaymentSection from "@/components/PaymentSection";
 import RandomAd from "@/components/RandomAd";
 import ApplicationImport from "@/components/ApplicationImport";
@@ -27,6 +27,7 @@ const Index = () => {
               <ApplicationList />
             </div>
             <SubscriptionList />
+            <RecommendationList />
             <ApplicationImport />
             <RandomAd />
           </div>

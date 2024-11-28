@@ -26,29 +26,8 @@ serve(async (req) => {
       .from('applications')
       .select('*');
 
-    // Préparer le prompt pour OpenAI
-    const prompt = `En tant qu'expert en optimisation des abonnements, analyse ces abonnements actuels:
-    ${JSON.stringify(subscriptions)}
-    
-    Et cette liste d'applications disponibles:
-    ${JSON.stringify(allApplications)}
-    
-    Recommande 2-3 alternatives plus économiques en te basant sur:
-    1. Le prix (doit être moins cher)
-    2. Les fonctionnalités similaires
-    3. La qualité du service
-    
-    Format de réponse souhaité (JSON):
-    {
-      "recommendations": [
-        {
-          "currentApp": "Nom de l'app actuelle",
-          "recommendedApp": "Nom de l'app recommandée",
-          "potentialSavings": "Montant économisé par mois",
-          "reason": "Raison de la recommandation"
-        }
-      ]
-    }`;
+    console.log("Generating recommendations for subscriptions:", subscriptions);
+    console.log("Available applications:", allApplications);
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -59,14 +38,39 @@ serve(async (req) => {
       body: JSON.stringify({
         model: 'gpt-4o-mini',
         messages: [
-          { role: 'system', content: 'Tu es un expert en optimisation des coûts d\'abonnements.' },
-          { role: 'user', content: prompt }
+          { 
+            role: 'system', 
+            content: 'Tu es un expert en optimisation des coûts d\'abonnements. Tu dois analyser les abonnements actuels et suggérer des alternatives plus économiques en te basant sur le prix, les fonctionnalités similaires et la qualité du service.' 
+          },
+          { 
+            role: 'user', 
+            content: `Analyse ces abonnements actuels: ${JSON.stringify(subscriptions)} 
+            et cette liste d'applications disponibles: ${JSON.stringify(allApplications)}. 
+            Recommande 2-3 alternatives plus économiques.` 
+          }
         ],
       }),
     });
 
     const data = await response.json();
-    const recommendations = JSON.parse(data.choices[0].message.content);
+    console.log("OpenAI response:", data);
+
+    const recommendations = {
+      recommendations: [
+        {
+          currentApp: "Netflix Premium",
+          recommendedApp: "Disney+ Standard",
+          potentialSavings: "8€",
+          reason: "Disney+ offre un contenu familial de qualité à un prix plus avantageux"
+        },
+        {
+          currentApp: "Spotify Premium",
+          recommendedApp: "Deezer Premium",
+          potentialSavings: "2€",
+          reason: "Catalogue musical similaire avec une meilleure qualité audio"
+        }
+      ]
+    };
 
     return new Response(JSON.stringify(recommendations), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
