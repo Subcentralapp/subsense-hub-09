@@ -11,6 +11,7 @@ import PaymentSection from "@/components/PaymentSection";
 import RandomAd from "@/components/RandomAd";
 import ApplicationImport from "@/components/ApplicationImport";
 import ApplicationList from "@/components/ApplicationList";
+import { Navbar } from "@/components/Navbar";
 
 const Index = () => {
   const { toast } = useToast();
@@ -57,52 +58,55 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-light p-6">
-      <div className="max-w-7xl mx-auto space-y-8">
-        <header className="flex justify-between items-center">
-          <h1 className="text-3xl font-semibold text-gray-900">Mes Abonnements</h1>
-        </header>
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-neutral-light p-6">
+        <div className="max-w-7xl mx-auto space-y-8">
+          <header className="flex justify-between items-center">
+            <h1 className="text-3xl font-semibold text-gray-900">Mes Abonnements</h1>
+          </header>
 
-        <nav className="flex space-x-4">
-          <Button
-            variant={activeTab === "dashboard" ? "default" : "ghost"}
-            onClick={() => setActiveTab("dashboard")}
-            className="hover-scale"
-          >
-            <BarChart className="mr-2 h-4 w-4" />
-            Tableau de bord
-          </Button>
-          <Button
-            variant={activeTab === "compare" ? "default" : "ghost"}
-            onClick={() => setActiveTab("compare")}
-            className="hover-scale"
-          >
-            <ArrowRightLeft className="mr-2 h-4 w-4" />
-            Comparer
-          </Button>
-          <Button
-            variant={activeTab === "recommendations" ? "default" : "ghost"}
-            onClick={() => setActiveTab("recommendations")}
-            className="hover-scale"
-          >
-            <Lightbulb className="mr-2 h-4 w-4" />
-            Recommandations
-          </Button>
-          <Button
-            variant={activeTab === "payments" ? "default" : "ghost"}
-            onClick={() => setActiveTab("payments")}
-            className="hover-scale"
-          >
-            <Receipt className="mr-2 h-4 w-4" />
-            Paiements
-          </Button>
-        </nav>
+          <nav className="flex space-x-4">
+            <Button
+              variant={activeTab === "dashboard" ? "default" : "ghost"}
+              onClick={() => setActiveTab("dashboard")}
+              className="hover-scale"
+            >
+              <BarChart className="mr-2 h-4 w-4" />
+              Tableau de bord
+            </Button>
+            <Button
+              variant={activeTab === "compare" ? "default" : "ghost"}
+              onClick={() => setActiveTab("compare")}
+              className="hover-scale"
+            >
+              <ArrowRightLeft className="mr-2 h-4 w-4" />
+              Comparer
+            </Button>
+            <Button
+              variant={activeTab === "recommendations" ? "default" : "ghost"}
+              onClick={() => setActiveTab("recommendations")}
+              className="hover-scale"
+            >
+              <Lightbulb className="mr-2 h-4 w-4" />
+              Recommandations
+            </Button>
+            <Button
+              variant={activeTab === "payments" ? "default" : "ghost"}
+              onClick={() => setActiveTab("payments")}
+              className="hover-scale"
+            >
+              <Receipt className="mr-2 h-4 w-4" />
+              Paiements
+            </Button>
+          </nav>
 
-        <main className="fade-in">
-          {renderContent()}
-        </main>
+          <main className="fade-in">
+            {renderContent()}
+          </main>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
