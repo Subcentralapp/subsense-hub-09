@@ -18,7 +18,7 @@ interface InvoiceStore {
   removeInvoice: (id: string, fileUrl: string) => Promise<void>;
 }
 
-export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
+export const useInvoiceStore = create<InvoiceStore>((set) => ({
   invoices: [],
   isLoading: false,
 
@@ -28,7 +28,8 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
       const querySnapshot = await getDocs(collection(db, 'invoices'));
       const invoices = querySnapshot.docs.map(doc => ({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
+        date: new Date(doc.data().date)
       })) as Invoice[];
       set({ invoices });
       console.log('Invoices fetched:', invoices);
@@ -42,12 +43,10 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
   addInvoice: async (file: File) => {
     try {
       set({ isLoading: true });
-      // Upload file to Firebase Storage
       const storageRef = ref(storage, `invoices/${file.name}_${Date.now()}`);
-      await uploadBytes(storageRef, file);
-      const fileUrl = await getDownloadURL(storageRef);
+      const snapshot = await uploadBytes(storageRef, file);
+      const fileUrl = await getDownloadURL(snapshot.ref);
 
-      // Add document to Firestore
       const docRef = await addDoc(collection(db, 'invoices'), {
         name: file.name,
         date: new Date().toISOString(),
@@ -76,10 +75,7 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
   removeInvoice: async (id: string, fileUrl: string) => {
     try {
       set({ isLoading: true });
-      // Delete from Firestore
       await deleteDoc(doc(db, 'invoices', id));
-
-      // Delete from Storage
       const storageRef = ref(storage, fileUrl);
       await deleteObject(storageRef);
 
