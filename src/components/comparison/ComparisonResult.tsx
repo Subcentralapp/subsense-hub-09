@@ -31,7 +31,7 @@ export const ComparisonResult = ({
                   <h4 className="font-semibold">{plan.name}</h4>
                   <p className="text-primary font-bold">{plan.price}€/mois</p>
                   <ul className="mt-2 space-y-1">
-                    {plan.features.map((feature: string, idx: number) => (
+                    {plan.features?.map((feature: string, idx: number) => (
                       <li key={idx} className="text-sm flex items-center gap-2">
                         <Check className="h-4 w-4 text-green-500" />
                         {feature}
@@ -57,39 +57,41 @@ export const ComparisonResult = ({
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        {[app1, app2].map((app, index) => (
+        {[app1, app2].map((app, index) => app && (
           <div
             key={`app-${index}`}
             className="p-6 bg-white rounded-lg border border-gray-100 hover:shadow-md transition-shadow"
           >
             <div className="flex items-center gap-4 mb-4">
-              {app?.logo_url && (
+              {app.logo_url && (
                 <img 
                   src={app.logo_url} 
-                  alt={`Logo ${app?.name}`} 
+                  alt={`Logo ${app.name}`} 
                   className="w-12 h-12 object-contain"
                 />
               )}
               <div>
-                <h3 className="text-lg font-semibold">{app?.name}</h3>
-                <a 
-                  href={app?.website_url} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-sm text-primary hover:underline"
-                >
-                  Visiter le site
-                </a>
+                <h3 className="text-lg font-semibold">{app.name}</h3>
+                {app.website_url && (
+                  <a 
+                    href={app.website_url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-sm text-primary hover:underline"
+                  >
+                    Visiter le site
+                  </a>
+                )}
               </div>
             </div>
 
-            {renderPricingPlans(app!)}
+            {renderPricingPlans(app)}
 
             <div className="mt-6 space-y-4">
               <div>
                 <h4 className="font-medium mb-2">Fonctionnalités principales</h4>
                 <ul className="space-y-2">
-                  {app?.features?.map((feature: string, idx: number) => (
+                  {Array.isArray(app.features) && app.features.map((feature: string, idx: number) => (
                     <li key={idx} className="flex items-center gap-2 text-sm">
                       <Check className="h-4 w-4 text-green-500" />
                       {feature}
@@ -102,7 +104,7 @@ export const ComparisonResult = ({
                 <div>
                   <h4 className="font-medium mb-2 text-green-600">Avantages</h4>
                   <ul className="space-y-2">
-                    {app?.pros?.map((pro: string, idx: number) => (
+                    {Array.isArray(app.pros) && app.pros.map((pro: string, idx: number) => (
                       <li key={idx} className="flex items-center gap-2 text-sm">
                         <Check className="h-4 w-4 text-green-500" />
                         {pro}
@@ -113,7 +115,7 @@ export const ComparisonResult = ({
                 <div>
                   <h4 className="font-medium mb-2 text-red-600">Inconvénients</h4>
                   <ul className="space-y-2">
-                    {app?.cons?.map((con: string, idx: number) => (
+                    {Array.isArray(app.cons) && app.cons.map((con: string, idx: number) => (
                       <li key={idx} className="flex items-center gap-2 text-sm">
                         <X className="h-4 w-4 text-red-500" />
                         {con}
@@ -138,7 +140,7 @@ export const ComparisonResult = ({
             <span className="font-semibold text-primary">{winner.name}</span> pour les raisons suivantes :
           </p>
           <ul className="mt-3 space-y-2">
-            {winner.pros?.map((pro, index) => (
+            {Array.isArray(winner.pros) && winner.pros.map((pro, index) => (
               <li key={index} className="flex items-center gap-2">
                 <Check className="h-4 w-4 text-green-500" />
                 {pro}
