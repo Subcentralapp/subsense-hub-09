@@ -5,11 +5,22 @@ import { Application } from "@/types/application";
 
 interface ApplicationSearchProps {
   applications: Application[] | undefined;
+  onSearch: (searchTerm: string, category: string | null) => void;
 }
 
-const ApplicationSearch = ({ applications }: ApplicationSearchProps) => {
+const ApplicationSearch = ({ applications, onSearch }: ApplicationSearchProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
+  const handleSearch = (newSearchTerm: string) => {
+    setSearchTerm(newSearchTerm);
+    onSearch(newSearchTerm, selectedCategory);
+  };
+
+  const handleCategoryChange = (category: string) => {
+    setSelectedCategory(category || null);
+    onSearch(searchTerm, category || null);
+  };
 
   const categories = [...new Set(applications?.map(app => app.category))];
 
@@ -20,13 +31,13 @@ const ApplicationSearch = ({ applications }: ApplicationSearchProps) => {
         <Input
           placeholder="Rechercher une application..."
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => handleSearch(e.target.value)}
           className="pl-9"
         />
       </div>
       <select
         value={selectedCategory || ""}
-        onChange={(e) => setSelectedCategory(e.target.value || null)}
+        onChange={(e) => handleCategoryChange(e.target.value)}
         className="px-4 py-2 rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary/20"
       >
         <option value="">Toutes les catégories</option>
