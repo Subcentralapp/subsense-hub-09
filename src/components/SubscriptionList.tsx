@@ -5,7 +5,6 @@ import { supabase } from "@/lib/supabase";
 import { useToast } from "./ui/use-toast";
 import { useState } from "react";
 import { SubscriptionCard } from "./subscription/SubscriptionCard";
-import RecommendationList from "./recommendations/RecommendationList";
 import { SubscriptionEditDialog } from "./subscription/SubscriptionEditDialog";
 
 interface Subscription {
@@ -110,10 +109,6 @@ const SubscriptionList = () => {
           </div>
         )}
       </Card>
-
-      {subscriptions && subscriptions.length > 0 && (
-        <RecommendationList />
-      )}
 
       <SubscriptionEditDialog
         subscription={editingSubscription}

@@ -27,7 +27,6 @@ const Index = () => {
               <ApplicationList />
             </div>
             <SubscriptionList />
-            <RecommendationList />
             <ApplicationImport />
             <RandomAd />
           </div>
@@ -42,7 +41,7 @@ const Index = () => {
       case "recommendations":
         return (
           <>
-            <RecommendationSection />
+            <RecommendationList />
             <RandomAd />
           </>
         );
