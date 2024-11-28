@@ -1,6 +1,57 @@
 import { Application } from "@/types/application";
 
 export const productivityApplications: Application[] = [
+  {
+    name: "DeepL Pro",
+    price: 29.99,
+    category: "Productivité",
+    description: "Service de traduction professionnelle alimenté par l'IA",
+    pricing_plans: [
+      {
+        name: "Gratuit",
+        price: 0,
+        features: ["Traduction de base", "Limite de caractères", "Formats limités"]
+      },
+      {
+        name: "Pro",
+        price: 29.99,
+        features: ["Traduction illimitée", "Tous les formats", "API disponible", "Support prioritaire"]
+      }
+    ],
+    features: ["Traduction IA avancée", "Support multilingue", "Interface professionnelle", "API disponible"],
+    pros: ["Qualité supérieure", "Interface intuitive", "Rapide", "Support technique"],
+    cons: ["Prix élevé", "Nécessite internet", "Limite sur version gratuite"],
+    website_url: "https://www.deepl.com",
+    logo_url: "https://logo.clearbit.com/deepl.com"
+  },
+  {
+    name: "Dropbox Plus",
+    price: 11.99,
+    category: "Productivité",
+    description: "Stockage cloud et collaboration",
+    pricing_plans: [
+      {
+        name: "Basic",
+        price: 0,
+        features: ["2 Go de stockage", "Synchronisation basique", "Partage limité"]
+      },
+      {
+        name: "Plus",
+        price: 11.99,
+        features: ["2 To de stockage", "Synchronisation avancée", "Backup automatique"]
+      },
+      {
+        name: "Professional",
+        price: 19.99,
+        features: ["3 To de stockage", "Signature électronique", "Transfert de fichiers volumineux"]
+      }
+    ],
+    features: ["Stockage cloud", "Synchronisation", "Partage de fichiers", "Collaboration"],
+    pros: ["Interface simple", "Multi-plateforme", "Synchronisation rapide", "Sécurisé"],
+    cons: ["Espace limité version gratuite", "Prix des versions pro", "Dépendance internet"],
+    website_url: "https://www.dropbox.com",
+    logo_url: "https://logo.clearbit.com/dropbox.com"
+  },
   { 
     name: "Microsoft 365", 
     price: 7.00, 

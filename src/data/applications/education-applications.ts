@@ -27,6 +27,6 @@ export const educationApplications: Application[] = [
     pros: ["Apprentissage ludique", "Nombreuses langues", "Progression adaptative", "Prix abordable"],
     cons: ["Pas assez formel", "Vocabulaire limité", "Expressions parfois étranges", "Notifications insistantes"],
     website_url: "https://www.duolingo.com",
-    logo_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Duolingo_owl.svg/1920px-Duolingo_owl.svg.png"
+    logo_url: "https://logo.clearbit.com/duolingo.com"
   }
 ];

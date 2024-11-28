@@ -1,38 +1,33 @@
 import { Application } from "@/types/application";
 
 export const musicApplications: Application[] = [
-  { 
-    name: "Spotify", 
-    price: 10.99, 
-    category: "Streaming Musical", 
-    description: "Musique et podcasts en streaming",
+  {
+    name: "Deezer Premium",
+    price: 10.99,
+    category: "Streaming musical",
+    description: "Service de streaming musical",
     pricing_plans: [
       {
         name: "Gratuit",
         price: 0,
-        features: ["Avec publicité", "Lecture aléatoire", "Qualité audio normale", "Mode mobile uniquement"]
+        features: ["Avec publicités", "Qualité standard", "Mode aléatoire"]
       },
       {
-        name: "Premium Solo",
+        name: "Premium",
         price: 10.99,
-        features: ["Sans publicité", "Lecture à la demande", "Qualité audio supérieure", "Téléchargement hors-ligne"]
+        features: ["Sans publicité", "Haute qualité", "Mode hors ligne", "Flow personnalisé"]
       },
       {
-        name: "Premium Duo",
-        price: 14.99,
-        features: ["2 comptes Premium", "Duo Mix", "Sans publicité", "Téléchargement hors-ligne"]
-      },
-      {
-        name: "Premium Famille",
+        name: "Famille",
         price: 17.99,
-        features: ["6 comptes Premium", "Contrôle parental", "Spotify Kids", "Sans publicité"]
+        features: ["6 comptes", "Sans publicité", "Contrôle parental", "Mode hors ligne"]
       }
     ],
-    features: ["Qualité jusqu'à 320kbps", "Mode hors ligne", "Crossfade", "Equalizer"],
-    pros: ["Large catalogue", "Excellentes playlists", "Algorithme de recommandation", "Application multi-plateforme"],
-    cons: ["Qualité audio limitée sur le forfait standard", "Rémunération des artistes", "Pas de lyrics sur tous les titres"],
-    website_url: "https://www.spotify.com",
-    logo_url: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/1920px-Spotify_logo_without_text.svg.png"
+    features: ["Musique illimitée", "Playlists personnalisées", "Lyrics en direct", "Mode hors ligne"],
+    pros: ["Large catalogue", "Qualité audio", "Interface intuitive", "Recommandations pertinentes"],
+    cons: ["Certains artistes manquants", "App mobile perfectible", "Prix similaire concurrence"],
+    website_url: "https://www.deezer.com",
+    logo_url: "https://logo.clearbit.com/deezer.com"
   },
   { 
     name: "Apple Music", 
