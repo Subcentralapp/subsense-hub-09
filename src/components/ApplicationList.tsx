@@ -44,7 +44,7 @@ const ApplicationList = () => {
     queryKey: ["applications"],
     queryFn: fetchApplications,
     staleTime: 0, // Force le rafraîchissement des données
-    cacheTime: 0, // Désactive la mise en cache
+    gcTime: 0, // Désactive la mise en cache (remplace cacheTime dans v5)
   });
 
   const handleAddSubscription = async (app: Application) => {
