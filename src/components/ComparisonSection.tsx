@@ -18,26 +18,49 @@ const ComparisonSection = () => {
   const { data: applications } = useQuery({
     queryKey: ["applications"],
     queryFn: async () => {
+      console.log("Fetching applications...");
       const { data, error } = await supabase
         .from("applications")
         .select("*")
         .order("name");
       
-      if (error || !data?.length) {
-        console.log("Utilisation des données de repli:", error);
+      if (error) {
+        console.error("Error fetching applications:", error);
+        console.log("Using fallback applications");
         return fallbackApplications;
       }
+
+      if (!data?.length) {
+        console.log("No applications found, using fallback");
+        return fallbackApplications;
+      }
+
+      console.log("Applications fetched:", data);
       return data as Application[];
     },
   });
 
-  const filteredApps1 = applications?.filter(app => 
-    app.name.toLowerCase().includes(searchTerm1.toLowerCase())
-  );
+  const filteredApps1 = applications?.filter(app => {
+    const searchLower = searchTerm1.toLowerCase();
+    const nameLower = app.name?.toLowerCase() || '';
+    const categoryLower = app.category?.toLowerCase() || '';
+    const descriptionLower = app.description?.toLowerCase() || '';
+    
+    return nameLower.includes(searchLower) || 
+           categoryLower.includes(searchLower) || 
+           descriptionLower.includes(searchLower);
+  });
 
-  const filteredApps2 = applications?.filter(app => 
-    app.name.toLowerCase().includes(searchTerm2.toLowerCase())
-  );
+  const filteredApps2 = applications?.filter(app => {
+    const searchLower = searchTerm2.toLowerCase();
+    const nameLower = app.name?.toLowerCase() || '';
+    const categoryLower = app.category?.toLowerCase() || '';
+    const descriptionLower = app.description?.toLowerCase() || '';
+    
+    return nameLower.includes(searchLower) || 
+           categoryLower.includes(searchLower) || 
+           descriptionLower.includes(searchLower);
+  });
 
   const determineWinner = () => {
     if (!app1 || !app2) return null;

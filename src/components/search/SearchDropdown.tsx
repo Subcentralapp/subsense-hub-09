@@ -39,19 +39,25 @@ export const SearchDropdown = ({
       
       {searchTerm && (
         <div className="absolute z-50 mt-1 w-full bg-white rounded-md shadow-lg border border-gray-200 max-h-48 overflow-y-auto">
-          {filteredApps?.map((app) => (
-            <div
-              key={`${app.name}-${app.category}`}
-              className="px-4 py-2 hover:bg-neutral-light cursor-pointer transition-colors"
-              onClick={() => {
-                onSelectApp(app);
-                onSearchChange("");
-              }}
-            >
-              <div className="font-medium">{app.name}</div>
-              <div className="text-sm text-gray-500">{app.category}</div>
+          {filteredApps && filteredApps.length > 0 ? (
+            filteredApps.map((app) => (
+              <div
+                key={`${app.name}-${app.category}`}
+                className="px-4 py-2 hover:bg-neutral-light cursor-pointer transition-colors"
+                onClick={() => {
+                  onSelectApp(app);
+                  onSearchChange("");
+                }}
+              >
+                <div className="font-medium">{app.name}</div>
+                <div className="text-sm text-gray-500">{app.category}</div>
+              </div>
+            ))
+          ) : (
+            <div className="px-4 py-2 text-gray-500">
+              Aucune application trouvée
             </div>
-          ))}
+          )}
         </div>
       )}
     </div>
