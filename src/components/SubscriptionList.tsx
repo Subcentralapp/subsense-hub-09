@@ -111,9 +111,9 @@ const SubscriptionList = () => {
         )}
       </Card>
 
-      <div className="mt-8">
+      {subscriptions && subscriptions.length > 0 && (
         <RecommendationList />
-      </div>
+      )}
 
       <SubscriptionEditDialog
         subscription={editingSubscription}
