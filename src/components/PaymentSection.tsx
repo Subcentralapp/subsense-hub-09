@@ -1,23 +1,35 @@
-import { useState } from "react";
+import { useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Upload, Calendar, FileText, Trash2 } from "lucide-react";
+import { Upload, Calendar, FileText, Trash2, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useInvoiceStore } from "@/services/invoiceService";
 
 const PaymentSection = () => {
   const { toast } = useToast();
-  const { invoices, addInvoice, removeInvoice } = useInvoiceStore();
+  const { invoices, isLoading, fetchInvoices, addInvoice, removeInvoice } = useInvoiceStore();
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    fetchInvoices();
+  }, [fetchInvoices]);
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file && file.type === "application/pdf") {
-      addInvoice(file);
-      toast({
-        title: "Facture ajoutée",
-        description: `${file.name} a été ajouté avec succès.`,
-      });
+      try {
+        await addInvoice(file);
+        toast({
+          title: "Facture ajoutée",
+          description: `${file.name} a été ajouté avec succès.`,
+        });
+      } catch (error) {
+        toast({
+          title: "Erreur",
+          description: "Une erreur est survenue lors de l'ajout de la facture.",
+          variant: "destructive",
+        });
+      }
     } else {
       toast({
         title: "Erreur",
@@ -74,9 +86,14 @@ const PaymentSection = () => {
                   accept=".pdf"
                   onChange={handleFileUpload}
                   className="hidden"
+                  disabled={isLoading}
                 />
-                <Button className="hover-scale">
-                  <Upload className="mr-2 h-4 w-4" />
+                <Button className="hover-scale" disabled={isLoading}>
+                  {isLoading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Upload className="mr-2 h-4 w-4" />
+                  )}
                   Sélectionner un fichier
                 </Button>
               </label>
@@ -96,23 +113,41 @@ const PaymentSection = () => {
                     <div>
                       <span className="text-sm font-medium">{invoice.name}</span>
                       <p className="text-xs text-gray-500">
-                        {invoice.date.toLocaleDateString()}
+                        {new Date(invoice.date).toLocaleDateString()}
                       </p>
                     </div>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      removeInvoice(invoice.id);
-                      toast({
-                        title: "Facture supprimée",
-                        description: "La facture a été supprimée avec succès.",
-                      });
-                    }}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => window.open(invoice.fileUrl, '_blank')}
+                    >
+                      Voir
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={async () => {
+                        try {
+                          await removeInvoice(invoice.id, invoice.fileUrl);
+                          toast({
+                            title: "Facture supprimée",
+                            description: "La facture a été supprimée avec succès.",
+                          });
+                        } catch (error) {
+                          toast({
+                            title: "Erreur",
+                            description: "Une erreur est survenue lors de la suppression.",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                      disabled={isLoading}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
