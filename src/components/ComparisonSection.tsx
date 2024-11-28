@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
-import { Check, X, ArrowRight, Search, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { Application } from "@/types/application";
 import { fallbackApplications } from "@/data/fallbackApplications";
+import { SearchDropdown } from "./search/SearchDropdown";
+import { ComparisonResult } from "./comparison/ComparisonResult";
 
 const ComparisonSection = () => {
   const [app1, setApp1] = useState<string | null>(null);
@@ -45,15 +45,12 @@ const ComparisonSection = () => {
   const determineWinner = () => {
     if (!selectedApp1 || !selectedApp2) return null;
     
-    // Critères de comparaison
     let score1 = 0;
     let score2 = 0;
 
-    // Prix (le moins cher gagne)
     if (selectedApp1.price < selectedApp2.price) score1++;
     else if (selectedApp2.price < selectedApp1.price) score2++;
 
-    // Description (plus détaillée gagne)
     if (selectedApp1.description?.length > (selectedApp2.description?.length || 0)) score1++;
     else if (selectedApp2.description?.length > (selectedApp1.description?.length || 0)) score2++;
 
@@ -73,30 +70,17 @@ const ComparisonSection = () => {
       {!showComparison ? (
         <Card className="p-6">
           <div className="flex items-center justify-center gap-4">
-            <div className="w-1/3 space-y-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Rechercher une application..."
-                  value={searchTerm1}
-                  onChange={(e) => setSearchTerm1(e.target.value)}
-                  className="pl-9"
-                />
-              </div>
-              {searchTerm1 && (
-                <div className="absolute mt-1 w-[calc(100%-1rem)] bg-white rounded-md shadow-lg max-h-48 overflow-auto z-10">
-                  {filteredApps1?.map((app) => (
-                    <div
-                      key={app.name}
-                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                      onClick={() => {
-                        setApp1(app.name);
-                        setSearchTerm1("");
-                      }}
-                    >
-                      {app.name}
-                    </div>
-                  ))}
+            <div className="w-1/3">
+              <SearchDropdown
+                searchTerm={searchTerm1}
+                onSearchChange={setSearchTerm1}
+                filteredApps={filteredApps1}
+                onSelectApp={setApp1}
+                placeholder="Rechercher une application..."
+              />
+              {app1 && (
+                <div className="mt-2 p-2 bg-neutral-light rounded-md">
+                  Application sélectionnée: <span className="font-semibold">{app1}</span>
                 </div>
               )}
             </div>
@@ -108,30 +92,17 @@ const ComparisonSection = () => {
               </div>
             </div>
 
-            <div className="w-1/3 space-y-2">
-              <div className="relative">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
-                <Input
-                  placeholder="Rechercher une application..."
-                  value={searchTerm2}
-                  onChange={(e) => setSearchTerm2(e.target.value)}
-                  className="pl-9"
-                />
-              </div>
-              {searchTerm2 && (
-                <div className="absolute mt-1 w-[calc(100%-1rem)] bg-white rounded-md shadow-lg max-h-48 overflow-auto z-10">
-                  {filteredApps2?.map((app) => (
-                    <div
-                      key={app.name}
-                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                      onClick={() => {
-                        setApp2(app.name);
-                        setSearchTerm2("");
-                      }}
-                    >
-                      {app.name}
-                    </div>
-                  ))}
+            <div className="w-1/3">
+              <SearchDropdown
+                searchTerm={searchTerm2}
+                onSearchChange={setSearchTerm2}
+                filteredApps={filteredApps2}
+                onSelectApp={setApp2}
+                placeholder="Rechercher une application..."
+              />
+              {app2 && (
+                <div className="mt-2 p-2 bg-neutral-light rounded-md">
+                  Application sélectionnée: <span className="font-semibold">{app2}</span>
                 </div>
               )}
             </div>
@@ -148,62 +119,12 @@ const ComparisonSection = () => {
           </div>
         </Card>
       ) : (
-        <Card className="p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-semibold">Comparaison des Services</h2>
-            <Button variant="outline" onClick={() => setShowComparison(false)}>
-              Nouvelle comparaison
-            </Button>
-          </div>
-          
-          <div className="grid grid-cols-2 gap-6 mb-8">
-            {[selectedApp1, selectedApp2].map((app, index) => (
-              <div
-                key={index}
-                className="p-6 bg-white rounded-lg border border-gray-100 hover:shadow-md transition-shadow"
-              >
-                <h3 className="text-lg font-semibold mb-2">{app?.name}</h3>
-                <p className="text-2xl font-bold mb-4">{app?.price} €/mois</p>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <Check className="h-5 w-5 text-green-500" />
-                    <p className="text-sm">Catégorie: {app?.category}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="h-5 w-5 text-green-500" />
-                    <p className="text-sm">Description détaillée disponible</p>
-                  </div>
-                  <p className="text-sm text-gray-600">{app?.description}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {winner && (
-            <div className="bg-primary/10 p-6 rounded-lg">
-              <div className="flex items-center gap-3 mb-4">
-                <Trophy className="h-6 w-6 text-primary" />
-                <h3 className="text-lg font-semibold">Application Recommandée</h3>
-              </div>
-              <p className="text-gray-700">
-                Basé sur notre analyse comparative, nous recommandons{" "}
-                <span className="font-semibold text-primary">{winner.name}</span> pour les raisons suivantes :
-              </p>
-              <ul className="mt-3 space-y-2">
-                <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-green-500" />
-                  {winner.price < (selectedApp1?.name === winner.name ? selectedApp2?.price || 0 : selectedApp1?.price || 0) 
-                    ? "Meilleur rapport qualité-prix"
-                    : "Fonctionnalités plus complètes"}
-                </li>
-                <li className="flex items-center gap-2">
-                  <Check className="h-4 w-4 text-green-500" />
-                  Description plus détaillée des services
-                </li>
-              </ul>
-            </div>
-          )}
-        </Card>
+        <ComparisonResult
+          selectedApp1={selectedApp1}
+          selectedApp2={selectedApp2}
+          winner={winner}
+          onNewComparison={() => setShowComparison(false)}
+        />
       )}
     </div>
   );
