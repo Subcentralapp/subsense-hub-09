@@ -2,12 +2,13 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
-import { BarChart, DollarSign, Plus, ArrowRightLeft, Lightbulb, Layout } from "lucide-react";
+import { BarChart, DollarSign, Plus, ArrowRightLeft, Lightbulb, Receipt } from "lucide-react";
 import DashboardStats from "@/components/DashboardStats";
 import SubscriptionList from "@/components/SubscriptionList";
 import ComparisonSection from "@/components/ComparisonSection";
 import RecommendationSection from "@/components/RecommendationSection";
-import AdSpace from "@/components/AdSpace";
+import PaymentSection from "@/components/PaymentSection";
+import RandomAd from "@/components/RandomAd";
 
 const Index = () => {
   const { toast } = useToast();
@@ -26,15 +27,31 @@ const Index = () => {
         return (
           <div className="space-y-6 fade-in">
             <DashboardStats />
+            <RandomAd />
             <SubscriptionList />
           </div>
         );
       case "compare":
-        return <ComparisonSection />;
+        return (
+          <>
+            <ComparisonSection />
+            <RandomAd />
+          </>
+        );
       case "recommendations":
-        return <RecommendationSection />;
-      case "ads":
-        return <AdSpace />;
+        return (
+          <>
+            <RecommendationSection />
+            <RandomAd />
+          </>
+        );
+      case "payments":
+        return (
+          <>
+            <PaymentSection />
+            <RandomAd />
+          </>
+        );
       default:
         return null;
     }
@@ -77,12 +94,12 @@ const Index = () => {
             Recommandations
           </Button>
           <Button
-            variant={activeTab === "ads" ? "default" : "ghost"}
-            onClick={() => setActiveTab("ads")}
+            variant={activeTab === "payments" ? "default" : "ghost"}
+            onClick={() => setActiveTab("payments")}
             className="hover-scale"
           >
-            <Layout className="mr-2 h-4 w-4" />
-            Publicités
+            <Receipt className="mr-2 h-4 w-4" />
+            Paiements
           </Button>
         </nav>
 
