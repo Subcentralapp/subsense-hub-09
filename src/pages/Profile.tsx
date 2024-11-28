@@ -4,8 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, LogOut, Mail, Calendar, Key, Shield } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
+import { User, LogOut, Mail, Calendar } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 import { Separator } from "@/components/ui/separator";
 import {
   Tabs,
@@ -139,7 +139,7 @@ export default function Profile() {
           <TabsContent value="security" className="space-y-4">
             <Card className="p-6">
               <h2 className="text-xl font-semibold mb-4 flex items-center">
-                <Shield className="h-5 w-5 mr-2" />
+                <Calendar className="h-5 w-5 mr-2" />
                 Sécurité
               </h2>
               <div className="space-y-4">
@@ -157,15 +157,6 @@ export default function Profile() {
                 <div>
                   <label className="text-sm font-medium text-muted-foreground">Méthode d'authentification</label>
                   <p className="mt-1 capitalize">{user.app_metadata?.provider || 'Email'}</p>
-                </div>
-                <div className="pt-4">
-                  <Button
-                    variant="secondary"
-                    className="flex items-center space-x-2"
-                  >
-                    <Key className="h-4 w-4" />
-                    <span>Changer le mot de passe</span>
-                  </Button>
                 </div>
               </div>
             </Card>
