@@ -24,8 +24,13 @@ const fetchApplications = async () => {
       return fallbackApplications;
     }
 
-    console.log("Applications récupérées:", data);
-    return data as Application[];
+    // Dédoublonnage côté serveur
+    const uniqueApps = Array.from(
+      new Map(data.map(app => [`${app.name}-${app.category}`, app])).values()
+    );
+
+    console.log("Applications uniques récupérées:", uniqueApps);
+    return uniqueApps as Application[];
   } catch (error) {
     console.error("Erreur lors de la récupération:", error);
     console.log("Utilisation de la liste de repli...");
@@ -37,7 +42,9 @@ const ApplicationList = () => {
   const { toast } = useToast();
   const { data: applications, isLoading } = useQuery({
     queryKey: ["applications"],
-    queryFn: fetchApplications
+    queryFn: fetchApplications,
+    staleTime: 0, // Force le rafraîchissement des données
+    cacheTime: 0, // Désactive la mise en cache
   });
 
   const handleAddSubscription = async (app: Application) => {
