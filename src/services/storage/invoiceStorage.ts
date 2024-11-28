@@ -10,10 +10,7 @@ export const uploadInvoiceFile = async (file: File) => {
     // Upload du fichier dans le bucket Supabase
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('invoices')
-      .upload(fileName, file, {
-        cacheControl: '3600',
-        upsert: false
-      });
+      .upload(fileName, file);
 
     if (uploadError) {
       console.error('Error uploading file:', uploadError);
