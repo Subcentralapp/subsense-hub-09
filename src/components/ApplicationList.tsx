@@ -5,7 +5,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/lib/supabase";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Search, Tv, Play, Video, Music, Book, Camera, Cloud, Globe, Heart, Mail, Phone, Shield, Zap } from "lucide-react";
+import { Search, Plus } from "lucide-react";
+import { ApplicationCard } from "./ApplicationCard";
 
 type Application = {
   name: string;
@@ -85,25 +86,6 @@ const fetchApplications = async () => {
     console.error("Erreur lors de la récupération:", error);
     console.log("Utilisation de la liste de repli...");
     return fallbackApplications;
-  }
-};
-
-const getAppIcon = (category: string) => {
-  switch (category.toLowerCase()) {
-    case "streaming vidéo":
-      return <Tv className="h-6 w-6 text-purple-500" />;
-    case "streaming musical":
-      return <Music className="h-6 w-6 text-green-500" />;
-    case "gaming":
-      return <Play className="h-6 w-6 text-red-500" />;
-    case "productivité":
-      return <Zap className="h-6 w-6 text-blue-500" />;
-    case "éducation":
-      return <Book className="h-6 w-6 text-yellow-500" />;
-    case "bien-être":
-      return <Heart className="h-6 w-6 text-pink-500" />;
-    default:
-      return <Globe className="h-6 w-6 text-gray-500" />;
   }
 };
 
@@ -199,31 +181,11 @@ const ApplicationList = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto p-2">
             {filteredApplications?.map((app) => (
-              <div
-                key={app.name}
-                className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-100 hover:border-primary/20 transition-all hover:shadow-md hover:scale-[1.02]"
-              >
-                <div className="flex items-center gap-3">
-                  {getAppIcon(app.category)}
-                  <div>
-                    <h4 className="font-medium text-gray-900">{app.name}</h4>
-                    <p className="text-sm text-gray-500">{app.category}</p>
-                    {app.description && (
-                      <p className="text-xs text-gray-400 mt-1 max-w-[200px]">{app.description}</p>
-                    )}
-                  </div>
-                </div>
-                <div className="flex flex-col items-end gap-2">
-                  <p className="font-medium text-primary">{app.price}€/mois</p>
-                  <Button 
-                    onClick={() => handleAddSubscription(app)}
-                    size="sm"
-                    className="bg-primary/10 text-primary hover:bg-primary/20"
-                  >
-                    Ajouter
-                  </Button>
-                </div>
-              </div>
+              <ApplicationCard 
+                key={app.name} 
+                app={app} 
+                onAdd={handleAddSubscription}
+              />
             ))}
           </div>
         </div>
