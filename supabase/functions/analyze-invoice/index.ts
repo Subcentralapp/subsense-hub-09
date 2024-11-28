@@ -7,7 +7,6 @@ const corsHeaders = {
 }
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders })
   }
@@ -22,39 +21,28 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // Fetch the file content from Supabase Storage URL
-    const response = await fetch(fileUrl)
-    if (!response.ok) {
-      throw new Error('Failed to fetch file content')
+    // Mock metadata extraction (à remplacer par l'intégration réelle de Google Vision)
+    const mockMetadata = {
+      Name: invoiceId,
+      Price: Math.floor(Math.random() * 1000),
+      date: new Date().toISOString()
     }
 
-    // Mock analysis results for now (replace with actual OCR/analysis logic later)
-    const mockAnalysis = {
-      amount: Math.floor(Math.random() * 1000),
-      category: 'General',
-      invoice_date: new Date().toISOString().split('T')[0],
-      merchant_name: 'Sample Vendor',
-      status: 'processed'
-    }
+    console.log('Extracted metadata:', mockMetadata)
 
-    console.log('Analysis results:', mockAnalysis)
-
-    // Save analysis results to InvoiceDetails table
-    const { data, error: dbError } = await supabase
-      .from('InvoiceDetails')
-      .insert({
-        invoice_id: invoiceId,
-        ...mockAnalysis
-      })
+    // Store metadata in the Métadonné table
+    const { data, error: insertError } = await supabase
+      .from('Métadonné')
+      .insert([mockMetadata])
       .select()
       .single()
 
-    if (dbError) {
-      console.error('Database error:', dbError)
-      throw dbError
+    if (insertError) {
+      console.error('Error storing metadata:', insertError)
+      throw insertError
     }
 
-    console.log('Successfully saved invoice details:', data)
+    console.log('Successfully stored metadata:', data)
 
     return new Response(
       JSON.stringify({ success: true, data }),

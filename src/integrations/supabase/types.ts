@@ -33,6 +33,24 @@ export type Database = {
         }
         Relationships: []
       }
+      Métadonné: {
+        Row: {
+          date: Json | null
+          Name: number
+          Price: number
+        }
+        Insert: {
+          date?: Json | null
+          Name?: number
+          Price: number
+        }
+        Update: {
+          date?: Json | null
+          Name?: number
+          Price?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
