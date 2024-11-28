@@ -47,6 +47,33 @@ export const ComparisonResult = ({
     );
   };
 
+  const renderAdvantagesDisadvantages = (app: Application) => (
+    <div className="grid grid-cols-2 gap-4 mt-4">
+      <div>
+        <h4 className="font-medium mb-2 text-green-600">Avantages</h4>
+        <ul className="space-y-2">
+          {app.pros?.map((pro: string, idx: number) => (
+            <li key={idx} className="flex items-center gap-2 text-sm">
+              <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
+              <span>{pro}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <h4 className="font-medium mb-2 text-red-600">Inconvénients</h4>
+        <ul className="space-y-2">
+          {app.cons?.map((con: string, idx: number) => (
+            <li key={idx} className="flex items-center gap-2 text-sm">
+              <X className="h-4 w-4 text-red-500 flex-shrink-0" />
+              <span>{con}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </div>
+  );
+
   return (
     <Card className="p-6">
       <div className="flex justify-between items-center mb-6">
@@ -85,46 +112,15 @@ export const ComparisonResult = ({
               </div>
             </div>
 
-            {renderPricingPlans(app)}
-
-            <div className="mt-6 space-y-4">
-              <div>
-                <h4 className="font-medium mb-2">Fonctionnalités principales</h4>
-                <ul className="space-y-2">
-                  {Array.isArray(app.features) && app.features.map((feature: string, idx: number) => (
-                    <li key={idx} className="flex items-center gap-2 text-sm">
-                      <Check className="h-4 w-4 text-green-500" />
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <h4 className="font-medium mb-2 text-green-600">Avantages</h4>
-                  <ul className="space-y-2">
-                    {Array.isArray(app.pros) && app.pros.map((pro: string, idx: number) => (
-                      <li key={idx} className="flex items-center gap-2 text-sm">
-                        <Check className="h-4 w-4 text-green-500" />
-                        {pro}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <h4 className="font-medium mb-2 text-red-600">Inconvénients</h4>
-                  <ul className="space-y-2">
-                    {Array.isArray(app.cons) && app.cons.map((con: string, idx: number) => (
-                      <li key={idx} className="flex items-center gap-2 text-sm">
-                        <X className="h-4 w-4 text-red-500" />
-                        {con}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
+            <div className="mt-4">
+              <p className="text-lg font-semibold text-primary">{app.price}€/mois</p>
+              {app.description && (
+                <p className="text-sm text-gray-600 mt-2">{app.description}</p>
+              )}
             </div>
+
+            {renderPricingPlans(app)}
+            {renderAdvantagesDisadvantages(app)}
           </div>
         ))}
       </div>
@@ -140,7 +136,7 @@ export const ComparisonResult = ({
             <span className="font-semibold text-primary">{winner.name}</span> pour les raisons suivantes :
           </p>
           <ul className="mt-3 space-y-2">
-            {Array.isArray(winner.pros) && winner.pros.map((pro, index) => (
+            {winner.pros?.map((pro, index) => (
               <li key={index} className="flex items-center gap-2">
                 <Check className="h-4 w-4 text-green-500" />
                 {pro}
