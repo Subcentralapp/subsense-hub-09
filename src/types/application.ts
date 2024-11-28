@@ -12,5 +12,5 @@ export type Application = {
   pros?: string[];
   cons?: string[];
   website_url?: string;
-  logo_url?: string;
+  logo_url?: string | null;
 };

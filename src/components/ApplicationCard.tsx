@@ -2,19 +2,7 @@ import { MessageSquare, Music, Play, Book, Heart, Globe, Zap, Gamepad, Video, Bo
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import SubscriptionCustomizeDialog from "./dialog/SubscriptionCustomizeDialog";
-
-type Application = {
-  name: string;
-  price: number;
-  category: string | null;
-  description: string | null;
-  logo_url?: string | null;
-  pricing_plans?: Array<{
-    name: string;
-    price: number;
-    features: string[];
-  }>;
-};
+import { Application } from "@/types/application";
 
 interface ApplicationCardProps {
   app: Application;
@@ -63,7 +51,13 @@ export const ApplicationCard = ({ app, onAdd }: ApplicationCardProps) => {
   const [logoError, setLogoError] = useState(false);
 
   const handleCustomize = (customPrice: number, nextBilling: Date) => {
-    onAdd(app, customPrice, nextBilling);
+    // S'assurer que le prix n'est jamais null
+    const finalPrice = customPrice || app.price;
+    if (!finalPrice) {
+      console.error("Prix invalide pour l'application:", app);
+      return;
+    }
+    onAdd({ ...app, price: finalPrice }, finalPrice, nextBilling);
   };
 
   const handlePlanSelect = (plan: any) => {
