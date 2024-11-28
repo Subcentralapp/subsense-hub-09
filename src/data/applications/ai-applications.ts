@@ -16,6 +16,7 @@ export const aiApplications: Application[] = [
           "Support prioritaire"
         ]
       }
-    ]
+    ],
+    logo_url: "https://assets-global.website-files.com/64e6590f33c7b2be6e0e9e48/64e6590f33c7b2be6e0e9e71_perplexity-logo.svg"
   }
 ];
