@@ -24,9 +24,8 @@ const fetchApplications = async () => {
       return fallbackApplications;
     }
 
-    // Dédoublonnage côté serveur
     const uniqueApps = Array.from(
-      new Map(data.map(app => [`${app.name}-${app.category}`, app])).values()
+      new Map(data.map(app => [app.name.toLowerCase(), app])).values()
     );
 
     console.log("Applications uniques récupérées:", uniqueApps);
@@ -43,11 +42,15 @@ const ApplicationList = () => {
   const { data: applications, isLoading } = useQuery({
     queryKey: ["applications"],
     queryFn: fetchApplications,
-    staleTime: 0, // Force le rafraîchissement des données
-    gcTime: 0, // Désactive la mise en cache (remplace cacheTime dans v5)
+    staleTime: 0,
+    gcTime: 0,
   });
 
-  const handleAddSubscription = async (app: Application) => {
+  const handleAddSubscription = async (
+    app: Application, 
+    customPrice?: number, 
+    nextBilling?: Date
+  ) => {
     try {
       const {
         data: { user },
@@ -62,14 +65,14 @@ const ApplicationList = () => {
         return;
       }
 
-      const nextBillingDate = new Date();
-      nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);
+      const billingDate = nextBilling || new Date();
+      billingDate.setMonth(billingDate.getMonth() + 1);
 
       const { error } = await supabase.from("subscriptions").insert({
         name: app.name,
-        price: app.price,
+        price: customPrice || app.price,
         category: app.category,
-        next_billing: nextBillingDate.toISOString(),
+        next_billing: billingDate.toISOString(),
         description: app.description,
         user_id: user.id,
       });
@@ -90,7 +93,13 @@ const ApplicationList = () => {
     }
   };
 
-  return <ApplicationDialog applications={applications} isLoading={isLoading} onAddSubscription={handleAddSubscription} />;
+  return (
+    <ApplicationDialog 
+      applications={applications} 
+      isLoading={isLoading} 
+      onAddSubscription={handleAddSubscription} 
+    />
+  );
 };
 
 export default ApplicationList;
