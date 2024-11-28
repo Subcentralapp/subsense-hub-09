@@ -21,7 +21,7 @@ const ApplicationList = () => {
     queryFn: async () => {
       console.log("Starting applications fetch...");
       const { data, error } = await supabase
-        .from("Applications")
+        .from("applications")
         .select("*")
         .order("name");
 
