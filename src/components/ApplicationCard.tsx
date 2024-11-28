@@ -2,7 +2,6 @@ import { MessageSquare, Music, Play, Book, Heart, Globe, Zap, Gamepad, Video, Bo
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import SubscriptionCustomizeDialog from "./dialog/SubscriptionCustomizeDialog";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 type Application = {
   name: string;
@@ -43,9 +42,25 @@ const getAppIcon = (category: string | null, name: string) => {
   }
 };
 
+const getClearbitLogoUrl = (appName: string, websiteUrl?: string) => {
+  if (websiteUrl) {
+    try {
+      const domain = new URL(websiteUrl).hostname;
+      return `https://logo.clearbit.com/${domain}`;
+    } catch (e) {
+      console.log(`Invalid website URL for ${appName}:`, e);
+    }
+  }
+  
+  // Fallback: use company name
+  const domain = `${appName.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`;
+  return `https://logo.clearbit.com/${domain}`;
+};
+
 export const ApplicationCard = ({ app, onAdd }: ApplicationCardProps) => {
   const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<any>(null);
+  const [logoError, setLogoError] = useState(false);
 
   const handleCustomize = (customPrice: number, nextBilling: Date) => {
     onAdd(app, customPrice, nextBilling);
@@ -56,19 +71,20 @@ export const ApplicationCard = ({ app, onAdd }: ApplicationCardProps) => {
     setIsCustomizeOpen(true);
   };
 
+  const logoUrl = app.logo_url || (logoError ? null : getClearbitLogoUrl(app.name, app.website_url));
+
   return (
     <>
       <div className="flex flex-col p-4 bg-white rounded-lg border border-gray-100 hover:border-primary/20 transition-all hover:shadow-md">
         <div className="flex items-center gap-3 mb-3">
-          {app.logo_url ? (
+          {logoUrl && !logoError ? (
             <img 
-              src={app.logo_url} 
+              src={logoUrl}
               alt={`Logo ${app.name}`} 
               className="h-8 w-8 object-contain"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.src = getAppIcon(app.category, app.name).props.className;
+              onError={() => {
                 console.log(`Failed to load logo for ${app.name}, falling back to icon`);
+                setLogoError(true);
               }}
             />
           ) : (
