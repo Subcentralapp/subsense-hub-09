@@ -13,19 +13,19 @@ export type Database = {
         Row: {
           category: string | null
           description: string | null
-          Name: string
+          name: string | null
           price: number | null
         }
         Insert: {
           category?: string | null
           description?: string | null
-          Name: string
+          name?: string | null
           price?: number | null
         }
         Update: {
           category?: string | null
           description?: string | null
-          Name?: string
+          name?: string | null
           price?: number | null
         }
         Relationships: []
