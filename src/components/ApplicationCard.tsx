@@ -9,6 +9,7 @@ type Application = {
   price: number;
   category: string | null;
   description: string | null;
+  logo_url?: string | null;
   pricing_plans?: Array<{
     name: string;
     price: number;
@@ -23,11 +24,6 @@ interface ApplicationCardProps {
 
 const getAppIcon = (category: string | null, name: string) => {
   const categoryLower = category?.toLowerCase() || '';
-  const nameLower = name.toLowerCase();
-  
-  if (categoryLower === "intelligence artificielle") {
-    return <MessageSquare className="h-6 w-6 text-violet-500" />;
-  }
   
   switch (categoryLower) {
     case "streaming vidéo":
@@ -64,7 +60,20 @@ export const ApplicationCard = ({ app, onAdd }: ApplicationCardProps) => {
     <>
       <div className="flex flex-col p-4 bg-white rounded-lg border border-gray-100 hover:border-primary/20 transition-all hover:shadow-md">
         <div className="flex items-center gap-3 mb-3">
-          {getAppIcon(app.category, app.name)}
+          {app.logo_url ? (
+            <img 
+              src={app.logo_url} 
+              alt={`Logo ${app.name}`} 
+              className="h-8 w-8 object-contain"
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = getAppIcon(app.category, app.name).props.className;
+                console.log(`Failed to load logo for ${app.name}, falling back to icon`);
+              }}
+            />
+          ) : (
+            getAppIcon(app.category, app.name)
+          )}
           <div>
             <h4 className="font-medium text-gray-900">{app.name}</h4>
             <p className="text-sm text-gray-500">{app.category || 'Non catégorisé'}</p>
