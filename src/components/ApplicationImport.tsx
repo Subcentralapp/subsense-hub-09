@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
@@ -7,26 +7,7 @@ import { supabase } from "@/lib/supabase";
 const ApplicationImport = () => {
   const [text, setText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [applications, setApplications] = useState([]);
   const { toast } = useToast();
-
-  useEffect(() => {
-    fetchApplications();
-  }, []);
-
-  const fetchApplications = async () => {
-    const { data, error } = await supabase
-      .from("applications")
-      .select("*")
-      .order("name");
-
-    if (error) {
-      console.error("Erreur lors de la récupération des applications:", error);
-      return;
-    }
-
-    setApplications(data || []);
-  };
 
   const parseText = (text: string) => {
     return text
@@ -69,7 +50,6 @@ const ApplicationImport = () => {
       });
       
       setText("");
-      fetchApplications(); // Rafraîchir la liste
     } catch (error) {
       console.error("Erreur lors de l'import:", error);
       toast({
@@ -105,28 +85,6 @@ const ApplicationImport = () => {
           </Button>
         </div>
       </div>
-
-      {applications.length > 0 && (
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold">Applications importées</h3>
-          <div className="space-y-2">
-            {applications.map((app: any) => (
-              <div
-                key={app.name}
-                className="p-4 bg-white rounded-lg border border-gray-100 hover:border-primary/20 transition-colors"
-              >
-                <div className="flex justify-between items-center">
-                  <div>
-                    <h4 className="font-medium">{app.name}</h4>
-                    <p className="text-sm text-gray-500">{app.category}</p>
-                  </div>
-                  <p className="font-medium">{app.price} €/mois</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 };
