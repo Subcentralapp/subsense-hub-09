@@ -23,17 +23,33 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
   fetchInvoices: async () => {
     try {
       set({ isLoading: true });
+      console.log('Vérification de la table invoices...');
       
-      // Vérifier si la table existe et la créer si nécessaire
-      const { error: tableError } = await supabase
+      // Création de la table si elle n'existe pas
+      const { error: createTableError } = await supabase
         .from('invoices')
-        .select('count')
+        .select('*')
         .limit(1)
         .single();
 
-      if (tableError?.message?.includes('does not exist')) {
+      if (createTableError?.message?.includes('does not exist')) {
         console.log('Création de la table invoices...');
-        const { error: createError } = await supabase.rpc('create_invoices_table');
+        const { error: createError } = await supabase.rpc('create_table_invoices', {
+          sql_command: `
+            CREATE TABLE IF NOT EXISTS public.invoices (
+              id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+              name TEXT NOT NULL,
+              file_path TEXT NOT NULL,
+              url TEXT NOT NULL,
+              created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+            );
+            ALTER TABLE public.invoices ENABLE ROW LEVEL SECURITY;
+            CREATE POLICY "Enable read access for all users" ON public.invoices FOR SELECT USING (true);
+            CREATE POLICY "Enable insert access for all users" ON public.invoices FOR INSERT WITH CHECK (true);
+            CREATE POLICY "Enable delete access for all users" ON public.invoices FOR DELETE USING (true);
+          `
+        });
+
         if (createError) {
           console.error('Erreur lors de la création de la table:', createError);
           set({ invoices: [] });
@@ -41,6 +57,7 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
         }
       }
 
+      // Récupération des factures
       const { data: invoices, error } = await supabase
         .from('invoices')
         .select('*')
@@ -99,19 +116,6 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
       const { data: { publicUrl } } = supabase.storage
         .from('invoices')
         .getPublicUrl(fileName);
-
-      // Vérifier si la table existe et la créer si nécessaire
-      const { error: tableError } = await supabase
-        .from('invoices')
-        .select('count')
-        .limit(1)
-        .single();
-
-      if (tableError?.message?.includes('does not exist')) {
-        console.log('Création de la table invoices...');
-        const { error: createError } = await supabase.rpc('create_invoices_table');
-        if (createError) throw createError;
-      }
 
       // Ajout de l'enregistrement dans la table invoices
       const { data: invoice, error: dbError } = await supabase
