@@ -2,20 +2,21 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Upload, Calendar, FileText } from "lucide-react";
+import { Upload, Calendar, FileText, Trash2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { useInvoiceStore } from "@/services/invoiceService";
 
 const PaymentSection = () => {
   const { toast } = useToast();
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const { invoices, addInvoice, removeInvoice } = useInvoiceStore();
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file && file.type === "application/pdf") {
-      setSelectedFile(file);
+      addInvoice(file);
       toast({
-        title: "Fichier sélectionné",
-        description: `${file.name} a été sélectionné avec succès.`,
+        title: "Facture ajoutée",
+        description: `${file.name} a été ajouté avec succès.`,
       });
     } else {
       toast({
@@ -81,19 +82,39 @@ const PaymentSection = () => {
               </label>
             </div>
           </div>
-          {selectedFile && (
-            <div className="bg-primary/10 p-3 rounded-lg flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <FileText className="h-5 w-5 text-primary" />
-                <span className="text-sm font-medium">{selectedFile.name}</span>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setSelectedFile(null)}
-              >
-                Supprimer
-              </Button>
+
+          {invoices.length > 0 && (
+            <div className="space-y-2">
+              <h3 className="font-medium text-lg">Factures enregistrées</h3>
+              {invoices.map((invoice) => (
+                <div
+                  key={invoice.id}
+                  className="bg-primary/10 p-3 rounded-lg flex items-center justify-between"
+                >
+                  <div className="flex items-center gap-2">
+                    <FileText className="h-5 w-5 text-primary" />
+                    <div>
+                      <span className="text-sm font-medium">{invoice.name}</span>
+                      <p className="text-xs text-gray-500">
+                        {invoice.date.toLocaleDateString()}
+                      </p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      removeInvoice(invoice.id);
+                      toast({
+                        title: "Facture supprimée",
+                        description: "La facture a été supprimée avec succès.",
+                      });
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
             </div>
           )}
         </div>
