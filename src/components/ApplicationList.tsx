@@ -27,12 +27,19 @@ const fetchApplications = async () => {
       return updatedData || fallbackApplications;
     }
 
-    const uniqueApps = Array.from(
-      new Map(data.map(app => [app.name.toLowerCase(), app])).values()
-    );
+    // Amélioration de la déduplication
+    const uniqueApps = data.reduce((acc: Application[], current) => {
+      const exists = acc.find(app => 
+        app.name.toLowerCase() === current.name.toLowerCase()
+      );
+      if (!exists) {
+        acc.push(current);
+      }
+      return acc;
+    }, []);
 
     console.log("Applications uniques récupérées:", uniqueApps);
-    return uniqueApps as Application[];
+    return uniqueApps;
   } catch (error) {
     console.error("Erreur lors de la récupération:", error);
     return fallbackApplications;
