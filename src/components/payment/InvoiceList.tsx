@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
-import { FileText, Trash2, Loader2, Tag, DollarSign, Calendar } from "lucide-react";
+import { FileText, Trash2, Loader2, DollarSign, Calendar, PenLine } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
+import { useState } from "react";
+import { Input } from "@/components/ui/input";
 
 interface Invoice {
   id: string;
@@ -19,8 +21,13 @@ interface InvoiceListProps {
 
 const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
   const { toast } = useToast();
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editForm, setEditForm] = useState({
+    price: "",
+    date: "",
+  });
 
-  const { data: metadata } = useQuery({
+  const { data: metadata, refetch } = useQuery({
     queryKey: ['metadata'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -31,6 +38,44 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
       return data;
     }
   });
+
+  const handleEdit = async (invoiceId: string) => {
+    if (editingId === invoiceId) {
+      try {
+        const { error } = await supabase
+          .from('Métadonné')
+          .update({
+            Price: parseFloat(editForm.price),
+            date: editForm.date,
+          })
+          .eq('Name', invoiceId);
+
+        if (error) throw error;
+
+        toast({
+          title: "Modifications enregistrées",
+          description: "Les informations de la facture ont été mises à jour.",
+        });
+
+        setEditingId(null);
+        refetch();
+      } catch (error) {
+        console.error("Erreur lors de la mise à jour:", error);
+        toast({
+          title: "Erreur",
+          description: "Une erreur est survenue lors de la mise à jour.",
+          variant: "destructive",
+        });
+      }
+    } else {
+      const invoiceMetadata = metadata?.find(m => m.Name === invoiceId);
+      setEditForm({
+        price: invoiceMetadata?.Price?.toString() || "",
+        date: invoiceMetadata?.date?.toString() || "",
+      });
+      setEditingId(invoiceId);
+    }
+  };
 
   const handleDelete = async (id: string) => {
     try {
@@ -50,69 +95,102 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
   };
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-4">
       <h3 className="font-medium text-lg">Factures enregistrées</h3>
-      {invoices.map((invoice) => {
-        const invoiceMetadata = metadata?.find(m => m.Name === invoice.id);
-        
-        return (
-          <div
-            key={invoice.id}
-            className="bg-primary/10 p-4 rounded-lg space-y-3"
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <FileText className="h-5 w-5 text-primary" />
-                <div>
-                  <a 
-                    href={invoice.url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="text-sm font-medium hover:underline"
+      <div className="grid gap-4">
+        {invoices.map((invoice) => {
+          const invoiceMetadata = metadata?.find(m => m.Name === invoice.id);
+          const isEditing = editingId === invoice.id;
+          
+          return (
+            <div
+              key={invoice.id}
+              className="bg-white rounded-lg shadow p-4 space-y-3"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <FileText className="h-5 w-5 text-primary" />
+                  <div>
+                    <a 
+                      href={invoice.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-sm font-medium hover:underline"
+                    >
+                      {invoice.name}
+                    </a>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleEdit(invoice.id)}
                   >
-                    {invoice.name}
-                  </a>
-                  <p className="text-xs text-gray-500">
-                    {invoice.date.toLocaleDateString()}
-                  </p>
+                    {isEditing ? (
+                      "Sauvegarder"
+                    ) : (
+                      <>
+                        <PenLine className="h-4 w-4 mr-1" />
+                        Modifier
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDelete(invoice.id)}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Trash2 className="h-4 w-4" />
+                    )}
+                  </Button>
                 </div>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => handleDelete(invoice.id)}
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Trash2 className="h-4 w-4" />
-                )}
-              </Button>
+              
+              <div className="bg-gray-50 p-4 rounded-md space-y-3">
+                <div className="flex items-center gap-2">
+                  <DollarSign className="h-4 w-4 text-primary shrink-0" />
+                  {isEditing ? (
+                    <Input
+                      type="number"
+                      value={editForm.price}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, price: e.target.value }))}
+                      placeholder="Prix"
+                      className="h-8"
+                    />
+                  ) : (
+                    <span className="text-sm">
+                      {invoiceMetadata?.Price ? `${invoiceMetadata.Price} €` : 'Prix non défini'}
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-4 w-4 text-primary shrink-0" />
+                  {isEditing ? (
+                    <Input
+                      type="date"
+                      value={editForm.date}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, date: e.target.value }))}
+                      className="h-8"
+                    />
+                  ) : (
+                    <span className="text-sm">
+                      {invoiceMetadata?.date 
+                        ? new Date(invoiceMetadata.date).toLocaleDateString()
+                        : 'Date non définie'
+                      }
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
-            
-            {invoiceMetadata && (
-              <div className="bg-white/50 p-3 rounded-md space-y-2">
-                <div className="flex items-center gap-2 text-sm">
-                  <DollarSign className="h-4 w-4 text-primary" />
-                  <span className="font-medium">
-                    {invoiceMetadata.Price ? `${invoiceMetadata.Price} €` : 'Montant non détecté'}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Calendar className="h-4 w-4 text-primary" />
-                  <span>
-                    {invoiceMetadata.date 
-                      ? new Date(invoiceMetadata.date).toLocaleDateString()
-                      : 'Date non détectée'
-                    }
-                  </span>
-                </div>
-              </div>
-            )}
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 };
