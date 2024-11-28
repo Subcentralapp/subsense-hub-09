@@ -24,18 +24,21 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
     try {
       set({ isLoading: true });
       
-      // Vérifier si la table existe
+      // Vérifier si la table existe et la créer si nécessaire
       const { error: tableError } = await supabase
         .from('invoices')
         .select('count')
         .limit(1)
         .single();
 
-      // Si la table n'existe pas, on retourne un tableau vide
       if (tableError?.message?.includes('does not exist')) {
-        console.log('La table invoices n\'existe pas encore');
-        set({ invoices: [] });
-        return;
+        console.log('Création de la table invoices...');
+        const { error: createError } = await supabase.rpc('create_invoices_table');
+        if (createError) {
+          console.error('Erreur lors de la création de la table:', createError);
+          set({ invoices: [] });
+          return;
+        }
       }
 
       const { data: invoices, error } = await supabase
