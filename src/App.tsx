@@ -4,6 +4,9 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import "./App.css";
 import Index from "./pages/Index";
+import Auth from "./pages/Auth";
+import { Routes, Route } from "react-router-dom";
+import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -12,7 +15,11 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Router>
-          <Index />
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/profile" element={<Profile />} />
+          </Routes>
           <Toaster />
         </Router>
       </TooltipProvider>
