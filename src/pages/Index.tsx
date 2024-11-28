@@ -27,6 +27,7 @@ const Index = () => {
               <ApplicationList />
             </div>
             <SubscriptionList />
+            <RecommendationList />
             <ApplicationImport />
             <RandomAd />
           </div>
