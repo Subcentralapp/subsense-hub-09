@@ -9,30 +9,69 @@ import { Application } from "@/types/application";
 const RecommendationList = () => {
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const { data: recommendations, isLoading } = useQuery({
-    queryKey: ['recommendations', refreshKey],
+  // First fetch user's active subscriptions
+  const { data: subscriptions } = useQuery({
+    queryKey: ['subscriptions'],
     queryFn: async () => {
-      console.log("Fetching random recommendations...");
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return [];
+
       const { data, error } = await supabase
-        .from('applications')
+        .from('subscriptions')
         .select('*')
-        .limit(3)
-        .order('name', { ascending: false });
+        .eq('user_id', user.id);
 
-      if (error) {
-        console.error("Error fetching recommendations:", error);
-        throw error;
-      }
-
-      console.log("Fetched recommendations:", data);
-      return data as Application[];
+      if (error) throw error;
+      return data || [];
     },
+  });
+
+  // Then fetch and filter recommendations based on subscriptions
+  const { data: recommendations, isLoading } = useQuery({
+    queryKey: ['recommendations', refreshKey, subscriptions],
+    queryFn: async () => {
+      console.log("Fetching smart recommendations...");
+      if (!subscriptions) return [];
+
+      // Get all applications
+      const { data: allApps, error } = await supabase
+        .from('applications')
+        .select('*');
+
+      if (error) throw error;
+      
+      // Filter out applications user already has
+      const existingAppNames = new Set(subscriptions.map(sub => sub.name.toLowerCase()));
+      const availableApps = (allApps || []).filter(app => 
+        !existingAppNames.has(app.name.toLowerCase())
+      );
+
+      // Group apps by category to recommend similar ones
+      const userCategories = new Set(subscriptions.map(sub => sub.category));
+      
+      // Prioritize apps in same categories as user's subscriptions
+      const prioritizedApps = availableApps.sort((a, b) => {
+        const aInUserCategory = userCategories.has(a.category || '');
+        const bInUserCategory = userCategories.has(b.category || '');
+        if (aInUserCategory && !bInUserCategory) return -1;
+        if (!aInUserCategory && bInUserCategory) return 1;
+        return 0;
+      });
+
+      // Return top 3 recommendations
+      return prioritizedApps.slice(0, 3);
+    },
+    enabled: !!subscriptions,
   });
 
   const handleRefresh = () => {
     console.log("Refreshing recommendations...");
     setRefreshKey(prev => prev + 1);
   };
+
+  if (!subscriptions?.length) {
+    return null; // Don't show recommendations if user has no subscriptions
+  }
 
   return (
     <div className="space-y-6 p-4">
