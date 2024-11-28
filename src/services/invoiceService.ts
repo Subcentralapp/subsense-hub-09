@@ -1,11 +1,19 @@
 import { create } from 'zustand';
 import { uploadInvoiceFile, deleteInvoiceFile, fetchInvoices as fetchInvoicesFromStorage } from './storage/invoiceStorage';
+import { supabase } from '@/lib/supabase';
 
 interface Invoice {
   id: string;
   name: string;
   date: Date;
   url: string;
+  details?: {
+    amount: number;
+    category: string;
+    invoice_date: string;
+    merchant_name: string;
+    status: string;
+  };
 }
 
 interface InvoiceStore {
@@ -25,14 +33,26 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
       set({ isLoading: true });
       const data = await fetchInvoicesFromStorage();
       
-      set({
-        invoices: data.map((inv: any) => ({
-          id: inv.id,
-          name: inv.Names,
-          date: new Date(inv.created_at),
-          url: inv.url
-        }))
-      });
+      // Fetch invoice details
+      const invoicesWithDetails = await Promise.all(
+        data.map(async (inv: any) => {
+          const { data: details } = await supabase
+            .from('InvoiceDetails')
+            .select('*')
+            .eq('invoice_id', inv.id)
+            .single();
+          
+          return {
+            id: inv.id,
+            name: inv.Names,
+            date: new Date(inv.created_at),
+            url: inv.url,
+            details: details || undefined
+          };
+        })
+      );
+
+      set({ invoices: invoicesWithDetails });
     } catch (error) {
       console.error('Error fetching invoices:', error);
       throw error;
@@ -46,6 +66,15 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
       set({ isLoading: true });
       const invoice = await uploadInvoiceFile(file);
       
+      // Analyze the invoice with Google Vision API
+      const { error: analysisError } = await supabase.functions.invoke('analyze-invoice', {
+        body: { fileUrl: invoice.url, invoiceId: invoice.id }
+      });
+
+      if (analysisError) {
+        console.error('Error analyzing invoice:', analysisError);
+      }
+
       set((state) => ({
         invoices: [{
           id: invoice.id,
@@ -54,6 +83,9 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
           url: invoice.url
         }, ...state.invoices]
       }));
+
+      // Refresh to get the analyzed details
+      await get().fetchInvoices();
     } catch (error) {
       console.error('Error adding invoice:', error);
       throw error;

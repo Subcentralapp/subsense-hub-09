@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Upload, Calendar, FileText, Trash2, Loader2 } from "lucide-react";
+import { Upload, Calendar, FileText, Trash2, Loader2, Tag, DollarSign } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useInvoiceStore } from "@/services/invoiceService";
 
@@ -129,42 +129,68 @@ const PaymentSection = () => {
               {invoices.map((invoice) => (
                 <div
                   key={invoice.id}
-                  className="bg-primary/10 p-3 rounded-lg flex items-center justify-between"
+                  className="bg-primary/10 p-4 rounded-lg space-y-3"
                 >
-                  <div className="flex items-center gap-2">
-                    <FileText className="h-5 w-5 text-primary" />
-                    <div>
-                      <a 
-                        href={invoice.url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-sm font-medium hover:underline"
-                      >
-                        {invoice.name}
-                      </a>
-                      <p className="text-xs text-gray-500">
-                        {invoice.date.toLocaleDateString()}
-                      </p>
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-5 w-5 text-primary" />
+                      <div>
+                        <a 
+                          href={invoice.url} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                          className="text-sm font-medium hover:underline"
+                        >
+                          {invoice.name}
+                        </a>
+                        <p className="text-xs text-gray-500">
+                          {invoice.date.toLocaleDateString()}
+                        </p>
+                      </div>
                     </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        removeInvoice(invoice.id);
+                        toast({
+                          title: "Facture supprimée",
+                          description: "La facture a été supprimée avec succès.",
+                        });
+                      }}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Trash2 className="h-4 w-4" />
+                      )}
+                    </Button>
                   </div>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      removeInvoice(invoice.id);
-                      toast({
-                        title: "Facture supprimée",
-                        description: "La facture a été supprimée avec succès.",
-                      });
-                    }}
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Trash2 className="h-4 w-4" />
-                    )}
-                  </Button>
+                  
+                  {invoice.details && (
+                    <div className="bg-white/50 p-3 rounded-md space-y-2">
+                      <div className="flex items-center gap-2 text-sm">
+                        <DollarSign className="h-4 w-4 text-primary" />
+                        <span className="font-medium">
+                          {invoice.details.amount ? `${invoice.details.amount} €` : 'Montant non détecté'}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm">
+                        <Tag className="h-4 w-4 text-primary" />
+                        <span>{invoice.details.category || 'Catégorie non détectée'}</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm">
+                        <Calendar className="h-4 w-4 text-primary" />
+                        <span>
+                          {invoice.details.invoice_date 
+                            ? new Date(invoice.details.invoice_date).toLocaleDateString()
+                            : 'Date non détectée'
+                          }
+                        </span>
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
