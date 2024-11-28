@@ -1,19 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Upload, Calendar, FileText, Trash2 } from "lucide-react";
+import { Upload, Calendar, FileText, Trash2, Loader2 } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useInvoiceStore } from "@/services/invoiceService";
 
 const PaymentSection = () => {
   const { toast } = useToast();
-  const { invoices, addInvoice, removeInvoice } = useInvoiceStore();
+  const { invoices, isLoading, addInvoice, removeInvoice, fetchInvoices } = useInvoiceStore();
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    fetchInvoices();
+  }, [fetchInvoices]);
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file && file.type === "application/pdf") {
-      addInvoice(file);
+      await addInvoice(file);
       toast({
         title: "Facture ajoutée",
         description: `${file.name} a été ajouté avec succès.`,
@@ -74,9 +78,14 @@ const PaymentSection = () => {
                   accept=".pdf"
                   onChange={handleFileUpload}
                   className="hidden"
+                  disabled={isLoading}
                 />
-                <Button className="hover-scale">
-                  <Upload className="mr-2 h-4 w-4" />
+                <Button className="hover-scale" disabled={isLoading}>
+                  {isLoading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : (
+                    <Upload className="mr-2 h-4 w-4" />
+                  )}
                   Sélectionner un fichier
                 </Button>
               </label>
@@ -94,7 +103,14 @@ const PaymentSection = () => {
                   <div className="flex items-center gap-2">
                     <FileText className="h-5 w-5 text-primary" />
                     <div>
-                      <span className="text-sm font-medium">{invoice.name}</span>
+                      <a 
+                        href={invoice.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-sm font-medium hover:underline"
+                      >
+                        {invoice.name}
+                      </a>
                       <p className="text-xs text-gray-500">
                         {invoice.date.toLocaleDateString()}
                       </p>
@@ -110,8 +126,13 @@ const PaymentSection = () => {
                         description: "La facture a été supprimée avec succès.",
                       });
                     }}
+                    disabled={isLoading}
                   >
-                    <Trash2 className="h-4 w-4" />
+                    {isLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Trash2 className="h-4 w-4" />
+                    )}
                   </Button>
                 </div>
               ))}
