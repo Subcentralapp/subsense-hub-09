@@ -7,7 +7,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { User, LogOut } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 
-export default function ProfilePage() {
+export default function Profile() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [user, setUser] = useState<any>(null);
@@ -47,7 +47,7 @@ export default function ProfilePage() {
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-neutral-light p-4">
+    <div className="min-h-[calc(100vh-4rem)] bg-neutral-light p-4">
       <div className="max-w-2xl mx-auto space-y-6 animate-fade-in">
         <Card className="p-6">
           <div className="flex items-center space-x-4">

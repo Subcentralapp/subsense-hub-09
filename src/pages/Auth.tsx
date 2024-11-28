@@ -1,11 +1,11 @@
-import { Auth } from "@supabase/auth-ui-react";
-import { supabase } from "@/integrations/supabase/client";
-import { ThemeSupa } from "@supabase/auth-ui-shared";
-import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
+import { ThemeSupa } from "@supabase/auth-ui-shared";
+import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 
-export default function AuthPage() {
+export default function Auth() {
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -20,14 +20,14 @@ export default function AuthPage() {
   }, [navigate]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-neutral-light p-4">
+    <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-neutral-light p-4">
       <Card className="w-full max-w-md p-6 space-y-6 animate-fade-in">
         <div className="text-center space-y-2">
           <h1 className="text-2xl font-bold text-primary">Bienvenue</h1>
           <p className="text-muted-foreground">Connectez-vous pour continuer</p>
         </div>
         
-        <Auth
+        <SupabaseAuth
           supabaseClient={supabase}
           appearance={{
             theme: ThemeSupa,
