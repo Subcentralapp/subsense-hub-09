@@ -2,12 +2,18 @@ import { Tv, Music, Play, Book, Heart, Globe, Zap, Gamepad, Video, BookOpen, Smi
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import SubscriptionCustomizeDialog from "./dialog/SubscriptionCustomizeDialog";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 type Application = {
   name: string;
   price: number;
   category: string | null;
   description: string | null;
+  pricing_plans?: Array<{
+    name: string;
+    price: number;
+    features: string[];
+  }>;
 };
 
 interface ApplicationCardProps {
@@ -38,40 +44,86 @@ const getAppIcon = (category: string | null) => {
 
 export const ApplicationCard = ({ app, onAdd }: ApplicationCardProps) => {
   const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<any>(null);
 
   const handleCustomize = (customPrice: number, nextBilling: Date) => {
     onAdd(app, customPrice, nextBilling);
   };
 
+  const handlePlanSelect = (plan: any) => {
+    setSelectedPlan(plan);
+    setIsCustomizeOpen(true);
+  };
+
   return (
     <>
-      <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-100 hover:border-primary/20 transition-all hover:shadow-md hover:scale-[1.02]">
-        <div className="flex items-center gap-3">
+      <div className="flex flex-col p-4 bg-white rounded-lg border border-gray-100 hover:border-primary/20 transition-all hover:shadow-md">
+        <div className="flex items-center gap-3 mb-3">
           {getAppIcon(app.category)}
           <div>
             <h4 className="font-medium text-gray-900">{app.name}</h4>
             <p className="text-sm text-gray-500">{app.category || 'Non catégorisé'}</p>
-            {app.description && (
-              <p className="text-xs text-gray-400 mt-1 max-w-[200px]">{app.description}</p>
-            )}
           </div>
         </div>
-        <div className="flex flex-col items-end gap-2">
-          <p className="font-medium text-primary">{app.price}€/mois</p>
-          <Button 
-            onClick={() => setIsCustomizeOpen(true)}
-            size="sm"
-            className="bg-primary/10 text-primary hover:bg-primary/20"
-          >
-            Ajouter
-          </Button>
-        </div>
+
+        {app.description && (
+          <p className="text-xs text-gray-400 mb-3">{app.description}</p>
+        )}
+
+        {app.pricing_plans && app.pricing_plans.length > 0 ? (
+          <Accordion type="single" collapsible className="w-full">
+            <AccordionItem value="plans">
+              <AccordionTrigger className="text-sm">Voir les plans</AccordionTrigger>
+              <AccordionContent>
+                <div className="space-y-3 mt-2">
+                  {app.pricing_plans.map((plan, index) => (
+                    <div key={index} className="p-3 bg-gray-50 rounded-lg">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="font-medium text-sm">{plan.name}</span>
+                        <span className="text-primary font-bold">{plan.price}€/mois</span>
+                      </div>
+                      <div className="space-y-1">
+                        {plan.features.map((feature, idx) => (
+                          <p key={idx} className="text-xs text-gray-600 flex items-center gap-1">
+                            <span className="w-1 h-1 bg-primary rounded-full"></span>
+                            {feature}
+                          </p>
+                        ))}
+                      </div>
+                      <Button 
+                        onClick={() => handlePlanSelect(plan)}
+                        size="sm"
+                        className="w-full mt-2 bg-primary/10 text-primary hover:bg-primary/20"
+                      >
+                        Choisir
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        ) : (
+          <div className="mt-auto">
+            <p className="font-medium text-primary mb-2">{app.price}€/mois</p>
+            <Button 
+              onClick={() => setIsCustomizeOpen(true)}
+              size="sm"
+              className="w-full bg-primary/10 text-primary hover:bg-primary/20"
+            >
+              Ajouter
+            </Button>
+          </div>
+        )}
       </div>
 
       <SubscriptionCustomizeDialog
-        app={app}
+        app={selectedPlan ? { ...app, price: selectedPlan.price } : app}
         isOpen={isCustomizeOpen}
-        onClose={() => setIsCustomizeOpen(false)}
+        onClose={() => {
+          setIsCustomizeOpen(false);
+          setSelectedPlan(null);
+        }}
         onConfirm={handleCustomize}
       />
     </>
