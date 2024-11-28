@@ -20,40 +20,22 @@ const ApplicationList = () => {
     queryKey: ["applications"],
     queryFn: async () => {
       console.log("Starting applications fetch...");
-      try {
-        const { data, error } = await supabase
-          .from("Applications")
-          .select("*")
-          .order("name");
+      const { data, error } = await supabase
+        .from("Applications")
+        .select("*")
+        .order("name");
 
-        console.log("Supabase response:", { data, error });
-
-        if (error) {
-          console.error("Supabase error details:", {
-            message: error.message,
-            details: error.details,
-            hint: error.hint
-          });
-          throw error;
-        }
-
-        if (!data) {
-          console.warn("No data returned from Supabase");
-          return [];
-        }
-
-        console.log("Successfully fetched applications:", data);
-        return data as Application[];
-      } catch (err) {
-        console.error("Error in queryFn:", err);
-        throw err;
+      if (error) {
+        console.error("Supabase error:", error);
+        throw error;
       }
+
+      return data || [];
     },
   });
 
   const handleAddSubscription = async (app: Application) => {
     try {
-      console.log("Adding subscription for:", app.name);
       const nextBillingDate = new Date();
       nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);
 
@@ -88,7 +70,6 @@ const ApplicationList = () => {
   }
 
   if (error) {
-    console.error("Query error details:", error);
     return (
       <div className="text-red-500 p-4">
         Erreur lors du chargement des applications. 
