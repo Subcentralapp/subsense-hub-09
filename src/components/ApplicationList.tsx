@@ -19,19 +19,35 @@ const ApplicationList = () => {
   const { data: applications, isLoading, error } = useQuery({
     queryKey: ["applications"],
     queryFn: async () => {
-      console.log("Fetching applications...");
-      const { data, error } = await supabase
-        .from("Applications")  // Changed to match the exact table name with capital A
-        .select("*")
-        .order("name");
+      console.log("Starting applications fetch...");
+      try {
+        const { data, error } = await supabase
+          .from("Applications")
+          .select("*")
+          .order("name");
 
-      if (error) {
-        console.error("Error fetching applications:", error);
-        throw error;
+        console.log("Supabase response:", { data, error });
+
+        if (error) {
+          console.error("Supabase error details:", {
+            message: error.message,
+            details: error.details,
+            hint: error.hint
+          });
+          throw error;
+        }
+
+        if (!data) {
+          console.warn("No data returned from Supabase");
+          return [];
+        }
+
+        console.log("Successfully fetched applications:", data);
+        return data as Application[];
+      } catch (err) {
+        console.error("Error in queryFn:", err);
+        throw err;
       }
-
-      console.log("Applications fetched:", data);
-      return data as Application[];
     },
   });
 
@@ -72,8 +88,13 @@ const ApplicationList = () => {
   }
 
   if (error) {
-    console.error("Error in applications query:", error);
-    return <div>Erreur lors du chargement des applications.</div>;
+    console.error("Query error details:", error);
+    return (
+      <div className="text-red-500 p-4">
+        Erreur lors du chargement des applications. 
+        {error instanceof Error ? `: ${error.message}` : ''}
+      </div>
+    );
   }
 
   return (
