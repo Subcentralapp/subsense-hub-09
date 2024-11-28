@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2 } from "lucide-react";
+import { Pencil, Trash2, CreditCard } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "./ui/use-toast";
 
@@ -70,7 +70,7 @@ const SubscriptionList = () => {
 
   if (isLoading) {
     return (
-      <Card className="p-6">
+      <Card className="p-6 bg-white/5 backdrop-blur-lg border border-white/10">
         <div className="flex items-center justify-center h-40">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
@@ -79,47 +79,62 @@ const SubscriptionList = () => {
   }
 
   return (
-    <Card className="p-6 glass-card">
-      <h2 className="text-xl font-semibold mb-4">Mes Abonnements Actifs</h2>
-      {subscriptions && subscriptions.length > 0 ? (
-        <div className="space-y-4">
-          {subscriptions.map((sub) => (
+    <Card className="p-6 bg-gradient-to-br from-white/80 to-white/40 backdrop-blur-md border border-white/20 shadow-xl">
+      <h2 className="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-2">
+        <CreditCard className="h-6 w-6 text-primary" />
+        Mes Abonnements Actifs
+      </h2>
+      
+      <div className="space-y-4 fade-in">
+        {subscriptions && subscriptions.length > 0 ? (
+          subscriptions.map((sub) => (
             <div
               key={sub.id}
-              className="flex items-center justify-between p-4 bg-white rounded-lg border border-gray-100 hover-scale"
+              className="group relative overflow-hidden p-6 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02] hover:bg-gradient-to-r hover:from-primary/5 hover:to-transparent"
             >
-              <div>
-                <h3 className="font-medium">{sub.name}</h3>
-                <p className="text-sm text-gray-500">{sub.category}</p>
-              </div>
-              <div className="flex items-center space-x-4">
-                <div className="text-right">
-                  <p className="font-medium">{sub.price} €/mois</p>
-                  <p className="text-sm text-gray-500">
-                    Prochain paiement: {new Date(sub.next_billing).toLocaleDateString()}
-                  </p>
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800">{sub.name}</h3>
+                  <p className="text-sm text-gray-500 mt-1">{sub.category}</p>
                 </div>
-                <div className="flex space-x-2">
-                  <Button variant="ghost" size="icon">
-                    <Pencil className="h-4 w-4" />
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="icon"
-                    onClick={() => handleDelete(sub.id)}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
+                <div className="flex items-center space-x-6">
+                  <div className="text-right">
+                    <p className="text-xl font-bold text-primary">
+                      {sub.price} €<span className="text-sm font-normal text-gray-500">/mois</span>
+                    </p>
+                    <p className="text-sm text-gray-500 mt-1">
+                      Prochain paiement: {new Date(sub.next_billing).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div className="flex space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      className="hover:bg-primary/10 hover:text-primary"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="icon"
+                      onClick={() => handleDelete(sub.id)}
+                      className="hover:bg-red-50 hover:text-red-500"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </div>
               </div>
             </div>
-          ))}
-        </div>
-      ) : (
-        <p className="text-center text-gray-500 py-8">
-          Aucun abonnement actif pour le moment
-        </p>
-      )}
+          ))
+        ) : (
+          <div className="text-center py-12 bg-neutral-light rounded-xl border border-gray-100">
+            <p className="text-gray-500">
+              Aucun abonnement actif pour le moment
+            </p>
+          </div>
+        )}
+      </div>
     </Card>
   );
 };
