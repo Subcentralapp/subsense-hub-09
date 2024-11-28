@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { FileText, Trash2, Loader2, Tag, DollarSign, Calendar } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useQuery } from "@tanstack/react-query";
