@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 import { Pencil, Trash2, CreditCard } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "./ui/use-toast";
@@ -45,6 +46,19 @@ const SubscriptionList = () => {
     refetchInterval: 1000,
     refetchOnWindowFocus: true,
   });
+
+  const calculateDaysProgress = (nextBilling: string): number => {
+    const now = new Date();
+    const nextDate = new Date(nextBilling);
+    const lastMonth = new Date(nextDate);
+    lastMonth.setMonth(lastMonth.getMonth() - 1);
+
+    const totalDays = (nextDate.getTime() - lastMonth.getTime()) / (1000 * 60 * 60 * 24);
+    const daysLeft = (nextDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24);
+    
+    const progress = ((totalDays - daysLeft) / totalDays) * 100;
+    return Math.min(Math.max(progress, 0), 100);
+  };
 
   const handleDelete = async (id: number) => {
     try {
@@ -104,9 +118,17 @@ const SubscriptionList = () => {
                   <p className="text-xl font-bold text-primary">
                     {sub.price} €<span className="text-sm font-normal text-gray-500">/mois</span>
                   </p>
-                  <p className="text-sm text-gray-500">
-                    Prochain paiement: {new Date(sub.next_billing).toLocaleDateString()}
-                  </p>
+                  <div className="space-y-2">
+                    <p className="text-sm text-gray-500">
+                      Prochain paiement: {new Date(sub.next_billing).toLocaleDateString()}
+                    </p>
+                    <div className="space-y-1">
+                      <Progress value={calculateDaysProgress(sub.next_billing)} className="h-2" />
+                      <p className="text-xs text-gray-500 text-right">
+                        {Math.ceil((new Date(sub.next_billing).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} jours restants
+                      </p>
+                    </div>
+                  </div>
                 </div>
                 <div className="flex justify-end space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                   <Button 
