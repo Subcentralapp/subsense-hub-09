@@ -6,7 +6,7 @@ import SubscriptionCustomizeDialog from "./dialog/SubscriptionCustomizeDialog";
 type Application = {
   name: string;
   price: number;
-  category: string;
+  category: string | null;
   description: string | null;
 };
 
@@ -15,8 +15,10 @@ interface ApplicationCardProps {
   onAdd: (app: Application, customPrice?: number, nextBilling?: Date) => void;
 }
 
-const getAppIcon = (category: string) => {
-  switch (category.toLowerCase()) {
+const getAppIcon = (category: string | null) => {
+  const categoryLower = category?.toLowerCase() || '';
+  
+  switch (categoryLower) {
     case "streaming vidéo":
       return <Video className="h-6 w-6 text-purple-500" />;
     case "streaming musical":
@@ -48,7 +50,7 @@ export const ApplicationCard = ({ app, onAdd }: ApplicationCardProps) => {
           {getAppIcon(app.category)}
           <div>
             <h4 className="font-medium text-gray-900">{app.name}</h4>
-            <p className="text-sm text-gray-500">{app.category}</p>
+            <p className="text-sm text-gray-500">{app.category || 'Non catégorisé'}</p>
             {app.description && (
               <p className="text-xs text-gray-400 mt-1 max-w-[200px]">{app.description}</p>
             )}
