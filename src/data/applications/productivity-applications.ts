@@ -52,7 +52,7 @@ export const productivityApplications: Application[] = [
     website_url: "https://www.dropbox.com",
     logo_url: "https://logo.clearbit.com/dropbox.com"
   },
-  { 
+  {
     name: "Microsoft 365", 
     price: 7.00, 
     category: "Productivité", 
