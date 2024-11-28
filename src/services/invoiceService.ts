@@ -16,7 +16,7 @@ interface InvoiceStore {
   fetchInvoices: () => Promise<void>;
 }
 
-export const useInvoiceStore = create<InvoiceStore>((set) => ({
+export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
   invoices: [],
   isLoading: false,
 
@@ -65,13 +65,13 @@ export const useInvoiceStore = create<InvoiceStore>((set) => ({
   removeInvoice: async (id: string) => {
     try {
       set({ isLoading: true });
-      const invoice = set((state) => ({
-        invoices: state.invoices.filter((inv) => inv.id !== id)
-      }));
+      const invoiceToDelete = get().invoices.find((inv) => inv.id === id);
       
-      const invoiceToDelete = set.getState().invoices.find((inv) => inv.id === id);
       if (invoiceToDelete) {
         await deleteInvoiceFile(invoiceToDelete.url.split('/').pop() || '');
+        set((state) => ({
+          invoices: state.invoices.filter((inv) => inv.id !== id)
+        }));
       }
     } catch (error) {
       console.error('Error removing invoice:', error);
