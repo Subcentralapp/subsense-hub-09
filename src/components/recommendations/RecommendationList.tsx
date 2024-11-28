@@ -32,6 +32,8 @@ const RecommendationList = () => {
     queryFn: async () => {
       if (!subscriptions || subscriptions.length === 0) return [];
 
+      console.log("Fetching recommendations for subscriptions:", subscriptions);
+
       const response = await fetch(
         'https://qhidxbdxcymhuyquyqgk.supabase.co/functions/v1/generate-recommendations',
         {
@@ -49,6 +51,7 @@ const RecommendationList = () => {
       }
 
       const data = await response.json();
+      console.log("Received recommendations:", data);
       return data.recommendations || [];
     },
     enabled: !!subscriptions && subscriptions.length > 0,
@@ -56,7 +59,7 @@ const RecommendationList = () => {
 
   if (isLoading) {
     return (
-      <Card className="p-6 mt-6">
+      <Card className="p-6">
         <div className="flex items-center justify-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
         </div>
@@ -69,9 +72,9 @@ const RecommendationList = () => {
   }
 
   return (
-    <Card className="p-6 mt-6 bg-gradient-to-br from-white/80 to-white/40 backdrop-blur-md border border-white/20">
-      <h2 className="text-xl font-semibold mb-4 flex items-center gap-2">
-        <Sparkles className="h-5 w-5 text-primary" />
+    <Card className="p-6 bg-gradient-to-br from-white/80 to-white/40 backdrop-blur-md border border-white/20 shadow-xl">
+      <h2 className="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-2">
+        <Sparkles className="h-6 w-6 text-primary" />
         Recommandations d'Optimisation
       </h2>
       
@@ -79,15 +82,15 @@ const RecommendationList = () => {
         {recommendations.map((rec: Recommendation, index: number) => (
           <div
             key={index}
-            className="p-4 bg-white rounded-lg border border-gray-100 hover:border-primary/20 transition-all hover:shadow-md"
+            className="p-6 bg-white rounded-lg border border-gray-100 hover:border-primary/20 transition-all hover:shadow-md"
           >
             <div className="flex justify-between items-start">
               <div>
-                <h3 className="font-medium text-gray-900">
+                <h3 className="font-medium text-gray-900 text-lg">
                   {rec.currentApp} → {rec.recommendedApp}
                 </h3>
-                <p className="text-sm text-gray-500 mt-1">{rec.reason}</p>
-                <p className="text-sm font-medium text-green-600 mt-2">
+                <p className="text-sm text-gray-500 mt-2">{rec.reason}</p>
+                <p className="text-sm font-medium text-green-600 mt-3">
                   Économie potentielle : {rec.potentialSavings}/mois
                 </p>
               </div>
