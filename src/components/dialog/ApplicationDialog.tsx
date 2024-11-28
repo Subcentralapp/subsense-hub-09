@@ -28,6 +28,15 @@ const ApplicationDialog = ({ applications, isLoading, onAddSubscription }: Appli
   });
   const { toast } = useToast();
 
+  const triggerConfetti = () => {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#9b87f5', '#7E69AB', '#F1F0FB']
+    });
+  };
+
   const filteredApplications = useMemo(() => {
     if (!applications) return [];
     
@@ -43,14 +52,6 @@ const ApplicationDialog = ({ applications, isLoading, onAddSubscription }: Appli
   const handleSearch = (newSearchTerm: string, category: string | null) => {
     setSearchTerm(newSearchTerm);
     setSelectedCategory(category);
-  };
-
-  const triggerConfetti = () => {
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
   };
 
   const handleCustomSubmit = async (e: React.FormEvent) => {
@@ -158,7 +159,10 @@ const ApplicationDialog = ({ applications, isLoading, onAddSubscription }: Appli
           <ApplicationGrid 
             applications={filteredApplications} 
             isLoading={isLoading} 
-            onAddSubscription={onAddSubscription} 
+            onAddSubscription={async (app) => {
+              await onAddSubscription(app);
+              triggerConfetti();
+            }} 
           />
         </div>
       </DialogContent>
