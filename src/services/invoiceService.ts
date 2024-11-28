@@ -1,7 +1,5 @@
 import { create } from 'zustand';
-import { supabase } from '@/lib/supabase';
-import { initializeInvoicesTable } from './database/tableSetup';
-import { setupInvoicesBucket, uploadInvoiceFile, deleteInvoiceFile } from './storage/invoiceStorage';
+import { uploadInvoiceFile, deleteInvoiceFile, fetchInvoices as fetchInvoicesFromStorage } from './storage/invoiceStorage';
 
 interface Invoice {
   id: string;
@@ -18,38 +16,26 @@ interface InvoiceStore {
   fetchInvoices: () => Promise<void>;
 }
 
-export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
+export const useInvoiceStore = create<InvoiceStore>((set) => ({
   invoices: [],
   isLoading: false,
 
   fetchInvoices: async () => {
     try {
       set({ isLoading: true });
+      const data = await fetchInvoicesFromStorage();
       
-      await initializeInvoicesTable(supabase);
-
-      console.log('Récupération des factures...');
-      const { data: invoices, error } = await supabase
-        .from('invoices')
-        .select('*')
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Erreur lors de la récupération des factures:', error);
-        throw error;
-      }
-
-      console.log('Factures récupérées:', invoices);
-      
-      set({ 
-        invoices: invoices?.map(inv => ({
-          ...inv,
-          date: new Date(inv.created_at)
-        })) || []
+      set({
+        invoices: data.map((inv: any) => ({
+          id: inv.id,
+          name: inv.Names,
+          date: new Date(inv.created_at),
+          url: inv.url
+        }))
       });
     } catch (error) {
-      console.error('Erreur lors du chargement des factures:', error);
-      set({ invoices: [] });
+      console.error('Error fetching invoices:', error);
+      throw error;
     } finally {
       set({ isLoading: false });
     }
@@ -58,41 +44,19 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
   addInvoice: async (file: File) => {
     try {
       set({ isLoading: true });
+      const invoice = await uploadInvoiceFile(file);
       
-      await setupInvoicesBucket(supabase);
-      const { fileName, publicUrl } = await uploadInvoiceFile(supabase, file);
-
-      const { data: invoice, error: dbError } = await supabase
-        .from('invoices')
-        .insert([
-          {
-            name: file.name,
-            file_path: fileName,
-            url: publicUrl,
-            created_at: new Date().toISOString()
-          }
-        ])
-        .select()
-        .single();
-
-      if (dbError) throw dbError;
-
-      console.log('Facture ajoutée avec succès:', invoice);
-
-      const { invoices } = get();
-      set({
-        invoices: [
-          {
-            id: invoice.id,
-            name: invoice.name,
-            date: new Date(invoice.created_at),
-            url: invoice.url
-          },
-          ...invoices
-        ]
-      });
+      set((state) => ({
+        invoices: [{
+          id: invoice.id,
+          name: invoice.Names,
+          date: new Date(invoice.created_at),
+          url: invoice.url
+        }, ...state.invoices]
+      }));
     } catch (error) {
-      console.error('Erreur lors de l\'ajout de la facture:', error);
+      console.error('Error adding invoice:', error);
+      throw error;
     } finally {
       set({ isLoading: false });
     }
@@ -101,27 +65,17 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
   removeInvoice: async (id: string) => {
     try {
       set({ isLoading: true });
+      const invoice = set((state) => ({
+        invoices: state.invoices.filter((inv) => inv.id !== id)
+      }));
       
-      const invoice = get().invoices.find(inv => inv.id === id);
-      if (!invoice) throw new Error('Facture non trouvée');
-
-      await deleteInvoiceFile(supabase, invoice.url.split('/').pop() || '');
-
-      const { error: dbError } = await supabase
-        .from('invoices')
-        .delete()
-        .eq('id', id);
-
-      if (dbError) throw dbError;
-
-      const { invoices } = get();
-      set({
-        invoices: invoices.filter(inv => inv.id !== id)
-      });
-
-      console.log('Facture supprimée avec succès');
+      const invoiceToDelete = set.getState().invoices.find((inv) => inv.id === id);
+      if (invoiceToDelete) {
+        await deleteInvoiceFile(invoiceToDelete.url.split('/').pop() || '');
+      }
     } catch (error) {
-      console.error('Erreur lors de la suppression de la facture:', error);
+      console.error('Error removing invoice:', error);
+      throw error;
     } finally {
       set({ isLoading: false });
     }
