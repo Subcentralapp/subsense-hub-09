@@ -78,11 +78,12 @@ const ApplicationDialog = ({ applications, isLoading, onAddSubscription }: Appli
           Ajouter un abonnement
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[800px]">
+      <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">Choisir une application</DialogTitle>
         </DialogHeader>
-        <div className="space-y-6">
+        
+        <div className="space-y-6 py-4">
           <ApplicationSearch 
             applications={applications} 
             onSearch={handleSearch}
@@ -93,30 +94,31 @@ const ApplicationDialog = ({ applications, isLoading, onAddSubscription }: Appli
             onAddSubscription={onAddSubscription} 
           />
 
-          <div className="border-t pt-6">
+          <div className="border-t border-gray-200 pt-6">
             <button
               onClick={() => setShowCustomForm(!showCustomForm)}
-              className="flex items-center gap-2 text-sm text-primary hover:text-primary/80 transition-colors"
+              className="w-full flex items-center justify-center gap-2 p-4 text-lg font-medium text-primary hover:text-primary/80 transition-colors bg-neutral-light rounded-lg hover:bg-neutral-light/80"
             >
-              <ChevronDown className={`h-4 w-4 transition-transform ${showCustomForm ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`h-5 w-5 transition-transform ${showCustomForm ? 'rotate-180' : ''}`} />
               Je ne trouve pas mon abonnement
             </button>
 
             {showCustomForm && (
-              <form onSubmit={handleCustomSubmit} className="mt-4 space-y-4 animate-fade-in">
+              <form onSubmit={handleCustomSubmit} className="mt-6 space-y-4 animate-fade-in bg-white p-6 rounded-lg shadow-sm">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Nom de l'application *</Label>
+                  <Label htmlFor="name" className="text-sm font-medium">Nom de l'application *</Label>
                   <Input
                     id="name"
                     value={customApp.name}
                     onChange={(e) => setCustomApp(prev => ({ ...prev, name: e.target.value }))}
                     placeholder="ex: Netflix, Spotify..."
+                    className="w-full"
                     required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="price">Prix mensuel *</Label>
+                  <Label htmlFor="price" className="text-sm font-medium">Prix mensuel *</Label>
                   <Input
                     id="price"
                     type="number"
@@ -124,32 +126,35 @@ const ApplicationDialog = ({ applications, isLoading, onAddSubscription }: Appli
                     value={customApp.price}
                     onChange={(e) => setCustomApp(prev => ({ ...prev, price: parseFloat(e.target.value) }))}
                     placeholder="9.99"
+                    className="w-full"
                     required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="category">Catégorie *</Label>
+                  <Label htmlFor="category" className="text-sm font-medium">Catégorie *</Label>
                   <Input
                     id="category"
                     value={customApp.category}
                     onChange={(e) => setCustomApp(prev => ({ ...prev, category: e.target.value }))}
                     placeholder="ex: Streaming vidéo, Gaming..."
+                    className="w-full"
                     required
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="description">Description (optionnelle)</Label>
+                  <Label htmlFor="description" className="text-sm font-medium">Description (optionnelle)</Label>
                   <Input
                     id="description"
                     value={customApp.description || ""}
                     onChange={(e) => setCustomApp(prev => ({ ...prev, description: e.target.value }))}
                     placeholder="Description de l'application..."
+                    className="w-full"
                   />
                 </div>
 
-                <Button type="submit" className="w-full">
+                <Button type="submit" className="w-full bg-primary hover:bg-primary/90 mt-4">
                   Ajouter mon abonnement
                 </Button>
               </form>
