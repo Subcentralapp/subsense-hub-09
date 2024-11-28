@@ -16,10 +16,10 @@ const ApplicationGrid = ({ applications, isLoading, onAddSubscription }: Applica
     );
   }
 
-  // Créer un Map pour stocker les applications uniques
+  // Utiliser un Map pour dédoublonner les applications
   const uniqueApps = new Map();
   applications?.forEach(app => {
-    const key = `${app.name.toLowerCase()}-${app.category}`;
+    const key = app.name.toLowerCase(); // Utiliser uniquement le nom comme clé
     if (!uniqueApps.has(key)) {
       uniqueApps.set(key, app);
     }
@@ -29,7 +29,7 @@ const ApplicationGrid = ({ applications, isLoading, onAddSubscription }: Applica
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto p-2">
       {Array.from(uniqueApps.values()).map((app) => (
         <ApplicationCard 
-          key={`${app.name}-${app.category}`}
+          key={app.name}
           app={app}
           onAdd={onAddSubscription}
         />
