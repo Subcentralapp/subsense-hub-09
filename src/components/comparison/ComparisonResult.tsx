@@ -4,15 +4,15 @@ import { Button } from "@/components/ui/button";
 import { Application } from "@/types/application";
 
 interface ComparisonResultProps {
-  selectedApp1: Application | undefined;
-  selectedApp2: Application | undefined;
+  app1: Application | null;
+  app2: Application | null;
   winner: Application | null;
   onNewComparison: () => void;
 }
 
 export const ComparisonResult = ({
-  selectedApp1,
-  selectedApp2,
+  app1,
+  app2,
   winner,
   onNewComparison,
 }: ComparisonResultProps) => {
@@ -25,10 +25,10 @@ export const ComparisonResult = ({
         </Button>
       </div>
       
-      <div className="grid grid-cols-2 gap-6 mb-8">
-        {[selectedApp1, selectedApp2].map((app, index) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        {[app1, app2].map((app, index) => (
           <div
-            key={index}
+            key={`app-${index}`}
             className="p-6 bg-white rounded-lg border border-gray-100 hover:shadow-md transition-shadow"
           >
             <h3 className="text-lg font-semibold mb-2">{app?.name}</h3>
@@ -44,7 +44,9 @@ export const ComparisonResult = ({
               </div>
               <ul className="ml-6 space-y-1">
                 {app?.description?.split('.').filter(Boolean).map((feature, idx) => (
-                  <li key={idx} className="text-sm text-gray-600 list-disc">{feature.trim()}</li>
+                  <li key={`feature-${index}-${idx}`} className="text-sm text-gray-600 list-disc">
+                    {feature.trim()}
+                  </li>
                 ))}
               </ul>
             </div>
@@ -65,7 +67,7 @@ export const ComparisonResult = ({
           <ul className="mt-3 space-y-2">
             <li className="flex items-center gap-2">
               <Check className="h-4 w-4 text-green-500" />
-              {winner.price < (selectedApp1?.name === winner.name ? selectedApp2?.price || 0 : selectedApp1?.price || 0) 
+              {winner.price < (app1?.name === winner.name ? app2?.price || 0 : app1?.price || 0) 
                 ? "Meilleur rapport qualité-prix"
                 : "Fonctionnalités plus complètes"}
             </li>
