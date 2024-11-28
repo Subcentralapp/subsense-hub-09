@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { BarChart, DollarSign, Plus, ArrowRightLeft, Lightbulb, Receipt, Import } from "lucide-react";
 import DashboardStats from "@/components/DashboardStats";
 import SubscriptionList from "@/components/SubscriptionList";
