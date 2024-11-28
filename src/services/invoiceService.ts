@@ -23,41 +23,48 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
   fetchInvoices: async () => {
     try {
       set({ isLoading: true });
-      console.log('Vérification de la table invoices...');
+      console.log('Initialisation de la table invoices...');
       
-      // Création de la table si elle n'existe pas
-      const { error: createTableError } = await supabase
-        .from('invoices')
-        .select('*')
-        .limit(1)
-        .single();
-
-      if (createTableError?.message?.includes('does not exist')) {
-        console.log('Création de la table invoices...');
-        const { error: createError } = await supabase.rpc('create_table_invoices', {
-          sql_command: `
-            CREATE TABLE IF NOT EXISTS public.invoices (
-              id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-              name TEXT NOT NULL,
-              file_path TEXT NOT NULL,
-              url TEXT NOT NULL,
-              created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
-            );
+      // Création de la table avec SQL brut
+      const { error: createError } = await supabase.from('_sql').select('*').execute(`
+        CREATE TABLE IF NOT EXISTS public.invoices (
+          id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+          name TEXT NOT NULL,
+          file_path TEXT NOT NULL,
+          url TEXT NOT NULL,
+          created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+        );
+        
+        DO $$ 
+        BEGIN
+          -- Création des politiques RLS si elles n'existent pas déjà
+          IF NOT EXISTS (
+            SELECT 1 FROM pg_policies WHERE tablename = 'invoices' AND policyname = 'Enable read access for all users'
+          ) THEN
             ALTER TABLE public.invoices ENABLE ROW LEVEL SECURITY;
             CREATE POLICY "Enable read access for all users" ON public.invoices FOR SELECT USING (true);
+          END IF;
+          
+          IF NOT EXISTS (
+            SELECT 1 FROM pg_policies WHERE tablename = 'invoices' AND policyname = 'Enable insert access for all users'
+          ) THEN
             CREATE POLICY "Enable insert access for all users" ON public.invoices FOR INSERT WITH CHECK (true);
+          END IF;
+          
+          IF NOT EXISTS (
+            SELECT 1 FROM pg_policies WHERE tablename = 'invoices' AND policyname = 'Enable delete access for all users'
+          ) THEN
             CREATE POLICY "Enable delete access for all users" ON public.invoices FOR DELETE USING (true);
-          `
-        });
+          END IF;
+        END $$;
+      `);
 
-        if (createError) {
-          console.error('Erreur lors de la création de la table:', createError);
-          set({ invoices: [] });
-          return;
-        }
+      if (createError) {
+        console.error('Erreur lors de l\'initialisation de la table:', createError);
+        throw createError;
       }
 
-      // Récupération des factures
+      console.log('Récupération des factures...');
       const { data: invoices, error } = await supabase
         .from('invoices')
         .select('*')
