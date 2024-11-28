@@ -1,6 +1,6 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Plus, ChevronDown } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useState, useMemo } from "react";
 import ApplicationSearch from "./ApplicationSearch";
 import ApplicationGrid from "./ApplicationGrid";
@@ -79,25 +79,22 @@ const ApplicationDialog = ({ applications, isLoading, onAddSubscription }: Appli
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
+        <DialogHeader className="flex flex-row justify-between items-center">
           <DialogTitle className="text-2xl font-bold">Choisir une application</DialogTitle>
+          <button
+            onClick={() => setShowCustomForm(!showCustomForm)}
+            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors bg-neutral-light rounded-lg hover:bg-neutral-light/80"
+          >
+            <Plus className="h-4 w-4" />
+            Je ne trouve pas mon abonnement
+          </button>
         </DialogHeader>
         
         <div className="space-y-6 py-4">
-          <div className="flex justify-between items-start gap-4">
-            <ApplicationSearch 
-              applications={applications} 
-              onSearch={handleSearch}
-              className="flex-1"
-            />
-            <button
-              onClick={() => setShowCustomForm(!showCustomForm)}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors bg-neutral-light rounded-lg hover:bg-neutral-light/80 whitespace-nowrap"
-            >
-              <Plus className="h-4 w-4" />
-              Ajouter manuellement
-            </button>
-          </div>
+          <ApplicationSearch 
+            applications={applications} 
+            onSearch={handleSearch}
+          />
 
           {showCustomForm && (
             <form onSubmit={handleCustomSubmit} className="animate-fade-in bg-white p-6 rounded-lg shadow-sm border border-gray-100">
