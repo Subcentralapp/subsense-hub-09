@@ -4,6 +4,7 @@ import { supabase } from "@/lib/supabase";
 import ApplicationDialog from "./dialog/ApplicationDialog";
 import { Application } from "@/types/application";
 import { fallbackApplications } from "@/data/fallbackApplications";
+import { updateApplications } from "@/services/database/updateApplications";
 
 const fetchApplications = async () => {
   console.log("Tentative de récupération des applications depuis Supabase...");
@@ -15,13 +16,15 @@ const fetchApplications = async () => {
 
     if (error) {
       console.error("Erreur Supabase:", error);
-      console.log("Utilisation de la liste de repli...");
-      return fallbackApplications;
+      console.log("Mise à jour des applications...");
+      const updatedData = await updateApplications();
+      return updatedData || fallbackApplications;
     }
 
     if (!data || data.length === 0) {
-      console.log("Aucune donnée trouvée, utilisation de la liste de repli...");
-      return fallbackApplications;
+      console.log("Aucune donnée trouvée, mise à jour des applications...");
+      const updatedData = await updateApplications();
+      return updatedData || fallbackApplications;
     }
 
     const uniqueApps = Array.from(
@@ -32,7 +35,6 @@ const fetchApplications = async () => {
     return uniqueApps as Application[];
   } catch (error) {
     console.error("Erreur lors de la récupération:", error);
-    console.log("Utilisation de la liste de repli...");
     return fallbackApplications;
   }
 };
