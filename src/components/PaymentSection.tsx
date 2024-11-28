@@ -9,23 +9,50 @@ import { useInvoiceStore } from "@/services/invoiceService";
 const PaymentSection = () => {
   const { toast } = useToast();
   const { invoices, isLoading, addInvoice, removeInvoice, fetchInvoices } = useInvoiceStore();
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   useEffect(() => {
     fetchInvoices();
   }, [fetchInvoices]);
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file && file.type === "application/pdf") {
-      await addInvoice(file);
+    if (file) {
+      setSelectedFile(file);
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!selectedFile) {
       toast({
-        title: "Facture ajoutée",
-        description: `${file.name} a été ajouté avec succès.`,
+        title: "Erreur",
+        description: "Veuillez sélectionner un fichier PDF.",
+        variant: "destructive",
       });
-    } else {
+      return;
+    }
+
+    if (selectedFile.type !== "application/pdf") {
       toast({
         title: "Erreur",
         description: "Veuillez sélectionner un fichier PDF valide.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      await addInvoice(selectedFile);
+      setSelectedFile(null);
+      toast({
+        title: "Succès",
+        description: `${selectedFile.name} a été ajouté avec succès.`,
+      });
+    } catch (error) {
+      console.error("Erreur lors de l'upload:", error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de l'upload du fichier.",
         variant: "destructive",
       });
     }
@@ -72,23 +99,27 @@ const PaymentSection = () => {
                 <p className="text-lg font-medium">Déposez votre facture ici</p>
                 <p className="text-sm text-gray-500">Format accepté : PDF</p>
               </div>
-              <label className="relative">
+              <div className="flex flex-col gap-2">
                 <Input
                   type="file"
                   accept=".pdf"
-                  onChange={handleFileUpload}
-                  className="hidden"
+                  onChange={handleFileChange}
+                  className="w-full"
                   disabled={isLoading}
                 />
-                <Button className="hover-scale" disabled={isLoading}>
+                <Button 
+                  onClick={handleUpload} 
+                  disabled={isLoading || !selectedFile}
+                  className="w-full"
+                >
                   {isLoading ? (
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   ) : (
                     <Upload className="mr-2 h-4 w-4" />
                   )}
-                  Sélectionner un fichier
+                  {selectedFile ? "Uploader le fichier" : "Sélectionner un fichier"}
                 </Button>
-              </label>
+              </div>
             </div>
           </div>
 
