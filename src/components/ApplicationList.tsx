@@ -101,6 +101,19 @@ const ApplicationList = () => {
 
   const handleAddSubscription = async (app: Application) => {
     try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        toast({
+          title: "Erreur",
+          description: "Vous devez être connecté pour ajouter un abonnement.",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const nextBillingDate = new Date();
       nextBillingDate.setMonth(nextBillingDate.getMonth() + 1);
 
@@ -110,6 +123,7 @@ const ApplicationList = () => {
         category: app.category,
         next_billing: nextBillingDate.toISOString(),
         description: app.description,
+        user_id: user.id,
       });
 
       if (error) throw error;

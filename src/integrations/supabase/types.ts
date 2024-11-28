@@ -102,6 +102,7 @@ export type Database = {
           name: string
           next_billing: string | null
           price: number
+          user_id: string | null
         }
         Insert: {
           category?: string | null
@@ -111,6 +112,7 @@ export type Database = {
           name: string
           next_billing?: string | null
           price: number
+          user_id?: string | null
         }
         Update: {
           category?: string | null
@@ -120,6 +122,7 @@ export type Database = {
           name?: string
           next_billing?: string | null
           price?: number
+          user_id?: string | null
         }
         Relationships: []
       }

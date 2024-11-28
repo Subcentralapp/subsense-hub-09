@@ -11,6 +11,7 @@ interface Subscription {
   price: number;
   category: string;
   next_billing: string;
+  user_id: string;
 }
 
 const SubscriptionList = () => {
@@ -20,6 +21,13 @@ const SubscriptionList = () => {
     queryKey: ['subscriptions'],
     queryFn: async () => {
       console.log("Fetching subscriptions...");
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        console.log("No user found, returning empty array");
+        return [];
+      }
+
       const { data, error } = await supabase
         .from('subscriptions')
         .select('*')
