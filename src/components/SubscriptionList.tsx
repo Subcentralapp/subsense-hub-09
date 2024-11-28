@@ -1,23 +1,45 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
 import { supabase } from "@/lib/supabase";
+import { useToast } from "@/components/ui/use-toast";
 
 const SubscriptionList = () => {
-  const { data: applications, isLoading } = useQuery({
+  const { toast } = useToast();
+  
+  const { data: applications, isLoading, error } = useQuery({
     queryKey: ['applications'],
     queryFn: async () => {
+      console.log("Fetching applications...");
       const { data, error } = await supabase
         .from('applications')
         .select('*')
         .order('name');
       
-      if (error) throw error;
+      console.log("Supabase response:", { data, error });
+      
+      if (error) {
+        console.error("Supabase error:", error);
+        toast({
+          title: "Erreur",
+          description: "Impossible de charger les applications",
+          variant: "destructive",
+        });
+        throw error;
+      }
       return data;
     },
   });
 
   if (isLoading) {
     return <div>Chargement des applications...</div>;
+  }
+
+  if (error) {
+    return (
+      <div className="text-red-500">
+        Une erreur est survenue lors du chargement des applications
+      </div>
+    );
   }
 
   return (
