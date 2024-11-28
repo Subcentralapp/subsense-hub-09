@@ -19,19 +19,23 @@ export const SubscriptionProgress = ({ nextBilling }: SubscriptionProgressProps)
   };
 
   const getProgressColor = (progress: number): string => {
-    if (progress >= 90) return "bg-red-500"; // Rouge quand il reste moins de 10%
-    if (progress >= 75) return "bg-orange-500"; // Orange quand il reste moins de 25%
-    return "bg-primary"; // Couleur primaire par défaut
+    if (progress >= 90) {
+      return "linear-gradient(90deg, #EF4444 0%, #DC2626 100%)"; // Rouge vif pour moins de 10%
+    }
+    if (progress >= 75) {
+      return "linear-gradient(90deg, #F97316 0%, #EA580C 100%)"; // Orange pour moins de 25%
+    }
+    return "linear-gradient(90deg, #9b87f5 0%, #7E69AB 100%)"; // Dégradé de violet (couleurs primaire/secondaire)
   };
 
   const progress = calculateDaysProgress(nextBilling);
   const daysLeft = Math.ceil((new Date(nextBilling).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24));
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-2">
       <Progress 
         value={progress} 
-        className="h-2 bg-gray-200"
+        className="h-3 bg-gray-100 shadow-inner"
         style={{
           ["--progress-color" as any]: getProgressColor(progress),
         }}
