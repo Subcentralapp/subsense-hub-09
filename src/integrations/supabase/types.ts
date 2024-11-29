@@ -15,6 +15,7 @@ export type Database = {
           cons: string[] | null
           description: string | null
           features: Json | null
+          id: number
           logo_url: string | null
           name: string | null
           price: number | null
@@ -27,6 +28,7 @@ export type Database = {
           cons?: string[] | null
           description?: string | null
           features?: Json | null
+          id?: number
           logo_url?: string | null
           name?: string | null
           price?: number | null
@@ -39,6 +41,7 @@ export type Database = {
           cons?: string[] | null
           description?: string | null
           features?: Json | null
+          id?: number
           logo_url?: string | null
           name?: string | null
           price?: number | null

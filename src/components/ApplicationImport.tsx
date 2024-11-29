@@ -3,62 +3,17 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/lib/supabase";
+import { handleApplicationImport } from "@/services/applications/importService";
 
 const ApplicationImport = () => {
   const [text, setText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const parseText = (text: string) => {
-    return text
-      .split("\n")
-      .filter((line) => line.trim())
-      .map((line) => {
-        const [name, price, category, description = ""] = line.split(",").map((item) => item.trim());
-        return {
-          name,
-          price: parseFloat(price),
-          category,
-          description,
-        };
-      });
-  };
-
   const handleImport = async () => {
     try {
       setIsLoading(true);
-      const newApplications = parseText(text);
-      
-      if (newApplications.length === 0) {
-        toast({
-          title: "Erreur",
-          description: "Aucune application à importer",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      console.log("Attempting to upsert applications:", newApplications);
-      
-      const { error } = await supabase
-        .from("applications")
-        .upsert(newApplications, {
-          onConflict: 'name',
-          ignoreDuplicates: false
-        });
-
-      if (error) {
-        console.error("Error during upsert:", error);
-        throw error;
-      }
-
-      console.log("Applications upserted successfully");
-      
-      toast({
-        title: "Succès",
-        description: `${newApplications.length} applications importées avec succès`,
-      });
-      
+      await handleApplicationImport(text, toast);
       setText("");
     } catch (error) {
       console.error("Erreur lors de l'import:", error);
