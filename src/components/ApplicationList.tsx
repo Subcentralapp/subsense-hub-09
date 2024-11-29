@@ -15,14 +15,14 @@ const fetchApplications = async () => {
 
     if (error) {
       console.error("Erreur lors de la récupération:", error);
-      return [];
+      throw error;
     }
 
     console.log("Applications récupérées:", data?.length);
     return data as Application[];
   } catch (error) {
     console.error("Erreur lors de la récupération:", error);
-    return [];
+    throw error;
   }
 };
 
@@ -46,16 +46,18 @@ const ApplicationList = () => {
     nextBilling?: Date
   ) => {
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      console.log("Début de l'ajout d'abonnement:", { app, customPrice, nextBilling });
+      
+      const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
+        console.log("Utilisateur non connecté, redirection vers l'authentification");
         navigate("/auth");
         return;
       }
 
       if (!nextBilling) {
+        console.log("Date de prélèvement manquante");
         toast({
           title: "Erreur",
           description: "Veuillez sélectionner une date de prélèvement",
@@ -64,19 +66,33 @@ const ApplicationList = () => {
         return;
       }
 
-      const { error } = await supabase.from("subscriptions").insert({
+      const subscriptionData = {
         name: app.name,
         price: customPrice || app.price,
         category: app.category,
         next_billing: nextBilling.toISOString(),
         description: app.description,
         user_id: user.id,
-      });
+      };
 
-      if (error) throw error;
+      console.log("Données de l'abonnement à insérer:", subscriptionData);
 
-      // Invalider le cache des abonnements après l'ajout
-      await queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
+      const { error } = await supabase
+        .from("subscriptions")
+        .insert(subscriptionData);
+
+      if (error) {
+        console.error("Erreur lors de l'insertion:", error);
+        throw error;
+      }
+
+      console.log("Abonnement ajouté avec succès");
+
+      // Invalider les deux caches
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["subscriptions"] }),
+        queryClient.invalidateQueries({ queryKey: ["applications"] })
+      ]);
 
       toast({
         title: "Abonnement ajouté",
