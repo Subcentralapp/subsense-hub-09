@@ -2,6 +2,29 @@ import { Application } from "@/types/application";
 
 export const productivityApplications: Application[] = [
   {
+    name: "Airtable",
+    price: 10.00,
+    category: "Productivité",
+    description: "Base de données collaborative et outil de gestion de projet",
+    pricing_plans: [
+      {
+        name: "Gratuit",
+        price: 0,
+        features: ["Base illimitée", "1000 enregistrements par base", "Interface intuitive"]
+      },
+      {
+        name: "Plus",
+        price: 10,
+        features: ["5000 enregistrements par base", "Extensions", "Vues personnalisées", "Support prioritaire"]
+      }
+    ],
+    features: ["Bases de données", "Vues personnalisables", "Automatisations", "Intégrations"],
+    pros: ["Interface intuitive", "Flexible", "Collaboratif", "Nombreuses intégrations"],
+    cons: ["Prix élevé pour équipes", "Courbe d'apprentissage", "Fonctionnalités limitées version gratuite"],
+    website_url: "https://www.airtable.com",
+    logo_url: "https://logo.clearbit.com/airtable.com"
+  },
+  {
     name: "DeepL Pro",
     price: 29.99,
     category: "Productivité",
