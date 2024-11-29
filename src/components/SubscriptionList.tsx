@@ -7,6 +7,8 @@ import { useState } from "react";
 import { SubscriptionCard } from "./subscription/SubscriptionCard";
 import { SubscriptionEditDialog } from "./subscription/SubscriptionEditDialog";
 import { useNavigate } from "react-router-dom";
+import { AlternativeSuggestion } from "./suggestions/AlternativeSuggestion";
+import { Application } from "@/types/application";
 
 interface Subscription {
   id: number;
@@ -16,6 +18,30 @@ interface Subscription {
   next_billing: string;
   description?: string;
 }
+
+const findAlternatives = (subscription: Subscription, allApps: Application[]) => {
+  const currentApp = allApps.find(app => app.name.toLowerCase() === subscription.name.toLowerCase());
+  if (!currentApp) return null;
+
+  // Trouver des applications similaires dans la même catégorie avec un prix inférieur
+  const alternatives = allApps.filter(app => 
+    app.category === currentApp.category && 
+    app.price < currentApp.price &&
+    app.name.toLowerCase() !== currentApp.name.toLowerCase()
+  );
+
+  if (alternatives.length === 0) return null;
+
+  // Trier par prix croissant et prendre la première alternative
+  const bestAlternative = alternatives.sort((a, b) => (a.price || 0) - (b.price || 0))[0];
+  const savingsAmount = subscription.price - (bestAlternative.price || 0);
+
+  return {
+    currentApp,
+    alternativeApp: bestAlternative,
+    savingsAmount: Number(savingsAmount.toFixed(2))
+  };
+};
 
 const SubscriptionList = () => {
   const { toast } = useToast();
@@ -46,6 +72,18 @@ const SubscriptionList = () => {
 
       console.log("Fetched subscriptions:", data);
       return data as Subscription[];
+    },
+  });
+
+  const { data: applications } = useQuery({
+    queryKey: ['applications'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('applications')
+        .select('*');
+      
+      if (error) throw error;
+      return data as Application[];
     },
   });
 
@@ -95,8 +133,30 @@ const SubscriptionList = () => {
     );
   }
 
+  const alternatives = subscriptions?.map(sub => 
+    applications ? findAlternatives(sub, applications) : null
+  ).filter(Boolean);
+
   return (
     <div className="space-y-8">
+      {alternatives && alternatives.length > 0 && (
+        <Card className="p-6 bg-gradient-to-br from-amber-50 to-amber-100/50 border-amber-200">
+          <h3 className="text-lg font-semibold text-amber-800 mb-4">
+            Suggestions d'économies
+          </h3>
+          <div className="space-y-4">
+            {alternatives.map((alt, index) => alt && (
+              <AlternativeSuggestion
+                key={index}
+                currentApp={alt.currentApp}
+                alternativeApp={alt.alternativeApp}
+                savingsAmount={alt.savingsAmount}
+              />
+            ))}
+          </div>
+        </Card>
+      )}
+
       <Card className="p-6 bg-gradient-to-br from-white/80 to-white/40 backdrop-blur-md border border-white/20 shadow-xl">
         <h2 className="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-2">
           <CreditCard className="h-6 w-6 text-primary" />
