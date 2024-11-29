@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/lib/supabase";
 import ApplicationDialog from "./dialog/ApplicationDialog";
@@ -29,6 +29,8 @@ const fetchApplications = async () => {
 const ApplicationList = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
   const { data: applications, isLoading } = useQuery({
     queryKey: ["applications"],
     queryFn: fetchApplications,
@@ -72,6 +74,9 @@ const ApplicationList = () => {
       });
 
       if (error) throw error;
+
+      // Invalider le cache des abonnements après l'ajout
+      await queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
 
       toast({
         title: "Abonnement ajouté",
