@@ -5,32 +5,35 @@ export const updateApplications = async () => {
   console.log("Starting applications update...");
 
   try {
-    // Delete existing applications
-    const { error: deleteError } = await supabase
+    // Vérifier d'abord si la base de données est vide
+    const { data: existingApps, error: checkError } = await supabase
       .from('applications')
-      .delete()
-      .neq('name', ''); // Delete all rows
+      .select('name');
 
-    if (deleteError) {
-      console.error("Error deleting existing applications:", deleteError);
-      throw deleteError;
+    if (checkError) {
+      console.error("Error checking existing applications:", checkError);
+      throw checkError;
     }
 
-    console.log("Existing applications deleted successfully");
+    // N'insérer les applications de secours que si la base de données est vide
+    if (!existingApps || existingApps.length === 0) {
+      console.log("Database is empty, inserting fallback applications...");
+      const { data, error: insertError } = await supabase
+        .from('applications')
+        .insert(fallbackApplications)
+        .select();
 
-    // Insert updated applications
-    const { data, error: insertError } = await supabase
-      .from('applications')
-      .insert(fallbackApplications)
-      .select();
+      if (insertError) {
+        console.error("Error inserting applications:", insertError);
+        throw insertError;
+      }
 
-    if (insertError) {
-      console.error("Error inserting applications:", insertError);
-      throw insertError;
+      console.log("Fallback applications inserted successfully:", data);
+      return data;
     }
 
-    console.log("Applications updated successfully:", data);
-    return data;
+    console.log("Database already contains applications, skipping fallback insertion");
+    return existingApps;
   } catch (error) {
     console.error("Error in updateApplications:", error);
     throw error;
