@@ -11,14 +11,12 @@ export default function Auth() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Check if user is already logged in
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
         navigate("/dashboard");
       }
     });
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state changed:", event, session);
       if (event === "SIGNED_IN") {
@@ -42,8 +40,8 @@ export default function Auth() {
         </Button>
 
         <div className="text-center space-y-2 mt-8">
-          <h1 className="text-2xl font-bold text-primary">Bienvenue</h1>
-          <p className="text-muted-foreground">Connectez-vous pour continuer</p>
+          <h1 className="text-2xl font-bold text-primary">Commencez à économiser dès aujourd'hui</h1>
+          <p className="text-muted-foreground">Rejoignez des milliers d'utilisateurs qui optimisent déjà leurs dépenses</p>
         </div>
         
         <SupabaseAuth
@@ -62,7 +60,7 @@ export default function Auth() {
               },
             },
           }}
-          providers={[]}
+          providers={["google"]}
           localization={{
             variables: {
               sign_in: {
@@ -75,9 +73,9 @@ export default function Auth() {
               sign_up: {
                 email_label: 'Adresse email',
                 password_label: 'Mot de passe',
-                button_label: "S'inscrire",
+                button_label: "Créer mon compte",
                 loading_button_label: 'Inscription en cours...',
-                link_text: "Vous n'avez pas de compte ? Inscrivez-vous",
+                link_text: "Pas encore de compte ? Inscrivez-vous",
               },
               forgotten_password: {
                 link_text: 'Mot de passe oublié ?',
