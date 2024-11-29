@@ -38,7 +38,7 @@ const fetchApplications = async () => {
       return acc;
     }, []);
 
-    console.log("Applications uniques récupérées:", uniqueApps);
+    console.log("Applications récupérées:", uniqueApps);
     return uniqueApps;
   } catch (error) {
     console.error("Erreur lors de la récupération:", error);
@@ -51,9 +51,10 @@ const ApplicationList = () => {
   const { data: applications, isLoading } = useQuery({
     queryKey: ["applications"],
     queryFn: fetchApplications,
-    staleTime: 0, // Force le rafraîchissement à chaque fois
-    gcTime: 0, // Désactive le cache
-    refetchOnMount: true, // Rafraîchit les données à chaque montage du composant
+    staleTime: 0,
+    cacheTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 
   const handleAddSubscription = async (
