@@ -51,8 +51,9 @@ const ApplicationList = () => {
   const { data: applications, isLoading } = useQuery({
     queryKey: ["applications"],
     queryFn: fetchApplications,
-    staleTime: 0,
-    gcTime: 0,
+    staleTime: 0, // Force le rafraîchissement à chaque fois
+    gcTime: 0, // Désactive le cache
+    refetchOnMount: true, // Rafraîchit les données à chaque montage du composant
   });
 
   const handleAddSubscription = async (
