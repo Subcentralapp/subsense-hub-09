@@ -1,5 +1,5 @@
 import { supabase } from "@/lib/supabase";
-import { Toast } from "@/components/ui/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 
 export const parseApplicationText = (text: string) => {
   return text
@@ -16,7 +16,7 @@ export const parseApplicationText = (text: string) => {
     });
 };
 
-export const handleApplicationImport = async (text: string, toast: Toast) => {
+export const handleApplicationImport = async (text: string, toast: any) => {
   const applications = parseApplicationText(text);
   
   if (applications.length === 0) {
