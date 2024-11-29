@@ -1,11 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { FileText, Trash2, Loader2, DollarSign, Calendar, PenLine, Search } from "lucide-react";
+import { FileText, Search } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
+import InvoiceMetadata from "./invoice/InvoiceMetadata";
+import InvoiceActions from "./invoice/InvoiceActions";
 
 interface Invoice {
   id: string;
@@ -30,12 +31,12 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
     date: "",
   });
 
-  const { data: metadata, refetch } = useQuery({
-    queryKey: ['metadata'],
+  const { data: invoiceDetails, refetch } = useQuery({
+    queryKey: ['invoiceDetails'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('Métadonné')
-        .select('*')
+        .from('InvoiceDetails')
+        .select('*');
       
       if (error) throw error;
       return data;
@@ -46,12 +47,12 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
     if (editingId === invoiceId) {
       try {
         const { error } = await supabase
-          .from('Métadonné')
+          .from('InvoiceDetails')
           .update({
-            Price: parseFloat(editForm.price),
-            date: editForm.date,
+            amount: parseFloat(editForm.price),
+            invoice_date: editForm.date,
           })
-          .eq('Name', invoiceId);
+          .eq('invoice_id', invoiceId);
 
         if (error) throw error;
 
@@ -71,10 +72,10 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
         });
       }
     } else {
-      const invoiceMetadata = metadata?.find(m => m.Name === invoiceId);
+      const invoiceDetail = invoiceDetails?.find(d => d.invoice_id === invoiceId);
       setEditForm({
-        price: invoiceMetadata?.Price?.toString() || "",
-        date: invoiceMetadata?.date?.toString() || "",
+        price: invoiceDetail?.amount?.toString() || "",
+        date: invoiceDetail?.invoice_date?.toString() || "",
       });
       setEditingId(invoiceId);
     }
@@ -97,25 +98,25 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
     }
   };
 
-  // Filtrer et trier les factures
-  const filteredInvoices = invoices.filter(invoice => {
-    const matchesSearch = invoice.name.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesSearch;
-  }).sort((a, b) => {
-    const metadataA = metadata?.find(m => m.Name === a.id);
-    const metadataB = metadata?.find(m => m.Name === b.id);
+  // Filter and sort invoices
+  const filteredInvoices = invoices
+    .filter(invoice => invoice.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    .sort((a, b) => {
+      const detailsA = invoiceDetails?.find(d => d.invoice_id === a.id);
+      const detailsB = invoiceDetails?.find(d => d.invoice_id === b.id);
 
-    switch (sortBy) {
-      case "date":
-        return new Date(metadataB?.date || 0).getTime() - new Date(metadataA?.date || 0).getTime();
-      case "name":
-        return a.name.localeCompare(b.name);
-      case "price":
-        return (metadataB?.Price || 0) - (metadataA?.Price || 0);
-      default:
-        return 0;
-    }
-  });
+      switch (sortBy) {
+        case "date":
+          return new Date(detailsB?.invoice_date || 0).getTime() - 
+                 new Date(detailsA?.invoice_date || 0).getTime();
+        case "name":
+          return a.name.localeCompare(b.name);
+        case "price":
+          return (detailsB?.amount || 0) - (detailsA?.amount || 0);
+        default:
+          return 0;
+      }
+    });
 
   return (
     <div className="space-y-4">
@@ -145,7 +146,7 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
 
       <div className="grid gap-4">
         {filteredInvoices.map((invoice) => {
-          const invoiceMetadata = metadata?.find(m => m.Name === invoice.id);
+          const invoiceDetail = invoiceDetails?.find(d => d.invoice_id === invoice.id);
           const isEditing = editingId === invoice.id;
           
           return (
@@ -167,72 +168,20 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
                     </a>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEdit(invoice.id)}
-                  >
-                    {isEditing ? (
-                      "Sauvegarder"
-                    ) : (
-                      <>
-                        <PenLine className="h-4 w-4 mr-1" />
-                        Modifier
-                      </>
-                    )}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDelete(invoice.id)}
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Trash2 className="h-4 w-4" />
-                    )}
-                  </Button>
-                </div>
+                <InvoiceActions
+                  isEditing={isEditing}
+                  isLoading={isLoading}
+                  onEdit={() => handleEdit(invoice.id)}
+                  onDelete={() => handleDelete(invoice.id)}
+                />
               </div>
               
-              <div className="bg-gray-50 p-4 rounded-md space-y-3">
-                <div className="flex items-center gap-2">
-                  <DollarSign className="h-4 w-4 text-primary shrink-0" />
-                  {isEditing ? (
-                    <Input
-                      type="number"
-                      value={editForm.price}
-                      onChange={(e) => setEditForm(prev => ({ ...prev, price: e.target.value }))}
-                      placeholder="Prix"
-                      className="h-8"
-                    />
-                  ) : (
-                    <span className="text-sm">
-                      {invoiceMetadata?.Price ? `${invoiceMetadata.Price} €` : 'Prix non défini'}
-                    </span>
-                  )}
-                </div>
-                <div className="flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-primary shrink-0" />
-                  {isEditing ? (
-                    <Input
-                      type="date"
-                      value={editForm.date}
-                      onChange={(e) => setEditForm(prev => ({ ...prev, date: e.target.value }))}
-                      className="h-8"
-                    />
-                  ) : (
-                    <span className="text-sm">
-                      {invoiceMetadata?.date 
-                        ? new Date(invoiceMetadata.date).toLocaleDateString()
-                        : 'Date non définie'
-                      }
-                    </span>
-                  )}
-                </div>
-              </div>
+              <InvoiceMetadata
+                isEditing={isEditing}
+                metadata={invoiceDetail}
+                editForm={editForm}
+                setEditForm={setEditForm}
+              />
             </div>
           );
         })}

@@ -51,6 +51,71 @@ export type Database = {
         }
         Relationships: []
       }
+      invoicedetails: {
+        Row: {
+          amount: number | null
+          category: string | null
+          created_at: string | null
+          id: number
+          invoice_date: string | null
+          invoice_id: number | null
+          merchant_name: string | null
+          status: string | null
+        }
+        Insert: {
+          amount?: number | null
+          category?: string | null
+          created_at?: string | null
+          id?: never
+          invoice_date?: string | null
+          invoice_id?: number | null
+          merchant_name?: string | null
+          status?: string | null
+        }
+        Update: {
+          amount?: number | null
+          category?: string | null
+          created_at?: string | null
+          id?: never
+          invoice_date?: string | null
+          invoice_id?: number | null
+          merchant_name?: string | null
+          status?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invoicedetails_invoice_id_fkey"
+            columns: ["invoice_id"]
+            isOneToOne: false
+            referencedRelation: "invoices"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      invoices: {
+        Row: {
+          created_at: string | null
+          file_path: string | null
+          id: number
+          names: string | null
+          url: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          file_path?: string | null
+          id?: never
+          names?: string | null
+          url?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          file_path?: string | null
+          id?: never
+          names?: string | null
+          url?: string | null
+        }
+        Relationships: []
+      }
       Invoices: {
         Row: {
           created_at: string | null
