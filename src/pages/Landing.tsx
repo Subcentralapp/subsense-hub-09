@@ -1,10 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Shield, Sparkles, BarChart, Clock } from "lucide-react";
+import { ArrowRight, Shield, Sparkles, BarChart, Clock, Check } from "lucide-react";
 import { motion } from "framer-motion";
 import { Header } from "@/components/Header";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
+
+// ... keep existing code (features and benefits arrays)
 
 const Landing = () => {
   const navigate = useNavigate();
