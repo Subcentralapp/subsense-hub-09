@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
-import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
 import { format, subMonths } from "date-fns";
 import { fr } from "date-fns/locale";
 
@@ -25,17 +25,31 @@ const PaymentCharts = () => {
   const currentMonthTotal = subscriptions?.reduce((total, sub) => total + Number(sub.price), 0) || 0;
   const previousMonthTotal = currentMonthTotal * 1.2;
   const savings = previousMonthTotal - currentMonthTotal;
-  const savingsPercentage = ((savings / previousMonthTotal) * 100).toFixed(1);
+
+  // Grouper les dépenses par catégorie
+  const categoryData = subscriptions?.reduce((acc: any, sub) => {
+    const category = sub.category || 'Autre';
+    if (!acc[category]) {
+      acc[category] = 0;
+    }
+    acc[category] += Number(sub.price);
+    return acc;
+  }, {});
+
+  const categoryChartData = Object.entries(categoryData || {}).map(([name, amount]) => ({
+    name,
+    montant: amount,
+  }));
 
   const monthlyData = [
     {
-      name: format(subMonths(new Date(), 1), 'MMMM', { locale: fr }),
-      montant: previousMonthTotal.toFixed(2),
+      name: format(subMonths(new Date(), 1), 'MMM', { locale: fr }),
+      montant: previousMonthTotal,
       fill: '#F97316'
     },
     {
-      name: format(new Date(), 'MMMM', { locale: fr }),
-      montant: currentMonthTotal.toFixed(2),
+      name: format(new Date(), 'MMM', { locale: fr }),
+      montant: currentMonthTotal,
       fill: '#9b87f5'
     }
   ];
@@ -43,7 +57,7 @@ const PaymentCharts = () => {
   const CustomTooltip = ({ active, payload, label }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="bg-white p-3 rounded-lg shadow-lg border border-neutral-100">
+        <div className="bg-white/90 backdrop-blur-sm p-3 rounded-lg shadow-lg border border-neutral-100">
           <p className="text-sm font-medium text-neutral-600">{label}</p>
           <p className="text-lg font-semibold text-primary">
             {`${Number(payload[0].value).toFixed(2)}€`}
@@ -55,28 +69,29 @@ const PaymentCharts = () => {
   };
 
   return (
-    <Card className="bg-gradient-to-br from-white/90 to-white/50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-white/20">
-      <div className="flex flex-col space-y-4">
-        <div className="flex justify-between items-center flex-wrap gap-4">
-          <h3 className="text-xl font-semibold text-neutral-800">
-            Évolution des Dépenses
-          </h3>
-          {savings > 0 && (
-            <div className="bg-green-50 px-4 py-2 rounded-full border border-green-100">
-              <span className="text-green-700 text-sm font-medium">
-                Économies: {savings.toFixed(2)}€ ({savingsPercentage}%)
+    <div className="grid gap-6 md:grid-cols-2">
+      <Card className="bg-gradient-to-br from-white/90 to-white/50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-white/20">
+        <div className="flex flex-col space-y-4">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-medium text-neutral-800">
+              Évolution Mensuelle
+            </h3>
+            {savings > 0 && (
+              <span className="text-sm text-green-600 font-medium bg-green-50 px-3 py-1 rounded-full">
+                -{savings.toFixed(0)}€
               </span>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
 
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-neutral-100">
-          <h4 className="text-sm font-medium text-neutral-600 mb-4">
-            Comparaison Mensuelle
-          </h4>
-          <div className="h-[250px]">
+          <div className="h-[250px] mt-4">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={monthlyData} barGap={8}>
+              <AreaChart data={monthlyData}>
+                <defs>
+                  <linearGradient id="colorMontant" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#9b87f5" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="#9b87f5" stopOpacity={0}/>
+                  </linearGradient>
+                </defs>
                 <XAxis 
                   dataKey="name" 
                   axisLine={false}
@@ -90,17 +105,56 @@ const PaymentCharts = () => {
                   tickFormatter={(value) => `${value}€`}
                 />
                 <Tooltip content={<CustomTooltip />} />
+                <Area 
+                  type="monotone"
+                  dataKey="montant"
+                  stroke="#9b87f5"
+                  fillOpacity={1}
+                  fill="url(#colorMontant)"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+      </Card>
+
+      <Card className="bg-gradient-to-br from-white/90 to-white/50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-white/20">
+        <div className="flex flex-col space-y-4">
+          <h3 className="text-lg font-medium text-neutral-800">
+            Dépenses par Catégorie
+          </h3>
+
+          <div className="h-[250px] mt-4">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={categoryChartData} layout="vertical">
+                <XAxis 
+                  type="number"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#666', fontSize: 12 }}
+                  tickFormatter={(value) => `${value}€`}
+                />
+                <YAxis 
+                  type="category"
+                  dataKey="name"
+                  axisLine={false}
+                  tickLine={false}
+                  tick={{ fill: '#666', fontSize: 12 }}
+                  width={100}
+                />
+                <Tooltip content={<CustomTooltip />} />
                 <Bar 
                   dataKey="montant" 
-                  radius={[4, 4, 0, 0]}
-                  maxBarSize={80}
+                  fill="#9b87f5"
+                  radius={[0, 4, 4, 0]}
+                  barSize={20}
                 />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
-      </div>
-    </Card>
+      </Card>
+    </div>
   );
 };
 
