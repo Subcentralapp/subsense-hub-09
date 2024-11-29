@@ -6,6 +6,7 @@ import { useToast } from "./ui/use-toast";
 import { useState } from "react";
 import { SubscriptionCard } from "./subscription/SubscriptionCard";
 import { SubscriptionEditDialog } from "./subscription/SubscriptionEditDialog";
+import { useNavigate } from "react-router-dom";
 
 interface Subscription {
   id: number;
@@ -18,6 +19,7 @@ interface Subscription {
 
 const SubscriptionList = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [editingSubscription, setEditingSubscription] = useState<Subscription | null>(null);
 
   const { data: subscriptions, isLoading, refetch } = useQuery({
@@ -27,7 +29,8 @@ const SubscriptionList = () => {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        console.log("No user found, returning empty array");
+        console.log("No user found, redirecting to auth");
+        navigate("/auth");
         return [];
       }
 
@@ -48,6 +51,13 @@ const SubscriptionList = () => {
   });
 
   const handleDelete = async (id: number) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    
+    if (!user) {
+      navigate("/auth");
+      return;
+    }
+
     try {
       const { error } = await supabase
         .from('subscriptions')

@@ -3,6 +3,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/lib/supabase";
 import ApplicationDialog from "./dialog/ApplicationDialog";
 import { Application } from "@/types/application";
+import { useNavigate } from "react-router-dom";
 
 const fetchApplications = async () => {
   console.log("Tentative de récupération des applications depuis Supabase...");
@@ -27,6 +28,7 @@ const fetchApplications = async () => {
 
 const ApplicationList = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const { data: applications, isLoading } = useQuery({
     queryKey: ["applications"],
     queryFn: fetchApplications,
@@ -47,11 +49,7 @@ const ApplicationList = () => {
       } = await supabase.auth.getUser();
 
       if (!user) {
-        toast({
-          title: "Erreur",
-          description: "Vous devez être connecté pour ajouter un abonnement.",
-          variant: "destructive",
-        });
+        navigate("/auth");
         return;
       }
 

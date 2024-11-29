@@ -41,10 +41,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Landing />} />
-          <Route 
-            path="/dashboard" 
-            element={user ? <Index /> : <Navigate to="/auth" replace />} 
-          />
+          <Route path="/dashboard" element={<Index />} />
           <Route 
             path="/auth" 
             element={user ? <Navigate to="/dashboard" replace /> : <Auth />} 

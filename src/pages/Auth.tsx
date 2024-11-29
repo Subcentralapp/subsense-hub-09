@@ -12,7 +12,7 @@ export default function Auth() {
     // Check if user is already logged in
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) {
-        navigate("/");
+        navigate("/dashboard");
       }
     });
 
@@ -20,7 +20,7 @@ export default function Auth() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state changed:", event, session);
       if (event === "SIGNED_IN") {
-        navigate("/");
+        navigate("/dashboard");
       }
     });
 
@@ -59,12 +59,27 @@ export default function Auth() {
                 password_label: 'Mot de passe',
                 button_label: 'Se connecter',
                 loading_button_label: 'Connexion en cours...',
+                link_text: 'Vous avez déjà un compte ? Connectez-vous',
+                password_required: 'Le mot de passe est requis',
+                email_required: "L'email est requis",
+                email_invalid: "L'email n'est pas valide",
               },
               sign_up: {
                 email_label: 'Adresse email',
                 password_label: 'Mot de passe',
                 button_label: "S'inscrire",
                 loading_button_label: 'Inscription en cours...',
+                link_text: "Vous n'avez pas de compte ? Inscrivez-vous",
+                password_required: 'Le mot de passe est requis',
+                email_required: "L'email est requis",
+                email_invalid: "L'email n'est pas valide",
+              },
+              forgotten_password: {
+                link_text: 'Mot de passe oublié ?',
+                button_label: 'Envoyer les instructions',
+                loading_button_label: 'Envoi en cours...',
+                email_label: 'Adresse email',
+                password_label: 'Mot de passe',
               },
             },
           }}
