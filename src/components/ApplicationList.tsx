@@ -16,18 +16,19 @@ const fetchApplications = async () => {
 
     if (error) {
       console.error("Erreur Supabase:", error);
-      console.log("Mise à jour des applications...");
+      console.log("Utilisation des données de secours...");
       const updatedData = await updateApplications();
+      console.log("Données de secours:", updatedData || fallbackApplications);
       return updatedData || fallbackApplications;
     }
 
     if (!data || data.length === 0) {
-      console.log("Aucune donnée trouvée, mise à jour des applications...");
+      console.log("Aucune donnée trouvée, utilisation des données de secours...");
       const updatedData = await updateApplications();
+      console.log("Données de secours:", updatedData || fallbackApplications);
       return updatedData || fallbackApplications;
     }
 
-    // Amélioration de la déduplication en utilisant le nom comme identifiant unique
     const uniqueApps = data.reduce((acc: Application[], current) => {
       const exists = acc.find(app => 
         app.name.toLowerCase() === current.name.toLowerCase()
@@ -38,10 +39,11 @@ const fetchApplications = async () => {
       return acc;
     }, []);
 
-    console.log("Applications récupérées:", uniqueApps);
+    console.log("Applications récupérées depuis Supabase:", uniqueApps);
     return uniqueApps;
   } catch (error) {
     console.error("Erreur lors de la récupération:", error);
+    console.log("Utilisation des données de secours suite à une erreur...");
     return fallbackApplications;
   }
 };
