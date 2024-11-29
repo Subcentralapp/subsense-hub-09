@@ -1,6 +1,14 @@
 import { useState } from "react";
-import { FileText } from "lucide-react";
+import { FileText, CheckCircle, AlertCircle, XCircle } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import InvoiceMetadata from "./invoice/InvoiceMetadata";
 import InvoiceActions from "./invoice/InvoiceActions";
 import InvoiceFilters from "./invoice/InvoiceFilters";
@@ -24,7 +32,7 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
   const { toast } = useToast();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState<"date" | "name" | "price">("date");
+  const [sortBy, setSortBy] = useState<"date" | "name" | "price" | "status">("date");
   const [editForm, setEditForm] = useState({
     price: "",
     date: "",
@@ -82,6 +90,45 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
     }
   };
 
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'paid':
+        return <CheckCircle className="h-5 w-5 text-green-500" />;
+      case 'pending':
+        return <AlertCircle className="h-5 w-5 text-orange-500" />;
+      case 'overdue':
+        return <XCircle className="h-5 w-5 text-red-500" />;
+      default:
+        return <AlertCircle className="h-5 w-5 text-gray-500" />;
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'paid':
+        return 'Payée';
+      case 'pending':
+        return 'En attente';
+      case 'overdue':
+        return 'En retard';
+      default:
+        return 'En attente';
+    }
+  };
+
+  const getStatusClass = (status: string) => {
+    switch (status) {
+      case 'paid':
+        return 'bg-green-50 text-green-700 border-green-200';
+      case 'pending':
+        return 'bg-orange-50 text-orange-700 border-orange-200';
+      case 'overdue':
+        return 'bg-red-50 text-red-700 border-red-200';
+      default:
+        return 'bg-gray-50 text-gray-700 border-gray-200';
+    }
+  };
+
   const filteredInvoices = invoices
     .filter(invoice => invoice.name.toLowerCase().includes(searchTerm.toLowerCase()))
     .sort((a, b) => {
@@ -96,6 +143,8 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
           return a.name.localeCompare(b.name);
         case "price":
           return (detailsB?.amount || 0) - (detailsA?.amount || 0);
+        case "status":
+          return (detailsA?.status || "").localeCompare(detailsB?.status || "");
         default:
           return 0;
       }
@@ -112,47 +161,70 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
         setSortBy={setSortBy}
       />
 
-      <div className="grid gap-4">
-        {filteredInvoices.map((invoice) => {
-          const invoiceDetail = invoiceDetails?.find(d => d.invoice_id === invoice.id);
-          const isEditing = editingId === invoice.id;
-          
-          return (
-            <div
-              key={invoice.id}
-              className="bg-white rounded-lg shadow p-4 space-y-3"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <FileText className="h-5 w-5 text-primary" />
-                  <div>
-                    <a 
-                      href={invoice.url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-sm font-medium hover:underline"
-                    >
-                      {invoice.name}
-                    </a>
-                  </div>
-                </div>
-                <InvoiceActions
-                  isEditing={isEditing}
-                  isLoading={isLoading}
-                  onEdit={() => handleEdit(invoice.id)}
-                  onDelete={() => handleDelete(invoice.id)}
-                />
-              </div>
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Statut</TableHead>
+              <TableHead>Facture</TableHead>
+              <TableHead>Date</TableHead>
+              <TableHead>Montant</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredInvoices.map((invoice) => {
+              const invoiceDetail = invoiceDetails?.find(d => d.invoice_id === invoice.id);
+              const isEditing = editingId === invoice.id;
               
-              <InvoiceMetadata
-                isEditing={isEditing}
-                metadata={invoiceDetail}
-                editForm={editForm}
-                setEditForm={setEditForm}
-              />
-            </div>
-          );
-        })}
+              return (
+                <TableRow key={invoice.id} className="hover:bg-gray-50">
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      {getStatusIcon(invoiceDetail?.status || 'pending')}
+                      <span className={`text-sm px-2.5 py-0.5 rounded-full border ${getStatusClass(invoiceDetail?.status || 'pending')}`}>
+                        {getStatusText(invoiceDetail?.status || 'pending')}
+                      </span>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      <FileText className="h-5 w-5 text-primary" />
+                      <a 
+                        href={invoice.url} 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="text-sm font-medium hover:underline"
+                      >
+                        {invoice.name}
+                      </a>
+                    </div>
+                  </TableCell>
+                  <TableCell>
+                    {invoiceDetail?.invoice_date 
+                      ? new Date(invoiceDetail.invoice_date).toLocaleDateString()
+                      : '-'
+                    }
+                  </TableCell>
+                  <TableCell>
+                    {invoiceDetail?.amount 
+                      ? `${invoiceDetail.amount} €`
+                      : '-'
+                    }
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <InvoiceActions
+                      isEditing={isEditing}
+                      isLoading={isLoading}
+                      onEdit={() => handleEdit(invoice.id)}
+                      onDelete={() => handleDelete(invoice.id)}
+                    />
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
       </div>
     </div>
   );

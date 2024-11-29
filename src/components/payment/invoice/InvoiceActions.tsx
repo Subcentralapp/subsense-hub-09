@@ -10,11 +10,12 @@ interface InvoiceActionsProps {
 
 const InvoiceActions = ({ isEditing, isLoading, onEdit, onDelete }: InvoiceActionsProps) => {
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 justify-end">
       <Button
         variant="outline"
         size="sm"
         onClick={onEdit}
+        className="h-8"
       >
         {isEditing ? (
           "Sauvegarder"
@@ -30,6 +31,7 @@ const InvoiceActions = ({ isEditing, isLoading, onEdit, onDelete }: InvoiceActio
         size="sm"
         onClick={onDelete}
         disabled={isLoading}
+        className="h-8 text-red-600 hover:text-red-700 hover:bg-red-50"
       >
         {isLoading ? (
           <Loader2 className="h-4 w-4 animate-spin" />
