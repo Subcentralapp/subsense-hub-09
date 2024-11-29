@@ -1,7 +1,7 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Application } from "@/types/application";
 import { Calendar } from "@/components/ui/calendar";
 import { Calendar as CalendarIcon, DollarSign } from "lucide-react";
@@ -23,14 +23,19 @@ const SubscriptionCustomizeDialog = ({
   onClose, 
   onConfirm 
 }: SubscriptionCustomizeDialogProps) => {
-  const [price, setPrice] = useState(app.price);
-  const [date, setDate] = useState<Date | undefined>(undefined);
+  const [price, setPrice] = useState<number>(app.price || 0);
+  // Initialiser la date avec la date du jour
+  const [date, setDate] = useState<Date>(new Date());
+
+  // Reset price when app changes
+  useEffect(() => {
+    if (app.price) {
+      setPrice(app.price);
+    }
+  }, [app.price]);
 
   const handleConfirm = () => {
-    if (!date) {
-      console.error("Date de prélèvement non définie");
-      return;
-    }
+    console.log("Confirmation avec date:", date);
     onConfirm(price, date);
     onClose();
   };
@@ -70,12 +75,11 @@ const SubscriptionCustomizeDialog = ({
                 <Button
                   variant="outline"
                   className={cn(
-                    "w-full justify-start text-left font-normal",
-                    !date && "text-muted-foreground"
+                    "w-full justify-start text-left font-normal"
                   )}
                 >
                   <CalendarIcon className="mr-2 h-4 w-4" />
-                  {date ? format(date, "PPP", { locale: fr }) : "Sélectionner une date"}
+                  {format(date, "PPP", { locale: fr })}
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0">
@@ -93,10 +97,7 @@ const SubscriptionCustomizeDialog = ({
             <Button variant="outline" onClick={onClose}>
               Annuler
             </Button>
-            <Button 
-              onClick={handleConfirm}
-              disabled={!date}
-            >
+            <Button onClick={handleConfirm}>
               Confirmer
             </Button>
           </div>
