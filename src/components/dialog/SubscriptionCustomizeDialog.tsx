@@ -27,6 +27,8 @@ const SubscriptionCustomizeDialog = ({
   const [date, setDate] = useState<Date>(new Date());
 
   const handleConfirm = () => {
+    // Utiliser directement la date sélectionnée sans modification
+    console.log("Confirming subscription with date:", date);
     onConfirm(price, date);
     onClose();
   };
