@@ -24,15 +24,9 @@ const SubscriptionCustomizeDialog = ({
   onConfirm 
 }: SubscriptionCustomizeDialogProps) => {
   const [price, setPrice] = useState(app.price);
-  // Initialiser la date par défaut à dans un mois
-  const [date, setDate] = useState<Date>(() => {
-    const defaultDate = new Date();
-    defaultDate.setMonth(defaultDate.getMonth() + 1);
-    return defaultDate;
-  });
+  const [date, setDate] = useState<Date>(new Date());
 
   const handleConfirm = () => {
-    // Utiliser directement la date sélectionnée par l'utilisateur
     console.log("Date de prélèvement sélectionnée:", date);
     onConfirm(price, date);
     onClose();
