@@ -53,13 +53,20 @@ const ApplicationList = () => {
         return;
       }
 
-      console.log("Adding subscription with billing date:", nextBilling);
+      // Si aucune date n'est fournie, on met la date à dans un mois
+      const billingDate = nextBilling || (() => {
+        const date = new Date();
+        date.setMonth(date.getMonth() + 1);
+        return date;
+      })();
+
+      console.log("Date de prélèvement choisie:", billingDate);
 
       const { error } = await supabase.from("subscriptions").insert({
         name: app.name,
         price: customPrice || app.price,
         category: app.category,
-        next_billing: nextBilling?.toISOString(),
+        next_billing: billingDate.toISOString(),
         description: app.description,
         user_id: user.id,
       });
