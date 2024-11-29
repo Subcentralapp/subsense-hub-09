@@ -54,7 +54,6 @@ const ApplicationList = () => {
       }
 
       if (!nextBilling) {
-        console.error("Date de prélèvement non définie");
         toast({
           title: "Erreur",
           description: "Veuillez sélectionner une date de prélèvement",
@@ -62,8 +61,6 @@ const ApplicationList = () => {
         });
         return;
       }
-
-      console.log("Date de prélèvement choisie:", nextBilling);
 
       const { error } = await supabase.from("subscriptions").insert({
         name: app.name,

@@ -24,16 +24,13 @@ const SubscriptionCustomizeDialog = ({
   onConfirm 
 }: SubscriptionCustomizeDialogProps) => {
   const [price, setPrice] = useState(app.price);
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const [date, setDate] = useState<Date>(today);
+  const [date, setDate] = useState<Date | undefined>(undefined);
 
   const handleConfirm = () => {
     if (!date) {
       console.error("Date de prélèvement non définie");
       return;
     }
-    console.log("Date de prélèvement sélectionnée:", date);
     onConfirm(price, date);
     onClose();
   };
@@ -96,7 +93,10 @@ const SubscriptionCustomizeDialog = ({
             <Button variant="outline" onClick={onClose}>
               Annuler
             </Button>
-            <Button onClick={handleConfirm}>
+            <Button 
+              onClick={handleConfirm}
+              disabled={!date}
+            >
               Confirmer
             </Button>
           </div>
