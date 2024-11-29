@@ -6,6 +6,7 @@ import { productivityApplications } from "./applications/productivity-applicatio
 import { educationApplications } from "./applications/education-applications";
 import { wellbeingApplications } from "./applications/wellbeing-applications";
 import { aiApplications } from "./applications/ai-applications";
+import { vpnApplications } from "./applications/vpn-applications";
 
 export const fallbackApplications: Application[] = [
   ...aiApplications,
@@ -14,5 +15,6 @@ export const fallbackApplications: Application[] = [
   ...gamingApplications,
   ...productivityApplications,
   ...educationApplications,
-  ...wellbeingApplications
+  ...wellbeingApplications,
+  ...vpnApplications
 ];

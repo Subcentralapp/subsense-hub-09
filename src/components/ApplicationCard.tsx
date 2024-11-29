@@ -1,4 +1,4 @@
-import { MessageSquare, Music, Play, Book, Heart, Globe, Zap, Gamepad, Video, BookOpen, Smile, Headphones } from "lucide-react";
+import { MessageSquare, Music, Play, Book, Heart, Globe, Zap, Gamepad, Video, BookOpen, Smile, Headphones, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import SubscriptionCustomizeDialog from "./dialog/SubscriptionCustomizeDialog";
@@ -25,6 +25,8 @@ const getAppIcon = (category: string | null, name: string) => {
       return <BookOpen className="h-6 w-6 text-yellow-500" />;
     case "bien-être":
       return <Smile className="h-6 w-6 text-pink-500" />;
+    case "vpn & sécurité":
+      return <Shield className="h-6 w-6 text-indigo-500" />;
     default:
       return <Globe className="h-6 w-6 text-gray-500" />;
   }
