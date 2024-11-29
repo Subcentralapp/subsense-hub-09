@@ -34,11 +34,16 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
   const { data: invoiceDetails, refetch } = useQuery({
     queryKey: ['invoiceDetails'],
     queryFn: async () => {
+      console.log('Fetching invoice details...');
       const { data, error } = await supabase
-        .from('InvoiceDetails')
+        .from('invoicedetails')  // Changed from 'InvoiceDetails' to 'invoicedetails'
         .select('*');
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching invoice details:', error);
+        throw error;
+      }
+      console.log('Fetched invoice details:', data);
       return data;
     }
   });
@@ -46,15 +51,19 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
   const handleEdit = async (invoiceId: string) => {
     if (editingId === invoiceId) {
       try {
+        console.log('Updating invoice details for ID:', invoiceId);
         const { error } = await supabase
-          .from('InvoiceDetails')
+          .from('invoicedetails')  // Changed from 'InvoiceDetails' to 'invoicedetails'
           .update({
             amount: parseFloat(editForm.price),
             invoice_date: editForm.date,
           })
           .eq('invoice_id', invoiceId);
 
-        if (error) throw error;
+        if (error) {
+          console.error('Error updating invoice details:', error);
+          throw error;
+        }
 
         toast({
           title: "Modifications enregistrées",
