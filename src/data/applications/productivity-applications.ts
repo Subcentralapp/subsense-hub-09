@@ -2,10 +2,10 @@ import { Application } from "@/types/application";
 
 export const productivityApplications: Application[] = [
   {
-    name: "Airtable",
-    price: 10.00,
-    category: "Productivité",
-    description: "Base de données collaborative et outil de gestion de projet",
+    name: "Airtable : 10",
+    price: 0.00,
+    category: "Organisation",
+    description: "Base de données collaborative avec fonctionnalités d'automatisation.",
     pricing_plans: [
       {
         name: "Gratuit",
