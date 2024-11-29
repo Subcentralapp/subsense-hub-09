@@ -32,17 +32,17 @@ const Index = () => {
             <RandomAd />
           </div>
         );
-      case "compare":
-        return (
-          <>
-            <ComparisonSection />
-            <RandomAd />
-          </>
-        );
       case "payments":
         return (
           <>
             <PaymentSection />
+            <RandomAd />
+          </>
+        );
+      case "compare":
+        return (
+          <>
+            <ComparisonSection />
             <RandomAd />
           </>
         );
@@ -77,20 +77,20 @@ const Index = () => {
               Tableau de bord
             </Button>
             <Button
-              variant={activeTab === "compare" ? "default" : "ghost"}
-              onClick={() => setActiveTab("compare")}
-              className="hover-scale"
-            >
-              <ArrowRightLeft className="mr-2 h-4 w-4" />
-              Comparer
-            </Button>
-            <Button
               variant={activeTab === "payments" ? "default" : "ghost"}
               onClick={() => setActiveTab("payments")}
               className="hover-scale"
             >
               <Receipt className="mr-2 h-4 w-4" />
               Paiements
+            </Button>
+            <Button
+              variant={activeTab === "compare" ? "default" : "ghost"}
+              onClick={() => setActiveTab("compare")}
+              className="hover-scale"
+            >
+              <ArrowRightLeft className="mr-2 h-4 w-4" />
+              Comparer
             </Button>
             <Button
               variant={activeTab === "recommendations" ? "default" : "ghost"}

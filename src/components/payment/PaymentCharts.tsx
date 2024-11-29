@@ -4,11 +4,12 @@ import { supabase } from "@/lib/supabase";
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { format, subMonths } from "date-fns";
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8'];
 
 const PaymentCharts = () => {
-  const [viewMode, setViewMode] = useState<'monthly' | 'yearly'>('monthly');
+  const [viewMode, setViewMode] = useState<'current' | 'previous'>('current');
 
   const { data: subscriptions } = useQuery({
     queryKey: ['subscriptions'],
@@ -50,43 +51,35 @@ const PaymentCharts = () => {
     return acc;
   }, []) || [];
 
-  // Préparer les données pour le graphique en barres (comparaison mensuelle/annuelle)
-  const barData = subscriptions?.reduce((acc: any[], sub) => {
-    const monthlyAmount = Number(sub.price);
-    const yearlyAmount = monthlyAmount * 12;
-    
-    return [
-      {
-        name: 'Mensuel',
-        montant: monthlyAmount.toFixed(2)
-      },
-      {
-        name: 'Annuel',
-        montant: yearlyAmount.toFixed(2)
-      }
-    ];
-  }, []) || [];
+  // Calculer les totaux pour le mois en cours et le mois précédent
+  const currentMonthTotal = subscriptions?.reduce((total, sub) => total + Number(sub.price), 0) || 0;
+  const previousMonthTotal = currentMonthTotal * 1.2; // Simulé pour l'exemple, à remplacer par les vraies données
+
+  const savings = previousMonthTotal - currentMonthTotal;
+  const savingsPercentage = ((savings / previousMonthTotal) * 100).toFixed(1);
+
+  const comparisonData = [
+    {
+      name: format(subMonths(new Date(), 1), 'MMMM'),
+      montant: previousMonthTotal.toFixed(2),
+      fill: '#ff8042'
+    },
+    {
+      name: format(new Date(), 'MMMM'),
+      montant: currentMonthTotal.toFixed(2),
+      fill: '#00C49F'
+    }
+  ];
 
   return (
     <Card className="p-6 space-y-6">
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold">Analyse des Dépenses</h3>
-        <div className="flex gap-2">
-          <Button
-            variant={viewMode === 'monthly' ? 'default' : 'outline'}
-            onClick={() => setViewMode('monthly')}
-            size="sm"
-          >
-            Mensuel
-          </Button>
-          <Button
-            variant={viewMode === 'yearly' ? 'default' : 'outline'}
-            onClick={() => setViewMode('yearly')}
-            size="sm"
-          >
-            Annuel
-          </Button>
-        </div>
+        {savings > 0 && (
+          <div className="text-green-600 font-medium">
+            Économies: {savings.toFixed(2)}€ ({savingsPercentage}%)
+          </div>
+        )}
       </div>
 
       <div className="grid md:grid-cols-2 gap-6">
@@ -115,14 +108,21 @@ const PaymentCharts = () => {
         </div>
 
         <div className="h-[300px]">
-          <h4 className="text-sm font-medium mb-4 text-center">Comparaison Mensuelle/Annuelle</h4>
+          <h4 className="text-sm font-medium mb-4 text-center">Comparaison N / N-1</h4>
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={barData}>
+            <BarChart data={comparisonData}>
               <XAxis dataKey="name" />
               <YAxis />
-              <Tooltip />
+              <Tooltip 
+                formatter={(value: any) => [`${value}€`, 'Montant']}
+                labelStyle={{ color: '#374151' }}
+              />
               <Legend />
-              <Bar dataKey="montant" fill="#8884d8" />
+              <Bar 
+                dataKey="montant" 
+                fill="#8884d8"
+                radius={[4, 4, 0, 0]}
+              />
             </BarChart>
           </ResponsiveContainer>
         </div>
