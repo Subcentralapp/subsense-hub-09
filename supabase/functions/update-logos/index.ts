@@ -20,7 +20,7 @@ Deno.serve(async (req) => {
     
     const { data: apps, error: fetchError } = await supabase
       .from('applications')
-      .select('name, website_url')
+      .select('name, website_url, logo_url')
       .is('logo_url', null)
     
     if (fetchError) throw fetchError
@@ -31,7 +31,7 @@ Deno.serve(async (req) => {
       try {
         const companyDomain = app.website_url 
           ? new URL(app.website_url).hostname 
-          : `${app.name.toLowerCase().replace(/\s+/g, '')}.com`
+          : `${app.name.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`
         
         const logoUrl = `https://logo.clearbit.com/${companyDomain}`
         console.log(`Trying to fetch logo for ${app.name} from: ${logoUrl}`)
