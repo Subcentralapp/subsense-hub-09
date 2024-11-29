@@ -29,8 +29,7 @@ const SubscriptionList = () => {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        console.log("No user found, redirecting to auth");
-        navigate("/auth");
+        console.log("No user found, returning empty array");
         return [];
       }
 
@@ -54,6 +53,10 @@ const SubscriptionList = () => {
     const { data: { user } } = await supabase.auth.getUser();
     
     if (!user) {
+      toast({
+        title: "Connexion requise",
+        description: "Veuillez vous connecter pour supprimer un abonnement",
+      });
       navigate("/auth");
       return;
     }
