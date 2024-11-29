@@ -1,8 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
-import { LogIn } from "lucide-react";
+import { LogIn, Zap } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
 
 export const Header = () => {
   const navigate = useNavigate();
@@ -22,34 +23,79 @@ export const Header = () => {
   }, []);
 
   return (
-    <header className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-sm z-50 border-b">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <header className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-sm z-50">
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-0 left-0 w-full h-full">
+          {/* Motif diagonal violet */}
+          {[...Array(6)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute h-[2px] bg-primary/20 transform -rotate-45"
+              style={{
+                width: '200%',
+                left: `-${50 * i}%`,
+                top: `${20 + i * 15}%`,
+              }}
+              initial={{ opacity: 0, x: -100 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: i * 0.1 }}
+            />
+          ))}
+        </div>
+      </div>
+      
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="flex justify-between h-16 items-center">
-          <div 
-            className="flex-shrink-0 cursor-pointer" 
+          <motion.div 
+            className="flex-shrink-0 cursor-pointer flex items-center space-x-2" 
             onClick={() => navigate("/")}
+            whileHover={{ scale: 1.05 }}
           >
-            <h1 className="text-xl font-bold text-primary">SubaCentral</h1>
-          </div>
+            <Zap className="w-6 h-6 text-primary animate-pulse" />
+            <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              SubaCentral
+            </h1>
+          </motion.div>
 
           <div className="flex items-center space-x-4">
             {user ? (
-              <Button onClick={() => navigate("/dashboard")}>
-                Tableau de bord
-              </Button>
-            ) : (
-              <Button
-                variant="outline"
-                className="flex items-center space-x-2"
-                onClick={() => navigate("/auth")}
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
               >
-                <LogIn className="h-4 w-4" />
-                <span>Connexion</span>
-              </Button>
+                <Button 
+                  onClick={() => navigate("/dashboard")}
+                  className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity"
+                >
+                  Tableau de bord
+                </Button>
+              </motion.div>
+            ) : (
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button
+                  variant="outline"
+                  className="flex items-center space-x-2 border-primary/20 hover:border-primary/40 transition-colors"
+                  onClick={() => navigate("/auth")}
+                >
+                  <LogIn className="h-4 w-4 text-primary" />
+                  <span className="text-primary">Connexion</span>
+                </Button>
+              </motion.div>
             )}
           </div>
         </div>
       </div>
+      
+      {/* Effet de bordure animée */}
+      <motion.div 
+        className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent"
+        initial={{ scaleX: 0 }}
+        animate={{ scaleX: 1 }}
+        transition={{ duration: 1.5, repeat: Infinity, repeatType: "reverse" }}
+      />
     </header>
   );
 };
