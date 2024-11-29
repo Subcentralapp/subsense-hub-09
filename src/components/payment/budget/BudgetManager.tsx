@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/lib/supabase";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Progress } from "@/components/ui/progress";
 import { AlertCircle } from "lucide-react";
 import { startOfMonth, endOfMonth, format } from "date-fns";
@@ -13,9 +13,10 @@ import { fr } from "date-fns/locale";
 const BudgetManager = () => {
   const { toast } = useToast();
   const [newBudget, setNewBudget] = useState("");
+  const queryClient = useQueryClient();
 
   // Fetch current budget
-  const { data: budget, refetch: refetchBudget } = useQuery({
+  const { data: budget } = useQuery({
     queryKey: ['current-budget'],
     queryFn: async () => {
       const startDate = startOfMonth(new Date());
@@ -62,17 +63,21 @@ const BudgetManager = () => {
       const startDate = startOfMonth(new Date());
       const endDate = endOfMonth(new Date());
 
+      // Utilisation de upsert avec onConflict
       const { error } = await supabase
         .from('budgets')
         .upsert({
           amount,
           period_start: startDate.toISOString(),
           period_end: endDate.toISOString(),
-        }, { 
-          onConflict: 'period_start,period_end',
+          user_id: (await supabase.auth.getUser()).data.user?.id
         });
 
       if (error) throw error;
+
+      // Invalidate queries to refresh data
+      await queryClient.invalidateQueries({ queryKey: ['current-budget'] });
+      await queryClient.invalidateQueries({ queryKey: ['monthly-expenses'] });
 
       toast({
         title: "Budget mis à jour",
@@ -80,12 +85,11 @@ const BudgetManager = () => {
       });
 
       setNewBudget("");
-      refetchBudget();
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error setting budget:', error);
       toast({
         title: "Erreur",
-        description: "Une erreur est survenue lors de la mise à jour du budget.",
+        description: error.message || "Une erreur est survenue lors de la mise à jour du budget.",
         variant: "destructive",
       });
     }
