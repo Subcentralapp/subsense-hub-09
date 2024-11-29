@@ -4,6 +4,16 @@ import { FeaturesSection } from "@/components/landing/FeaturesSection";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+import { ArrowRight, Check } from "lucide-react";
+
+const benefits = [
+  "Économisez jusqu'à 30% sur vos abonnements",
+  "Visualisez toutes vos dépenses en un coup d'œil",
+  "Recevez des alertes avant chaque renouvellement",
+  "Découvrez des alternatives moins chères"
+];
 
 const Landing = () => {
   const navigate = useNavigate();
