@@ -1,6 +1,7 @@
 import { MessageSquare, Music, Play, Book, Heart, Globe, Zap, Gamepad, Video, BookOpen, Smile, Headphones, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Application } from "@/types/application";
+import { useState } from 'react';
 
 interface ApplicationCardProps {
   app: Application;
