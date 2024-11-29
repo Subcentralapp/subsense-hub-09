@@ -1,12 +1,11 @@
-import { Button } from "@/components/ui/button";
-import { FileText, Search } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
+import { FileText } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 import InvoiceMetadata from "./invoice/InvoiceMetadata";
 import InvoiceActions from "./invoice/InvoiceActions";
+import InvoiceFilters from "./invoice/InvoiceFilters";
+import { useInvoiceDetails } from "@/hooks/useInvoiceDetails";
+import { updateInvoiceDetails } from "@/services/invoiceOperations";
 
 interface Invoice {
   id: string;
@@ -31,39 +30,15 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
     date: "",
   });
 
-  const { data: invoiceDetails, refetch } = useQuery({
-    queryKey: ['invoiceDetails'],
-    queryFn: async () => {
-      console.log('Fetching invoice details...');
-      const { data, error } = await supabase
-        .from('invoicedetails')  // Changed from 'InvoiceDetails' to 'invoicedetails'
-        .select('*');
-      
-      if (error) {
-        console.error('Error fetching invoice details:', error);
-        throw error;
-      }
-      console.log('Fetched invoice details:', data);
-      return data;
-    }
-  });
+  const { data: invoiceDetails, refetch } = useInvoiceDetails();
 
   const handleEdit = async (invoiceId: string) => {
     if (editingId === invoiceId) {
       try {
-        console.log('Updating invoice details for ID:', invoiceId);
-        const { error } = await supabase
-          .from('invoicedetails')  // Changed from 'InvoiceDetails' to 'invoicedetails'
-          .update({
-            amount: parseFloat(editForm.price),
-            invoice_date: editForm.date,
-          })
-          .eq('invoice_id', invoiceId);
-
-        if (error) {
-          console.error('Error updating invoice details:', error);
-          throw error;
-        }
+        await updateInvoiceDetails(invoiceId, {
+          amount: parseFloat(editForm.price),
+          invoice_date: editForm.date,
+        });
 
         toast({
           title: "Modifications enregistrées",
@@ -107,7 +82,6 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
     }
   };
 
-  // Filter and sort invoices
   const filteredInvoices = invoices
     .filter(invoice => invoice.name.toLowerCase().includes(searchTerm.toLowerCase()))
     .sort((a, b) => {
@@ -131,27 +105,12 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
     <div className="space-y-4">
       <h3 className="font-medium text-lg">Factures enregistrées</h3>
       
-      <div className="flex gap-4 items-center">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
-          <Input
-            type="text"
-            placeholder="Rechercher une facture..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value as "date" | "name" | "price")}
-          className="border rounded-md p-2"
-        >
-          <option value="date">Trier par date</option>
-          <option value="name">Trier par nom</option>
-          <option value="price">Trier par prix</option>
-        </select>
-      </div>
+      <InvoiceFilters
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+      />
 
       <div className="grid gap-4">
         {filteredInvoices.map((invoice) => {
