@@ -1,12 +1,10 @@
 import { MessageSquare, Music, Play, Book, Heart, Globe, Zap, Gamepad, Video, BookOpen, Smile, Headphones, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import SubscriptionCustomizeDialog from "./dialog/SubscriptionCustomizeDialog";
 import { Application } from "@/types/application";
 
 interface ApplicationCardProps {
   app: Application;
-  onAdd: (app: Application, customPrice?: number, nextBilling?: Date) => void;
+  onAdd: (app: Application) => void;
 }
 
 const getAppIcon = (category: string | null, name: string) => {
@@ -42,94 +40,50 @@ const getClearbitLogoUrl = (appName: string, websiteUrl?: string) => {
     }
   }
   
-  // Fallback: use company name
   const domain = `${appName.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`;
   return `https://logo.clearbit.com/${domain}`;
 };
 
 export const ApplicationCard = ({ app, onAdd }: ApplicationCardProps) => {
-  const [isCustomizeOpen, setIsCustomizeOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<any>(null);
   const [logoError, setLogoError] = useState(false);
-
-  const handleCustomize = (customPrice: number, nextBilling: Date) => {
-    // S'assurer que le prix n'est jamais null
-    const finalPrice = customPrice || app.price;
-    if (!finalPrice) {
-      console.error("Prix invalide pour l'application:", app);
-      return;
-    }
-    onAdd({ ...app, price: finalPrice }, finalPrice, nextBilling);
-  };
-
-  const handlePlanSelect = (plan: any) => {
-    setSelectedPlan(plan);
-    setIsCustomizeOpen(true);
-  };
-
   const logoUrl = app.logo_url || (logoError ? null : getClearbitLogoUrl(app.name, app.website_url));
 
   return (
-    <>
-      <div className="flex flex-col p-4 bg-white rounded-lg border border-gray-100 hover:border-primary/20 transition-all hover:shadow-md">
-        <div className="flex items-center gap-3 mb-3">
-          {logoUrl && !logoError ? (
-            <img 
-              src={logoUrl}
-              alt={`Logo ${app.name}`} 
-              className="h-8 w-8 object-contain"
-              onError={() => {
-                console.log(`Failed to load logo for ${app.name}, falling back to icon`);
-                setLogoError(true);
-              }}
-            />
-          ) : (
-            getAppIcon(app.category, app.name)
-          )}
-          <div>
-            <h4 className="font-medium text-gray-900">{app.name}</h4>
-            <p className="text-sm text-gray-500">{app.category || 'Non catégorisé'}</p>
-          </div>
-        </div>
-
-        {app.description && (
-          <p className="text-xs text-gray-400 mb-3">{app.description}</p>
-        )}
-
-        {app.pricing_plans && app.pricing_plans.length > 0 ? (
-          <div className="mt-auto">
-            <p className="font-medium text-primary mb-2">{app.pricing_plans[0].price}€/mois</p>
-            <Button 
-              onClick={() => handlePlanSelect(app.pricing_plans[0])}
-              size="sm"
-              className="w-full bg-primary/10 text-primary hover:bg-primary/20"
-            >
-              Ajouter
-            </Button>
-          </div>
+    <div className="flex flex-col p-4 bg-white rounded-lg border border-gray-100 hover:border-primary/20 transition-all hover:shadow-md">
+      <div className="flex items-center gap-3 mb-3">
+        {logoUrl && !logoError ? (
+          <img 
+            src={logoUrl}
+            alt={`Logo ${app.name}`} 
+            className="h-8 w-8 object-contain"
+            onError={() => {
+              console.log(`Failed to load logo for ${app.name}, falling back to icon`);
+              setLogoError(true);
+            }}
+          />
         ) : (
-          <div className="mt-auto">
-            <p className="font-medium text-primary mb-2">{app.price}€/mois</p>
-            <Button 
-              onClick={() => setIsCustomizeOpen(true)}
-              size="sm"
-              className="w-full bg-primary/10 text-primary hover:bg-primary/20"
-            >
-              Ajouter
-            </Button>
-          </div>
+          getAppIcon(app.category, app.name)
         )}
+        <div>
+          <h4 className="font-medium text-gray-900">{app.name}</h4>
+          <p className="text-sm text-gray-500">{app.category || 'Non catégorisé'}</p>
+        </div>
       </div>
 
-      <SubscriptionCustomizeDialog
-        app={selectedPlan ? { ...app, price: selectedPlan.price } : app}
-        isOpen={isCustomizeOpen}
-        onClose={() => {
-          setIsCustomizeOpen(false);
-          setSelectedPlan(null);
-        }}
-        onConfirm={handleCustomize}
-      />
-    </>
+      {app.description && (
+        <p className="text-xs text-gray-400 mb-3">{app.description}</p>
+      )}
+
+      <div className="mt-auto">
+        <p className="font-medium text-primary mb-2">{app.price}€/mois</p>
+        <Button 
+          onClick={() => onAdd(app)}
+          size="sm"
+          className="w-full bg-primary/10 text-primary hover:bg-primary/20"
+        >
+          Ajouter
+        </Button>
+      </div>
+    </div>
   );
 };

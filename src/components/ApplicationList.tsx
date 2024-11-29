@@ -34,48 +34,32 @@ const ApplicationList = () => {
   const { data: applications, isLoading } = useQuery({
     queryKey: ["applications"],
     queryFn: fetchApplications,
-    staleTime: 0,
-    gcTime: 0,
-    refetchOnMount: true,
-    refetchOnWindowFocus: true,
   });
 
-  const handleAddSubscription = async (
-    app: Application, 
-    customPrice?: number, 
-    nextBilling?: Date
-  ) => {
+  const handleAddSubscription = async (app: Application) => {
     try {
-      console.log("Début de l'ajout d'abonnement:", { app, customPrice, nextBilling });
-      
       const { data: { user } } = await supabase.auth.getUser();
-
+      
       if (!user) {
         console.log("Utilisateur non connecté, redirection vers l'authentification");
         navigate("/auth");
         return;
       }
 
-      if (!nextBilling) {
-        console.log("Date de prélèvement manquante");
-        toast({
-          title: "Erreur",
-          description: "Veuillez sélectionner une date de prélèvement",
-          variant: "destructive",
-        });
-        return;
-      }
+      // Utiliser la date du jour + 1 mois comme date de prélèvement par défaut
+      const nextBilling = new Date();
+      nextBilling.setMonth(nextBilling.getMonth() + 1);
 
       const subscriptionData = {
         name: app.name,
-        price: customPrice || app.price,
+        price: app.price,
         category: app.category,
         next_billing: nextBilling.toISOString(),
         description: app.description,
         user_id: user.id,
       };
 
-      console.log("Données de l'abonnement à insérer:", subscriptionData);
+      console.log("Ajout de l'abonnement:", subscriptionData);
 
       const { error } = await supabase
         .from("subscriptions")
@@ -86,13 +70,7 @@ const ApplicationList = () => {
         throw error;
       }
 
-      console.log("Abonnement ajouté avec succès");
-
-      // Invalider les deux caches
-      await Promise.all([
-        queryClient.invalidateQueries({ queryKey: ["subscriptions"] }),
-        queryClient.invalidateQueries({ queryKey: ["applications"] })
-      ]);
+      await queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
 
       toast({
         title: "Abonnement ajouté",
