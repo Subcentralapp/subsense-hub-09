@@ -1,5 +1,4 @@
 import { supabase } from "@/lib/supabase";
-import { fallbackApplications } from "@/data/fallbackApplications";
 import { streamingApplications } from "@/data/applications/streaming-applications";
 import { musicApplications } from "@/data/applications/music-applications";
 import { gamingApplications } from "@/data/applications/gaming-applications";
@@ -24,44 +23,36 @@ const allApplications = [
 ];
 
 export const updateApplications = async () => {
-  console.log("Starting applications restoration...");
+  console.log("Forçage de la restauration des applications...");
+  console.log("Nombre total d'applications à restaurer:", allApplications.length);
 
   try {
-    // Vérifier d'abord le nombre d'applications actuelles
-    const { count: currentCount } = await supabase
+    // Supprimer d'abord toutes les applications existantes
+    const { error: deleteError } = await supabase
       .from('applications')
-      .select('*', { count: 'exact', head: true });
+      .delete()
+      .neq('name', ''); // Supprime toutes les applications
 
-    console.log("Current number of applications:", currentCount);
-
-    // Si nous avons moins d'applications que prévu, restaurons-les
-    if (!currentCount || currentCount < allApplications.length) {
-      console.log("Restoring all applications...");
-      
-      // Utiliser upsert pour éviter les doublons et préserver les données existantes
-      const { data, error } = await supabase
-        .from('applications')
-        .upsert(
-          allApplications,
-          {
-            onConflict: 'name',
-            ignoreDuplicates: false // Met à jour si existe, insère si nouveau
-          }
-        );
-
-      if (error) {
-        console.error("Error restoring applications:", error);
-        throw error;
-      }
-
-      console.log("Applications restored successfully");
-      return data;
+    if (deleteError) {
+      console.error("Erreur lors de la suppression:", deleteError);
+      throw deleteError;
     }
 
-    console.log("Database already contains all applications");
-    return null;
+    // Insérer toutes les applications
+    const { data, error: insertError } = await supabase
+      .from('applications')
+      .insert(allApplications)
+      .select();
+
+    if (insertError) {
+      console.error("Erreur lors de l'insertion:", insertError);
+      throw insertError;
+    }
+
+    console.log("Applications restaurées avec succès. Nombre d'applications:", data?.length);
+    return data;
   } catch (error) {
-    console.error("Error in updateApplications:", error);
+    console.error("Erreur dans updateApplications:", error);
     throw error;
   }
 };

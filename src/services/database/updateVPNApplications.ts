@@ -2,7 +2,7 @@ import { supabase } from "@/lib/supabase";
 import { vpnApplications } from "@/data/applications/vpn-applications";
 
 export const updateVPNApplications = async () => {
-  console.log("Starting VPN applications update...");
+  console.log("Mise à jour des applications VPN...");
 
   try {
     // Utiliser upsert pour préserver les données existantes
@@ -19,19 +19,19 @@ export const updateVPNApplications = async () => {
         })),
         {
           onConflict: 'name',
-          ignoreDuplicates: false
+          ignoreDuplicates: true // Ne met pas à jour si l'application existe déjà
         }
       );
 
     if (error) {
-      console.error("Error updating VPN applications:", error);
+      console.error("Erreur lors de la mise à jour des VPN:", error);
       throw error;
     }
 
-    console.log("VPN applications updated successfully:", data);
+    console.log("Applications VPN mises à jour avec succès:", data);
     return data;
   } catch (error) {
-    console.error("Error in updateVPNApplications:", error);
+    console.error("Erreur dans updateVPNApplications:", error);
     throw error;
   }
 };
