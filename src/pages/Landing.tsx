@@ -1,10 +1,27 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Check, Shield, Sparkles, BarChart, Clock, CreditCard, Lock } from "lucide-react";
+import { ArrowRight, Shield, Sparkles, BarChart, Clock } from "lucide-react";
 import { motion } from "framer-motion";
+import { Header } from "@/components/Header";
+import { useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
 const Landing = () => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    // Check if user is already authenticated
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session) {
+        console.log("User already authenticated, redirecting to dashboard");
+        navigate("/dashboard");
+      }
+    });
+  }, [navigate]);
+
+  const handleGetStarted = () => {
+    navigate("/auth");
+  };
 
   const features = [
     {
@@ -40,8 +57,10 @@ const Landing = () => {
 
   return (
     <div className="min-h-screen bg-white">
+      <Header />
+      
       {/* Hero Section */}
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-hidden pt-16">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 to-secondary/10 z-0" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-16 relative z-10">
           <div className="text-center">
@@ -71,7 +90,7 @@ const Landing = () => {
             >
               <Button 
                 size="lg" 
-                onClick={() => navigate("/auth")}
+                onClick={handleGetStarted}
                 className="text-lg px-8 py-6"
               >
                 Commencer Gratuitement
