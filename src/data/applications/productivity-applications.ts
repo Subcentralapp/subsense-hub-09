@@ -21,7 +21,7 @@ export const productivityApplications: Application[] = [
     features: ["Bases de données", "Vues personnalisables", "Automatisations", "Intégrations"],
     pros: ["Interface intuitive", "Flexible", "Collaboratif", "Nombreuses intégrations"],
     cons: ["Prix élevé pour équipes", "Courbe d'apprentissage", "Fonctionnalités limitées version gratuite"],
-    website_url: "https://www.airtable.com",
+    website_url: "https://airtable.com",
     logo_url: "https://logo.clearbit.com/airtable.com"
   },
   {
