@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { BarChart, DollarSign, Plus, ArrowRightLeft, Lightbulb, Receipt, Import } from "lucide-react";
+import { BarChart, DollarSign, Plus, ArrowRightLeft, Lightbulb, Receipt } from "lucide-react";
 import DashboardStats from "@/components/DashboardStats";
 import SubscriptionList from "@/components/SubscriptionList";
 import ComparisonSection from "@/components/ComparisonSection";
@@ -39,17 +39,17 @@ const Index = () => {
             <RandomAd />
           </>
         );
-      case "recommendations":
-        return (
-          <>
-            <RecommendationList />
-            <RandomAd />
-          </>
-        );
       case "payments":
         return (
           <>
             <PaymentSection />
+            <RandomAd />
+          </>
+        );
+      case "recommendations":
+        return (
+          <>
+            <RecommendationList />
             <RandomAd />
           </>
         );
@@ -85,20 +85,20 @@ const Index = () => {
               Comparer
             </Button>
             <Button
-              variant={activeTab === "recommendations" ? "default" : "ghost"}
-              onClick={() => setActiveTab("recommendations")}
-              className="hover-scale"
-            >
-              <Lightbulb className="mr-2 h-4 w-4" />
-              Recommandations
-            </Button>
-            <Button
               variant={activeTab === "payments" ? "default" : "ghost"}
               onClick={() => setActiveTab("payments")}
               className="hover-scale"
             >
               <Receipt className="mr-2 h-4 w-4" />
               Paiements
+            </Button>
+            <Button
+              variant={activeTab === "recommendations" ? "default" : "ghost"}
+              onClick={() => setActiveTab("recommendations")}
+              className="hover-scale"
+            >
+              <Lightbulb className="mr-2 h-4 w-4" />
+              Recommandations
             </Button>
           </nav>
 
