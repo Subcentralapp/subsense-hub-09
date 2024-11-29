@@ -1,59 +1,108 @@
 import { motion } from "framer-motion";
-import { BarChart, Clock, Sparkles, Shield } from "lucide-react";
+import { 
+  BarChart, 
+  Bell, 
+  CreditCard, 
+  PieChart, 
+  Wallet, 
+  Zap 
+} from "lucide-react";
 
 const features = [
   {
-    icon: <BarChart className="w-6 h-6 text-primary" />,
-    title: "Suivi Intelligent",
-    description: "Visualisez et analysez vos dépenses d'abonnements en temps réel"
+    icon: <BarChart className="w-8 h-8 text-primary" />,
+    title: "Analyse Détaillée",
+    description: "Visualisez vos dépenses avec des graphiques interactifs et des analyses en temps réel",
+    color: "from-blue-500/20 to-purple-500/20"
   },
   {
-    icon: <Clock className="w-6 h-6 text-primary" />,
-    title: "Rappels Automatiques",
-    description: "Ne manquez plus jamais une date de renouvellement"
+    icon: <Bell className="w-8 h-8 text-primary" />,
+    title: "Alertes Intelligentes",
+    description: "Recevez des notifications personnalisées pour vos échéances et renouvellements",
+    color: "from-purple-500/20 to-pink-500/20"
   },
   {
-    icon: <Sparkles className="w-6 h-6 text-primary" />,
-    title: "Recommandations Personnalisées",
-    description: "Découvrez des opportunités d'économies adaptées à votre profil"
+    icon: <Wallet className="w-8 h-8 text-primary" />,
+    title: "Gestion Budgétaire",
+    description: "Définissez et suivez vos objectifs financiers avec notre outil de budgétisation",
+    color: "from-pink-500/20 to-red-500/20"
   },
   {
-    icon: <Shield className="w-6 h-6 text-primary" />,
-    title: "Sécurité Maximale",
-    description: "Vos données sont cryptées et sécurisées"
+    icon: <PieChart className="w-8 h-8 text-primary" />,
+    title: "Catégorisation Auto",
+    description: "Vos dépenses sont automatiquement classées pour une meilleure organisation",
+    color: "from-orange-500/20 to-yellow-500/20"
+  },
+  {
+    icon: <CreditCard className="w-8 h-8 text-primary" />,
+    title: "Multi-Comptes",
+    description: "Gérez tous vos abonnements au même endroit, quelle que soit la source",
+    color: "from-green-500/20 to-emerald-500/20"
+  },
+  {
+    icon: <Zap className="w-8 h-8 text-primary" />,
+    title: "Recommandations",
+    description: "Découvrez des opportunités d'économies grâce à notre système de recommandations",
+    color: "from-teal-500/20 to-cyan-500/20"
   }
 ];
 
 export const FeaturesSection = () => {
   return (
-    <div id="features" className="py-20 bg-neutral-light">
+    <div id="features" className="py-24 bg-neutral-light relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Fonctionnalités Principales
-          </h2>
-          <p className="text-xl text-gray-600">
-            Tout ce dont vous avez besoin pour une gestion efficace de vos abonnements
-          </p>
+        <div className="text-center mb-20">
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-4xl font-bold text-gray-900 mb-6"
+          >
+            Une Suite Complète d'Outils
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-xl text-gray-600 max-w-3xl mx-auto"
+          >
+            Découvrez toutes les fonctionnalités qui font de notre plateforme
+            la solution idéale pour gérer vos finances
+          </motion.p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
             <motion.div
               key={index}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+              className="relative group"
             >
-              <div className="bg-primary/10 w-12 h-12 rounded-full flex items-center justify-center mb-4 mx-auto">
-                {feature.icon}
+              <div className={`
+                absolute inset-0 rounded-2xl bg-gradient-to-br ${feature.color}
+                transform group-hover:scale-105 transition-transform duration-300
+              `} />
+              <div className="relative p-8 bg-white/80 backdrop-blur-sm rounded-2xl border border-white/20 shadow-lg">
+                <div className="bg-white rounded-xl p-3 w-16 h-16 flex items-center justify-center mb-6 shadow-md">
+                  {feature.icon}
+                </div>
+                <h3 className="text-xl font-semibold mb-4 text-gray-900">
+                  {feature.title}
+                </h3>
+                <p className="text-gray-600">
+                  {feature.description}
+                </p>
               </div>
-              <h3 className="text-xl font-semibold mb-2 text-gray-900">{feature.title}</h3>
-              <p className="text-gray-600">{feature.description}</p>
             </motion.div>
           ))}
         </div>
       </div>
+
+      {/* Background decorative elements */}
+      <div className="absolute top-0 left-0 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
+      <div className="absolute bottom-0 right-0 w-64 h-64 bg-secondary/5 rounded-full blur-3xl" />
     </div>
   );
 };
