@@ -53,15 +53,23 @@ const ApplicationList = () => {
         return;
       }
 
-      // Utiliser directement la date sélectionnée par l'utilisateur
-      const billingDate = nextBilling;
-      console.log("Date de prélèvement choisie:", billingDate);
+      if (!nextBilling) {
+        console.error("Date de prélèvement non définie");
+        toast({
+          title: "Erreur",
+          description: "Veuillez sélectionner une date de prélèvement",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      console.log("Date de prélèvement choisie:", nextBilling);
 
       const { error } = await supabase.from("subscriptions").insert({
         name: app.name,
         price: customPrice || app.price,
         category: app.category,
-        next_billing: billingDate?.toISOString(),
+        next_billing: nextBilling.toISOString(),
         description: app.description,
         user_id: user.id,
       });
