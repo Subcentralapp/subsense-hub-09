@@ -53,14 +53,14 @@ const ApplicationList = () => {
         return;
       }
 
-      // Si aucune date n'est fournie, on met la date à dans un mois
+      // Utiliser la date sélectionnée ou par défaut dans un mois
       const billingDate = nextBilling || (() => {
         const date = new Date();
         date.setMonth(date.getMonth() + 1);
         return date;
       })();
 
-      console.log("Date de prélèvement choisie:", billingDate);
+      console.log("Date de prélèvement finale:", billingDate);
 
       const { error } = await supabase.from("subscriptions").insert({
         name: app.name,

@@ -23,8 +23,8 @@ const SubscriptionCustomizeDialog = ({
   onClose, 
   onConfirm 
 }: SubscriptionCustomizeDialogProps) => {
-  // Initialiser la date à dans un mois par défaut
   const [price, setPrice] = useState(app.price);
+  // Initialiser la date par défaut à dans un mois
   const [date, setDate] = useState<Date>(() => {
     const defaultDate = new Date();
     defaultDate.setMonth(defaultDate.getMonth() + 1);
@@ -32,9 +32,17 @@ const SubscriptionCustomizeDialog = ({
   });
 
   const handleConfirm = () => {
+    // Utiliser directement la date sélectionnée par l'utilisateur
     console.log("Date de prélèvement sélectionnée:", date);
     onConfirm(price, date);
     onClose();
+  };
+
+  const handleDateSelect = (newDate: Date | undefined) => {
+    if (newDate) {
+      console.log("Nouvelle date sélectionnée:", newDate);
+      setDate(newDate);
+    }
   };
 
   return (
@@ -77,7 +85,7 @@ const SubscriptionCustomizeDialog = ({
                 <Calendar
                   mode="single"
                   selected={date}
-                  onSelect={(newDate) => newDate && setDate(newDate)}
+                  onSelect={handleDateSelect}
                   initialFocus
                 />
               </PopoverContent>
