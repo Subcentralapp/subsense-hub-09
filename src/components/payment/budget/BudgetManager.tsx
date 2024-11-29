@@ -20,17 +20,37 @@ const BudgetManager = () => {
   const { data: budget } = useQuery({
     queryKey: ['current-budget'],
     queryFn: async () => {
+      console.log("Fetching current budget...");
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        console.log("No user found when fetching budget");
+        return null;
+      }
+
       const startDate = startOfMonth(new Date());
       const endDate = endOfMonth(new Date());
       
+      console.log("Fetching budget for period:", {
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString(),
+        userId: user.id
+      });
+
       const { data, error } = await supabase
         .from('budgets')
         .select('*')
+        .eq('user_id', user.id)
         .gte('period_start', startDate.toISOString())
         .lte('period_end', endDate.toISOString())
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching budget:", error);
+        throw error;
+      }
+
+      console.log("Fetched budget:", data);
       return data;
     },
   });
@@ -58,7 +78,6 @@ const BudgetManager = () => {
     try {
       setIsLoading(true);
       
-      // Vérifier si l'utilisateur est connecté
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       
       if (userError || !user) {
@@ -80,18 +99,32 @@ const BudgetManager = () => {
         period_end: endDate
       });
 
-      const { error: budgetError } = await supabase
+      // D'abord, supprimons tout budget existant pour ce mois
+      const { error: deleteError } = await supabase
         .from('budgets')
-        .upsert({
+        .delete()
+        .eq('user_id', user.id)
+        .gte('period_start', startDate.toISOString())
+        .lte('period_end', endDate.toISOString());
+
+      if (deleteError) {
+        console.error("Erreur lors de la suppression de l'ancien budget:", deleteError);
+        throw deleteError;
+      }
+
+      // Ensuite, insérons le nouveau budget
+      const { error: insertError } = await supabase
+        .from('budgets')
+        .insert({
           amount,
           period_start: startDate.toISOString(),
           period_end: endDate.toISOString(),
           user_id: user.id
         });
 
-      if (budgetError) {
-        console.error("Erreur Supabase:", budgetError);
-        throw budgetError;
+      if (insertError) {
+        console.error("Erreur Supabase:", insertError);
+        throw insertError;
       }
 
       // Invalidate queries to refresh data
