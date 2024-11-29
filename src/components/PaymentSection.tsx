@@ -5,6 +5,7 @@ import UpcomingPayments from "./payment/UpcomingPayments";
 import InvoiceUploader from "./payment/InvoiceUploader";
 import InvoiceList from "./payment/InvoiceList";
 import PaymentCharts from "./payment/PaymentCharts";
+import BudgetManager from "./payment/budget/BudgetManager";
 
 const PaymentSection = () => {
   const { invoices, isLoading, addInvoice, removeInvoice, fetchInvoices } = useInvoiceStore();
@@ -15,7 +16,11 @@ const PaymentSection = () => {
 
   return (
     <div className="space-y-6">
-      <PaymentCharts />
+      <div className="grid gap-6 md:grid-cols-2">
+        <PaymentCharts />
+        <BudgetManager />
+      </div>
+      
       <UpcomingPayments />
       
       <Card className="p-6 glass-card">
