@@ -4,30 +4,73 @@ import { format, differenceInDays } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
 
 interface Payment {
   id: number;
-  service: string;
-  amount: number;
-  date: string;
+  name: string;
+  price: number;
+  next_billing: string;
 }
 
 const UpcomingPayments = () => {
-  const upcomingPayments = [
-    { id: 1, service: "Netflix", amount: 17.99, date: "2024-02-15" },
-    { id: 2, service: "Spotify", amount: 9.99, date: "2024-02-20" },
-    { id: 3, service: "Amazon Prime", amount: 6.99, date: "2024-02-25" },
-    // Test avec plus d'abonnements
-    { id: 4, service: "Disney+", amount: 8.99, date: "2024-03-01" },
-    { id: 5, service: "YouTube Premium", amount: 11.99, date: "2024-03-05" },
-    { id: 6, service: "Apple Music", amount: 9.99, date: "2024-03-10" },
-  ].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  const { data: upcomingPayments = [], isLoading } = useQuery({
+    queryKey: ['upcoming-payments'],
+    queryFn: async () => {
+      console.log("Fetching upcoming payments...");
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        console.log("No user found, returning empty array");
+        return [];
+      }
 
-  const totalAmount = upcomingPayments.reduce((sum, payment) => sum + payment.amount, 0);
+      const { data, error } = await supabase
+        .from('subscriptions')
+        .select('id, name, price, next_billing')
+        .eq('user_id', user.id)
+        .order('next_billing', { ascending: true });
+
+      if (error) {
+        console.error("Error fetching subscriptions:", error);
+        throw error;
+      }
+
+      console.log("Fetched subscriptions:", data);
+      return data as Payment[];
+    },
+  });
+
+  if (isLoading) {
+    return (
+      <Card className="p-6 bg-white/80 backdrop-blur-md border border-neutral-light shadow-lg">
+        <div className="flex items-center justify-center h-40">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      </Card>
+    );
+  }
+
+  if (!upcomingPayments.length) {
+    return (
+      <Card className="p-6 bg-white/80 backdrop-blur-md border border-neutral-light shadow-lg">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-semibold text-gray-800">Échéancier des Prélèvements</h2>
+          <CreditCard className="h-6 w-6 text-primary" />
+        </div>
+        <div className="text-center py-8 text-gray-500">
+          Aucun prélèvement à venir
+        </div>
+      </Card>
+    );
+  }
+
   const today = new Date();
-  const firstPaymentDate = new Date(upcomingPayments[0].date);
-  const lastPaymentDate = new Date(upcomingPayments[upcomingPayments.length - 1].date);
+  const firstPaymentDate = new Date(upcomingPayments[0].next_billing);
+  const lastPaymentDate = new Date(upcomingPayments[upcomingPayments.length - 1].next_billing);
   const totalDays = differenceInDays(lastPaymentDate, firstPaymentDate) || 1;
+  const totalAmount = upcomingPayments.reduce((sum, payment) => sum + Number(payment.price), 0);
 
   const getPositionInTimeline = (date: string) => {
     const paymentDate = new Date(date);
@@ -70,18 +113,18 @@ const UpcomingPayments = () => {
                     <div>
                       <div className="flex items-center gap-2 mb-1">
                         <Calendar className="h-4 w-4 text-primary" />
-                        <span className="font-medium text-gray-800">{payment.service}</span>
+                        <span className="font-medium text-gray-800">{payment.name}</span>
                       </div>
                       <div className="text-sm text-gray-500">
-                        {format(new Date(payment.date), "d MMMM yyyy", { locale: fr })}
+                        {format(new Date(payment.next_billing), "d MMMM yyyy", { locale: fr })}
                       </div>
                     </div>
                     <div className="text-right">
                       <span className="font-semibold text-gray-800">
-                        {payment.amount.toFixed(2)} €
+                        {Number(payment.price).toFixed(2)} €
                       </span>
                       <div className="text-xs font-medium text-primary mt-1">
-                        {getDaysUntil(payment.date)}
+                        {getDaysUntil(payment.next_billing)}
                       </div>
                     </div>
                   </div>
