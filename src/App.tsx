@@ -6,6 +6,10 @@ import Landing from "./pages/Landing";
 import { Toaster } from "@/components/ui/toaster";
 import { useEffect, useState } from "react";
 import { supabase } from "./integrations/supabase/client";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+// Create a client
+const queryClient = new QueryClient();
 
 function App() {
   const [user, setUser] = useState<any>(null);
@@ -33,24 +37,26 @@ function App() {
   }
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Landing />} />
-        <Route 
-          path="/dashboard" 
-          element={user ? <Index /> : <Navigate to="/auth" replace />} 
-        />
-        <Route 
-          path="/auth" 
-          element={user ? <Navigate to="/dashboard" replace /> : <Auth />} 
-        />
-        <Route 
-          path="/profile" 
-          element={user ? <Profile /> : <Navigate to="/auth" replace />} 
-        />
-      </Routes>
-      <Toaster />
-    </Router>
+    <QueryClientProvider client={queryClient}>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Landing />} />
+          <Route 
+            path="/dashboard" 
+            element={user ? <Index /> : <Navigate to="/auth" replace />} 
+          />
+          <Route 
+            path="/auth" 
+            element={user ? <Navigate to="/dashboard" replace /> : <Auth />} 
+          />
+          <Route 
+            path="/profile" 
+            element={user ? <Profile /> : <Navigate to="/auth" replace />} 
+          />
+        </Routes>
+        <Toaster />
+      </Router>
+    </QueryClientProvider>
   );
 }
 
