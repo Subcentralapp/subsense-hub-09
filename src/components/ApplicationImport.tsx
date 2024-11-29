@@ -38,12 +38,22 @@ const ApplicationImport = () => {
         return;
       }
 
+      console.log("Attempting to upsert applications:", newApplications);
+      
       const { error } = await supabase
         .from("applications")
-        .insert(newApplications);
+        .upsert(newApplications, {
+          onConflict: 'name',
+          ignoreDuplicates: false
+        });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error during upsert:", error);
+        throw error;
+      }
 
+      console.log("Applications upserted successfully");
+      
       toast({
         title: "Succès",
         description: `${newApplications.length} applications importées avec succès`,
