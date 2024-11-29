@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "./ui/button";
 import { User, LogIn } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,6 +7,7 @@ import { useToast } from "./ui/use-toast";
 
 export const Navbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const { toast } = useToast();
   const [user, setUser] = useState<any>(null);
 
@@ -33,7 +34,7 @@ export const Navbar = () => {
         title: "Déconnexion réussie",
         description: "À bientôt !",
       });
-      navigate("/auth");
+      navigate("/");
     } catch (error) {
       console.error("Error signing out:", error);
       toast({
@@ -44,11 +45,16 @@ export const Navbar = () => {
     }
   };
 
+  // Don't show navbar on landing page
+  if (location.pathname === "/") {
+    return null;
+  }
+
   return (
     <nav className="bg-white shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
-          <div className="flex-shrink-0 cursor-pointer" onClick={() => navigate("/")}>
+          <div className="flex-shrink-0 cursor-pointer" onClick={() => navigate(user ? "/dashboard" : "/")}>
             <h1 className="text-xl font-bold text-primary">SubaCentral</h1>
           </div>
 
