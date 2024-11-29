@@ -13,6 +13,7 @@ import { fr } from "date-fns/locale";
 const BudgetManager = () => {
   const { toast } = useToast();
   const [newBudget, setNewBudget] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
 
   // Fetch current budget
@@ -55,6 +56,15 @@ const BudgetManager = () => {
 
   const handleSetBudget = async () => {
     try {
+      setIsLoading(true);
+      
+      // Vérifier si l'utilisateur est connecté
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      
+      if (userError || !user) {
+        throw new Error("Vous devez être connecté pour définir un budget");
+      }
+
       const amount = parseFloat(newBudget);
       if (isNaN(amount) || amount <= 0) {
         throw new Error("Montant invalide");
@@ -63,17 +73,26 @@ const BudgetManager = () => {
       const startDate = startOfMonth(new Date());
       const endDate = endOfMonth(new Date());
 
-      // Utilisation de upsert avec onConflict
-      const { error } = await supabase
+      console.log("Tentative de mise à jour du budget:", {
+        amount,
+        user_id: user.id,
+        period_start: startDate,
+        period_end: endDate
+      });
+
+      const { error: budgetError } = await supabase
         .from('budgets')
         .upsert({
           amount,
           period_start: startDate.toISOString(),
           period_end: endDate.toISOString(),
-          user_id: (await supabase.auth.getUser()).data.user?.id
+          user_id: user.id
         });
 
-      if (error) throw error;
+      if (budgetError) {
+        console.error("Erreur Supabase:", budgetError);
+        throw budgetError;
+      }
 
       // Invalidate queries to refresh data
       await queryClient.invalidateQueries({ queryKey: ['current-budget'] });
@@ -92,6 +111,8 @@ const BudgetManager = () => {
         description: error.message || "Une erreur est survenue lors de la mise à jour du budget.",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -147,8 +168,8 @@ const BudgetManager = () => {
           />
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">€</span>
         </div>
-        <Button onClick={handleSetBudget}>
-          Mettre à jour
+        <Button onClick={handleSetBudget} disabled={isLoading}>
+          {isLoading ? "Mise à jour..." : "Mettre à jour"}
         </Button>
       </div>
     </Card>
