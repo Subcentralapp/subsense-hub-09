@@ -3,6 +3,7 @@ import { Calendar, CreditCard } from "lucide-react";
 import { format, differenceInDays } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Progress } from "@/components/ui/progress";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface Payment {
   id: number;
@@ -16,6 +17,10 @@ const UpcomingPayments = () => {
     { id: 1, service: "Netflix", amount: 17.99, date: "2024-02-15" },
     { id: 2, service: "Spotify", amount: 9.99, date: "2024-02-20" },
     { id: 3, service: "Amazon Prime", amount: 6.99, date: "2024-02-25" },
+    // Test avec plus d'abonnements
+    { id: 4, service: "Disney+", amount: 8.99, date: "2024-03-01" },
+    { id: 5, service: "YouTube Premium", amount: 11.99, date: "2024-03-05" },
+    { id: 6, service: "Apple Music", amount: 9.99, date: "2024-03-10" },
   ].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   const totalAmount = upcomingPayments.reduce((sum, payment) => sum + payment.amount, 0);
@@ -39,7 +44,7 @@ const UpcomingPayments = () => {
 
   return (
     <Card className="p-6 bg-white/80 backdrop-blur-md border border-neutral-light shadow-lg">
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div>
           <h2 className="text-xl font-semibold mb-1 text-gray-800">Échéancier des Prélèvements</h2>
           <p className="text-sm text-gray-500">
@@ -49,53 +54,51 @@ const UpcomingPayments = () => {
         <CreditCard className="h-6 w-6 text-primary" />
       </div>
 
-      <div className="space-y-8">
-        <div className="relative pt-8 pb-4">
-          <div className="absolute w-full h-1 bg-neutral-light rounded-full" />
-          {upcomingPayments.map((payment) => {
-            const position = getPositionInTimeline(payment.date);
-            return (
+      <ScrollArea className="h-[400px] pr-4">
+        <div className="space-y-6">
+          <div className="relative">
+            <div className="absolute w-0.5 h-full bg-neutral-light/50 left-3 top-0" />
+            {upcomingPayments.map((payment, index) => (
               <div
                 key={payment.id}
-                className="absolute transform -translate-x-1/2"
-                style={{ left: `${position}%`, top: '0' }}
+                className="relative flex items-start mb-4 animate-fade-in"
+                style={{ animationDelay: `${index * 100}ms` }}
               >
-                <div className="flex flex-col items-center animate-fade-in">
-                  <div className="w-4 h-4 rounded-full bg-primary mb-2 shadow-lg" />
-                  <div className="bg-white p-3 rounded-lg shadow-md border border-neutral-light min-w-[200px]">
-                    <div className="flex items-center gap-2 mb-1">
-                      <Calendar className="h-4 w-4 text-primary" />
-                      <span className="font-medium text-gray-800">{payment.service}</span>
+                <div className="absolute left-2 w-3 h-3 rounded-full bg-primary shadow-lg transform -translate-x-1/2 mt-2" />
+                <div className="ml-8 bg-white p-3 rounded-lg shadow-sm border border-neutral-light w-full hover:shadow-md transition-shadow">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <Calendar className="h-4 w-4 text-primary" />
+                        <span className="font-medium text-gray-800">{payment.service}</span>
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {format(new Date(payment.date), "d MMMM yyyy", { locale: fr })}
+                      </div>
                     </div>
-                    <div className="text-sm text-gray-500">
-                      {format(new Date(payment.date), "d MMMM yyyy", { locale: fr })}
-                    </div>
-                    <div className="mt-1 flex justify-between items-center">
-                      <span className="text-xs font-medium text-primary">
-                        {getDaysUntil(payment.date)}
-                      </span>
+                    <div className="text-right">
                       <span className="font-semibold text-gray-800">
                         {payment.amount.toFixed(2)} €
                       </span>
+                      <div className="text-xs font-medium text-primary mt-1">
+                        {getDaysUntil(payment.date)}
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            );
-          })}
-        </div>
-
-        <div className="mt-6 space-y-2">
-          <div className="flex justify-between text-sm text-gray-500">
-            <span>{format(firstPaymentDate, "d MMM", { locale: fr })}</span>
-            <span>{format(lastPaymentDate, "d MMM", { locale: fr })}</span>
+            ))}
           </div>
-          <Progress 
-            value={100} 
-            className="h-2 bg-neutral-light"
-          />
+
+          <div className="mt-4 space-y-2">
+            <div className="flex justify-between text-sm text-gray-500">
+              <span>{format(firstPaymentDate, "d MMM", { locale: fr })}</span>
+              <span>{format(lastPaymentDate, "d MMM", { locale: fr })}</span>
+            </div>
+            <Progress value={100} className="h-1.5 bg-neutral-light" />
+          </div>
         </div>
-      </div>
+      </ScrollArea>
     </Card>
   );
 };
