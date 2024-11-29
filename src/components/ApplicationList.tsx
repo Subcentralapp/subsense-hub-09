@@ -11,46 +11,11 @@ import { cleanApplications } from "@/services/database/cleanApplications";
 const fetchApplications = async () => {
   console.log("Tentative de récupération des applications depuis Supabase...");
   try {
-    // Nettoyer les applications non désirées
-    await cleanApplications();
-    console.log("Nettoyage des applications effectué");
-
-    // Mettre à jour les applications VPN
-    await updateVPNApplications();
-    console.log("Applications VPN mises à jour avec succès");
-
-    const { data, error } = await supabase
-      .from("applications")
-      .select("*")
-      .order("name");
-
-    if (error) {
-      console.error("Erreur Supabase:", error);
-      console.log("Utilisation des données de secours...");
-      const updatedData = await updateApplications();
-      console.log("Données de secours:", updatedData || fallbackApplications);
-      return updatedData || fallbackApplications;
-    }
-
-    if (!data || data.length === 0) {
-      console.log("Aucune donnée trouvée, utilisation des données de secours...");
-      const updatedData = await updateApplications();
-      console.log("Données de secours:", updatedData || fallbackApplications);
-      return updatedData || fallbackApplications;
-    }
-
-    const uniqueApps = data.reduce((acc: Application[], current) => {
-      const exists = acc.find(app => 
-        app.name.toLowerCase() === current.name.toLowerCase()
-      );
-      if (!exists) {
-        acc.push(current);
-      }
-      return acc;
-    }, []);
-
-    console.log("Applications récupérées depuis Supabase:", uniqueApps);
-    return uniqueApps;
+    // Forcer la restauration des applications
+    console.log("Forçage de la restauration des applications...");
+    const restoredData = await updateApplications();
+    console.log("Applications restaurées:", restoredData);
+    return restoredData || fallbackApplications;
   } catch (error) {
     console.error("Erreur lors de la récupération:", error);
     console.log("Utilisation des données de secours suite à une erreur...");

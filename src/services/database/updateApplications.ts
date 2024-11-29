@@ -23,7 +23,7 @@ const allApplications = [
 ];
 
 export const updateApplications = async () => {
-  console.log("Forçage de la restauration des applications...");
+  console.log("Restauration des applications...");
   console.log("Nombre total d'applications à restaurer:", allApplications.length);
 
   try {
@@ -38,18 +38,44 @@ export const updateApplications = async () => {
       throw deleteError;
     }
 
-    // Insérer toutes les applications
-    const { data, error: insertError } = await supabase
-      .from('applications')
-      .insert(allApplications)
-      .select();
+    // Insérer toutes les applications par lots de 50 pour éviter les limitations
+    const chunkSize = 50;
+    for (let i = 0; i < allApplications.length; i += chunkSize) {
+      const chunk = allApplications.slice(i, i + chunkSize);
+      const { error: insertError } = await supabase
+        .from('applications')
+        .insert(chunk);
 
-    if (insertError) {
-      console.error("Erreur lors de l'insertion:", insertError);
-      throw insertError;
+      if (insertError) {
+        console.error("Erreur lors de l'insertion du lot:", insertError);
+        throw insertError;
+      }
+      console.log(`Lot ${Math.floor(i / chunkSize) + 1} inséré avec succès`);
     }
 
-    console.log("Applications restaurées avec succès. Nombre d'applications:", data?.length);
+    // Vérifier le nombre d'applications après la restauration
+    const { data: checkData, error: checkError } = await supabase
+      .from('applications')
+      .select('count');
+
+    if (checkError) {
+      console.error("Erreur lors de la vérification:", checkError);
+    } else {
+      console.log("Nombre d'applications restaurées:", checkData[0].count);
+    }
+
+    // Récupérer toutes les applications pour les retourner
+    const { data, error: fetchError } = await supabase
+      .from('applications')
+      .select('*')
+      .order('name');
+
+    if (fetchError) {
+      console.error("Erreur lors de la récupération:", fetchError);
+      throw fetchError;
+    }
+
+    console.log("Applications restaurées avec succès");
     return data;
   } catch (error) {
     console.error("Erreur dans updateApplications:", error);
