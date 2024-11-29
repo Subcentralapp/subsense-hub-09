@@ -5,10 +5,15 @@ import ApplicationDialog from "./dialog/ApplicationDialog";
 import { Application } from "@/types/application";
 import { fallbackApplications } from "@/data/fallbackApplications";
 import { updateApplications } from "@/services/database/updateApplications";
+import { updateVPNApplications } from "@/services/database/updateVPNApplications";
 
 const fetchApplications = async () => {
   console.log("Tentative de récupération des applications depuis Supabase...");
   try {
+    // Mettre à jour les applications VPN
+    await updateVPNApplications();
+    console.log("Applications VPN mises à jour avec succès");
+
     const { data, error } = await supabase
       .from("applications")
       .select("*")
