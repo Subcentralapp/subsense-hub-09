@@ -10,6 +10,14 @@ export const vpnApplications: Application[] = [
     logo_url: "https://logo.clearbit.com/expressvpn.com"
   },
   {
+    name: "NordVPN",
+    price: 11.99,
+    category: "VPN & Sécurité",
+    description: "VPN sécurisé avec plus de 5400 serveurs dans 59 pays",
+    website_url: "https://nordvpn.com",
+    logo_url: "https://logo.clearbit.com/nordvpn.com"
+  },
+  {
     name: "CyberGhost",
     price: 11.99,
     category: "VPN & Sécurité",
