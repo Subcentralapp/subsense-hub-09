@@ -9,7 +9,6 @@ import { aiApplications } from "@/data/applications/ai-applications";
 import { vpnApplications } from "@/data/applications/vpn-applications";
 import { foodApplications } from "@/data/applications/food-applications";
 
-// Combine all applications
 const allApplications = [
   ...streamingApplications,
   ...musicApplications,
@@ -27,30 +26,22 @@ export const updateApplications = async () => {
   console.log("Nombre total d'applications à restaurer:", allApplications.length);
 
   try {
-    // Supprimer d'abord toutes les applications existantes
-    const { error: deleteError } = await supabase
-      .from('applications')
-      .delete()
-      .neq('name', ''); // Supprime toutes les applications
-
-    if (deleteError) {
-      console.error("Erreur lors de la suppression:", deleteError);
-      throw deleteError;
-    }
-
-    // Insérer toutes les applications par lots de 50 pour éviter les limitations
+    // Instead of deleting and reinserting, we'll use upsert
     const chunkSize = 50;
     for (let i = 0; i < allApplications.length; i += chunkSize) {
       const chunk = allApplications.slice(i, i + chunkSize);
-      const { error: insertError } = await supabase
+      const { error: upsertError } = await supabase
         .from('applications')
-        .insert(chunk);
+        .upsert(chunk, {
+          onConflict: 'name',
+          ignoreDuplicates: false // This will update existing entries
+        });
 
-      if (insertError) {
-        console.error("Erreur lors de l'insertion du lot:", insertError);
-        throw insertError;
+      if (upsertError) {
+        console.error("Erreur lors de l'upsert du lot:", upsertError);
+        throw upsertError;
       }
-      console.log(`Lot ${Math.floor(i / chunkSize) + 1} inséré avec succès`);
+      console.log(`Lot ${Math.floor(i / chunkSize) + 1} mis à jour avec succès`);
     }
 
     // Vérifier le nombre d'applications après la restauration
