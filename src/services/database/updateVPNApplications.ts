@@ -5,7 +5,7 @@ export const updateVPNApplications = async () => {
   console.log("Starting VPN applications update...");
 
   try {
-    // Utiliser upsert au lieu de delete + insert pour préserver les données existantes
+    // Utiliser upsert pour préserver les données existantes
     const { data, error } = await supabase
       .from('applications')
       .upsert(
@@ -19,7 +19,7 @@ export const updateVPNApplications = async () => {
         })),
         {
           onConflict: 'name',
-          ignoreDuplicates: false // Met à jour si existe, insère si nouveau
+          ignoreDuplicates: false
         }
       );
 
