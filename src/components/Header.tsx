@@ -5,9 +5,20 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
+// Fonction utilitaire pour générer des positions aléatoires
+const generateRandomLines = (count: number) => {
+  return Array.from({ length: count }, () => ({
+    top: Math.random() * 100,
+    left: Math.random() * 100,
+    opacity: 0.1 + Math.random() * 0.2,
+    width: 50 + Math.random() * 150,
+  }));
+};
+
 export const Header = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
+  const [randomLines] = useState(() => generateRandomLines(8));
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data: { user } }) => {
@@ -26,19 +37,24 @@ export const Header = () => {
     <header className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-sm z-50">
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full">
-          {/* Motif diagonal violet */}
-          {[...Array(6)].map((_, i) => (
+          {/* Lignes parallèles aléatoires */}
+          {randomLines.map((line, i) => (
             <motion.div
               key={i}
-              className="absolute h-[2px] bg-primary/20 transform -rotate-45"
+              className="absolute h-[2px] bg-primary/20"
               style={{
-                width: '200%',
-                left: `-${50 * i}%`,
-                top: `${20 + i * 15}%`,
+                width: `${line.width}px`,
+                top: `${line.top}%`,
+                left: `${line.left}%`,
+                opacity: line.opacity,
               }}
-              initial={{ opacity: 0, x: -100 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.1 }}
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: line.opacity, x: 0 }}
+              transition={{ 
+                duration: 0.8,
+                delay: i * 0.1,
+                ease: "easeOut"
+              }}
             />
           ))}
         </div>
@@ -89,7 +105,6 @@ export const Header = () => {
         </div>
       </div>
       
-      {/* Effet de bordure animée */}
       <motion.div 
         className="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary/30 to-transparent"
         initial={{ scaleX: 0 }}
