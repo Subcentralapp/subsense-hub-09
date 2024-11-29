@@ -2,6 +2,14 @@ import { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/lib/supabase";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Shield, Lock } from "lucide-react";
+
+declare global {
+  interface Window {
+    Plaid: any;
+  }
+}
 
 export const PlaidLink = () => {
   const [loading, setLoading] = useState(false);
@@ -11,19 +19,16 @@ export const PlaidLink = () => {
     try {
       setLoading(true);
       
-      // Créer un token de lien
       const { data, error } = await supabase.functions.invoke('plaid-link', {
         body: { action: 'create_link_token' }
       });
 
       if (error) throw error;
 
-      // Charger Plaid Link
       const { link_token } = data;
       const handler = window.Plaid.create({
         token: link_token,
         onSuccess: async (public_token: string) => {
-          // Échanger le token public contre un token d'accès
           const { error } = await supabase.functions.invoke('plaid-link', {
             body: { 
               action: 'exchange_public_token',
@@ -61,12 +66,28 @@ export const PlaidLink = () => {
   };
 
   return (
-    <Button 
-      onClick={handlePlaidConnection}
-      disabled={loading}
-      className="w-full"
-    >
-      {loading ? "Connexion en cours..." : "Connecter mon compte bancaire"}
-    </Button>
+    <div className="space-y-4">
+      <Alert>
+        <Shield className="h-4 w-4" />
+        <AlertDescription>
+          Vos données bancaires sont sécurisées et chiffrées. Nous utilisons Plaid, un service certifié conforme aux normes bancaires internationales.
+        </AlertDescription>
+      </Alert>
+      
+      <Alert>
+        <Lock className="h-4 w-4" />
+        <AlertDescription>
+          Nous n'avons jamais accès à vos identifiants bancaires. Toutes les connexions sont gérées de manière sécurisée par Plaid.
+        </AlertDescription>
+      </Alert>
+
+      <Button 
+        onClick={handlePlaidConnection}
+        disabled={loading}
+        className="w-full"
+      >
+        {loading ? "Connexion en cours..." : "Connecter mon compte bancaire"}
+      </Button>
+    </div>
   );
 };
