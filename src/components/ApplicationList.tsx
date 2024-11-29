@@ -4,6 +4,8 @@ import { supabase } from "@/lib/supabase";
 import ApplicationDialog from "./dialog/ApplicationDialog";
 import { Application } from "@/types/application";
 import { useNavigate } from "react-router-dom";
+import SubscriptionCustomizeDialog from "./dialog/SubscriptionCustomizeDialog";
+import { useState } from "react";
 
 const fetchApplications = async () => {
   console.log("Tentative de récupération des applications depuis Supabase...");
@@ -30,6 +32,7 @@ const ApplicationList = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const [selectedApp, setSelectedApp] = useState<Application | null>(null);
 
   const { data: applications, isLoading } = useQuery({
     queryKey: ["applications"],
@@ -37,6 +40,11 @@ const ApplicationList = () => {
   });
 
   const handleAddSubscription = async (app: Application) => {
+    console.log("Ouverture du dialogue de personnalisation pour:", app.name);
+    setSelectedApp(app);
+  };
+
+  const handleConfirmSubscription = async (price: number, nextBilling: Date) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
@@ -46,16 +54,14 @@ const ApplicationList = () => {
         return;
       }
 
-      // Utiliser la date du jour + 1 mois comme date de prélèvement par défaut
-      const nextBilling = new Date();
-      nextBilling.setMonth(nextBilling.getMonth() + 1);
+      if (!selectedApp) return;
 
       const subscriptionData = {
-        name: app.name,
-        price: app.price,
-        category: app.category,
+        name: selectedApp.name,
+        price: price,
+        category: selectedApp.category,
         next_billing: nextBilling.toISOString(),
-        description: app.description,
+        description: selectedApp.description,
         user_id: user.id,
       };
 
@@ -74,8 +80,10 @@ const ApplicationList = () => {
 
       toast({
         title: "Abonnement ajouté",
-        description: `L'abonnement à ${app.name} a été ajouté avec succès.`,
+        description: `L'abonnement à ${selectedApp.name} a été ajouté avec succès.`,
       });
+
+      setSelectedApp(null);
     } catch (error) {
       console.error("Error adding subscription:", error);
       toast({
@@ -87,11 +95,19 @@ const ApplicationList = () => {
   };
 
   return (
-    <ApplicationDialog 
-      applications={applications || []} 
-      isLoading={isLoading} 
-      onAddSubscription={handleAddSubscription} 
-    />
+    <>
+      <ApplicationDialog 
+        applications={applications || []} 
+        isLoading={isLoading} 
+        onAddSubscription={handleAddSubscription} 
+      />
+      <SubscriptionCustomizeDialog
+        app={selectedApp}
+        isOpen={!!selectedApp}
+        onClose={() => setSelectedApp(null)}
+        onConfirm={handleConfirmSubscription}
+      />
+    </>
   );
 };
 

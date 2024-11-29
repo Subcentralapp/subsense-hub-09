@@ -11,7 +11,7 @@ import { fr } from "date-fns/locale";
 import { cn } from "@/lib/utils";
 
 interface SubscriptionCustomizeDialogProps {
-  app: Application;
+  app: Application | null;
   isOpen: boolean;
   onClose: () => void;
   onConfirm: (price: number, nextBilling: Date) => void;
@@ -23,21 +23,22 @@ const SubscriptionCustomizeDialog = ({
   onClose, 
   onConfirm 
 }: SubscriptionCustomizeDialogProps) => {
-  const [price, setPrice] = useState<number>(app.price || 0);
-  // Initialiser la date avec la date du jour
-  const [date, setDate] = useState<Date>(new Date());
+  // Initialiser avec la date du jour + 1 mois
+  const defaultDate = new Date();
+  defaultDate.setMonth(defaultDate.getMonth() + 1);
+  
+  const [price, setPrice] = useState<number>(0);
+  const [date, setDate] = useState<Date>(defaultDate);
 
-  // Reset price when app changes
   useEffect(() => {
-    if (app.price) {
+    if (app?.price) {
       setPrice(app.price);
     }
-  }, [app.price]);
+  }, [app?.price]);
 
   const handleConfirm = () => {
     console.log("Confirmation avec date:", date);
     onConfirm(price, date);
-    onClose();
   };
 
   const handleDateSelect = (newDate: Date | undefined) => {
@@ -46,6 +47,8 @@ const SubscriptionCustomizeDialog = ({
       setDate(newDate);
     }
   };
+
+  if (!app) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
