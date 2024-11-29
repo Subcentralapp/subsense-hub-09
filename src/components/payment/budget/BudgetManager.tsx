@@ -123,8 +123,7 @@ const BudgetManager = () => {
         </div>
         <Progress 
           value={Math.min(spentPercentage, 100)} 
-          className="h-2"
-          indicatorClassName={getProgressColor(spentPercentage)}
+          className={`h-2 ${getProgressColor(spentPercentage)}`}
         />
         <p className="text-sm text-gray-500">
           Restant: <span className="font-medium">{remaining.toFixed(2)} €</span>

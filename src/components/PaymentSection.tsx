@@ -16,12 +16,9 @@ const PaymentSection = () => {
 
   return (
     <div className="space-y-6">
-      <div className="grid gap-6 md:grid-cols-2">
-        <PaymentCharts />
-        <BudgetManager />
-      </div>
-      
+      <PaymentCharts />
       <UpcomingPayments />
+      <BudgetManager />
       
       <Card className="p-6 glass-card">
         <h2 className="text-xl font-semibold mb-4">Gestion des Factures</h2>
