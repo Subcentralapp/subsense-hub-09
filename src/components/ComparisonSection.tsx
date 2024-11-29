@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { Application } from "@/types/application";
-import { fallbackApplications } from "@/data/fallbackApplications";
 import { SearchDropdown } from "./search/SearchDropdown";
 import { ComparisonResult } from "./comparison/ComparisonResult";
 
@@ -18,7 +17,7 @@ const ComparisonSection = () => {
   const { data: applications } = useQuery({
     queryKey: ["applications"],
     queryFn: async () => {
-      console.log("Fetching applications...");
+      console.log("Fetching applications for comparison...");
       const { data, error } = await supabase
         .from("applications")
         .select("*")
@@ -26,16 +25,10 @@ const ComparisonSection = () => {
       
       if (error) {
         console.error("Error fetching applications:", error);
-        console.log("Using fallback applications");
-        return fallbackApplications;
+        return [];
       }
 
-      if (!data?.length) {
-        console.log("No applications found, using fallback");
-        return fallbackApplications;
-      }
-
-      console.log("Applications fetched:", data);
+      console.log("Applications fetched:", data?.length);
       return data as Application[];
     },
   });

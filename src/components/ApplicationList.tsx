@@ -1,25 +1,27 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/lib/supabase";
 import ApplicationDialog from "./dialog/ApplicationDialog";
 import { Application } from "@/types/application";
-import { fallbackApplications } from "@/data/fallbackApplications";
-import { updateApplications } from "@/services/database/updateApplications";
-import { updateVPNApplications } from "@/services/database/updateVPNApplications";
-import { cleanApplications } from "@/services/database/cleanApplications";
 
 const fetchApplications = async () => {
   console.log("Tentative de récupération des applications depuis Supabase...");
   try {
-    // Forcer la restauration des applications
-    console.log("Forçage de la restauration des applications...");
-    const restoredData = await updateApplications();
-    console.log("Applications restaurées:", restoredData);
-    return restoredData || fallbackApplications;
+    const { data, error } = await supabase
+      .from("applications")
+      .select("*")
+      .order("name");
+
+    if (error) {
+      console.error("Erreur lors de la récupération:", error);
+      return [];
+    }
+
+    console.log("Applications récupérées:", data?.length);
+    return data as Application[];
   } catch (error) {
     console.error("Erreur lors de la récupération:", error);
-    console.log("Utilisation des données de secours suite à une erreur...");
-    return fallbackApplications;
+    return [];
   }
 };
 
@@ -83,7 +85,7 @@ const ApplicationList = () => {
 
   return (
     <ApplicationDialog 
-      applications={applications} 
+      applications={applications || []} 
       isLoading={isLoading} 
       onAddSubscription={handleAddSubscription} 
     />
