@@ -68,6 +68,8 @@ const BudgetManager = () => {
           amount,
           period_start: startDate.toISOString(),
           period_end: endDate.toISOString(),
+        }, { 
+          onConflict: 'period_start,period_end',
         });
 
       if (error) throw error;
@@ -131,13 +133,16 @@ const BudgetManager = () => {
       </div>
 
       <div className="flex gap-2">
-        <Input
-          type="number"
-          value={newBudget}
-          onChange={(e) => setNewBudget(e.target.value)}
-          placeholder="Définir un nouveau budget"
-          className="flex-1"
-        />
+        <div className="relative flex-1">
+          <Input
+            type="number"
+            value={newBudget}
+            onChange={(e) => setNewBudget(e.target.value)}
+            placeholder="Définir un nouveau budget"
+            className="pr-8"
+          />
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">€</span>
+        </div>
         <Button onClick={handleSetBudget}>
           Mettre à jour
         </Button>
