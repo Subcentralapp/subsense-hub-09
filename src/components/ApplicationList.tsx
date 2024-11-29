@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/lib/supabase";
 import ApplicationDialog from "./dialog/ApplicationDialog";
@@ -6,10 +6,15 @@ import { Application } from "@/types/application";
 import { fallbackApplications } from "@/data/fallbackApplications";
 import { updateApplications } from "@/services/database/updateApplications";
 import { updateVPNApplications } from "@/services/database/updateVPNApplications";
+import { cleanApplications } from "@/services/database/cleanApplications";
 
 const fetchApplications = async () => {
   console.log("Tentative de récupération des applications depuis Supabase...");
   try {
+    // Nettoyer les applications non désirées
+    await cleanApplications();
+    console.log("Nettoyage des applications effectué");
+
     // Mettre à jour les applications VPN
     await updateVPNApplications();
     console.log("Applications VPN mises à jour avec succès");
