@@ -6,7 +6,7 @@ export const updateInvoiceDetails = async (
 ) => {
   console.log('Updating invoice details for ID:', invoiceId);
   const { error } = await supabase
-    .from('invoicedetails')  // Changed from 'InvoiceDetails' to 'invoicedetails'
+    .from('invoicedetails')
     .update({
       amount: data.amount,
       invoice_date: data.invoice_date,

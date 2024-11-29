@@ -7,8 +7,9 @@ export const useInvoiceDetails = () => {
     queryFn: async () => {
       console.log('Fetching invoice details...');
       const { data, error } = await supabase
-        .from('invoicedetails')  // Changed from 'InvoiceDetails' to 'invoicedetails'
-        .select('*');
+        .from('invoicedetails')
+        .select('*')
+        .order('created_at', { ascending: false });
       
       if (error) {
         console.error('Error fetching invoice details:', error);
