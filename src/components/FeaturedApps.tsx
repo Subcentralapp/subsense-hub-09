@@ -4,6 +4,23 @@ import { ExternalLink } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 
+const logoUrls = {
+  'Amazon': 'https://logo.clearbit.com/amazon.com',
+  'Babbel': 'https://logo.clearbit.com/babbel.com',
+  'Coursera': 'https://logo.clearbit.com/coursera.org',
+  'Revolut': 'https://logo.clearbit.com/revolut.com',
+  'Udemy': 'https://logo.clearbit.com/udemy.com',
+  'Canal+': 'https://logo.clearbit.com/canalplus.com',
+  'Hostinger': 'https://logo.clearbit.com/hostinger.com',
+  'Bubble': 'https://logo.clearbit.com/bubble.io',
+  'Netflix': 'https://logo.clearbit.com/netflix.com',
+  'Shopify': 'https://logo.clearbit.com/shopify.com',
+  'Semrush': 'https://logo.clearbit.com/semrush.com',
+  'Make': 'https://logo.clearbit.com/make.com',
+  'Airtable': 'https://logo.clearbit.com/airtable.com',
+  'NordVPN': 'https://logo.clearbit.com/nordvpn.com'
+};
+
 const FeaturedApps = () => {
   const { data: apps, isLoading } = useQuery({
     queryKey: ['featured-apps'],
@@ -11,14 +28,15 @@ const FeaturedApps = () => {
       const { data, error } = await supabase
         .from('applications')
         .select('*')
-        .in('name', [
-          'Netflix', 'Shopify', 'Coursera', 'Udemy', 'Amazon', 
-          'Hostinger', 'Semrush', 'Make', 'Airtable', 'Revolut', 
-          'NordVPN', 'Babbel', 'Bubble', 'Canal+'
-        ]);
+        .in('name', Object.keys(logoUrls));
 
       if (error) throw error;
-      return data;
+      
+      // Add logo URLs to the apps data
+      return data?.map(app => ({
+        ...app,
+        logo_url: logoUrls[app.name as keyof typeof logoUrls] || app.logo_url
+      }));
     }
   });
 
@@ -70,6 +88,10 @@ const FeaturedApps = () => {
                   src={app.logo_url} 
                   alt={`${app.name} logo`}
                   className="w-12 h-12 object-contain"
+                  onError={(e) => {
+                    console.error(`Failed to load logo for ${app.name}`);
+                    e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(app.name)}&background=random`;
+                  }}
                 />
               ) : (
                 <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
@@ -86,16 +108,15 @@ const FeaturedApps = () => {
 
             <div className="flex items-baseline gap-1 mb-4">
               <span className="text-sm text-green-600">
-                {app.price ? `${app.price}% Off` : 'Gratuit'}
+                {app.price ? `${app.price}€/mois` : 'Gratuit'}
               </span>
-              <span className="text-xs text-gray-400">Sales upper scale</span>
             </div>
 
             <Button 
               variant="secondary" 
               className="w-full flex items-center justify-center gap-2"
             >
-              <span>Visit</span>
+              <span>Visiter</span>
               <ExternalLink className="h-4 w-4" />
             </Button>
           </Card>
