@@ -6,17 +6,47 @@ export const updateInvoiceDetails = async (
 ) => {
   console.log('Updating invoice details for ID:', invoiceId, 'with data:', data);
   
-  const { error } = await supabase
+  // Vérifions d'abord si un enregistrement existe
+  const { data: existing, error: checkError } = await supabase
     .from('invoicedetails')
-    .update({
-      amount: data.amount,
-      invoice_date: data.invoice_date,
-    })
-    .eq('invoice_id', invoiceId);
+    .select('*')
+    .eq('invoice_id', invoiceId)
+    .single();
 
-  if (error) {
-    console.error('Error updating invoice details:', error);
-    throw error;
+  if (checkError && checkError.code !== 'PGRST116') {
+    console.error('Error checking invoice details:', checkError);
+    throw checkError;
+  }
+
+  if (!existing) {
+    // Si aucun enregistrement n'existe, on en crée un nouveau
+    const { error: insertError } = await supabase
+      .from('invoicedetails')
+      .insert([{
+        invoice_id: invoiceId,
+        amount: data.amount,
+        invoice_date: data.invoice_date,
+        status: 'pending'
+      }]);
+
+    if (insertError) {
+      console.error('Error inserting invoice details:', insertError);
+      throw insertError;
+    }
+  } else {
+    // Si un enregistrement existe, on le met à jour
+    const { error: updateError } = await supabase
+      .from('invoicedetails')
+      .update({
+        amount: data.amount,
+        invoice_date: data.invoice_date,
+      })
+      .eq('invoice_id', invoiceId);
+
+    if (updateError) {
+      console.error('Error updating invoice details:', updateError);
+      throw updateError;
+    }
   }
 
   console.log('Successfully updated invoice details');

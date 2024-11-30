@@ -136,14 +136,14 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
 
       switch (sortBy) {
         case "date":
-          return new Date(detailsB?.invoice_date || 0).getTime() - 
-                 new Date(detailsA?.invoice_date || 0).getTime();
+          return new Date(detailsB?.invoice_date || b.date).getTime() - 
+                 new Date(detailsA?.invoice_date || a.date).getTime();
         case "name":
           return a.name.localeCompare(b.name);
         case "price":
           return (detailsB?.amount || 0) - (detailsA?.amount || 0);
         case "status":
-          return (detailsA?.status || "").localeCompare(detailsB?.status || "");
+          return (detailsA?.status || "pending").localeCompare(detailsB?.status || "pending");
         default:
           return 0;
       }
@@ -181,16 +181,20 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
           </TableHeader>
           <TableBody>
             {filteredInvoices.map((invoice) => {
-              const invoiceDetail = invoiceDetails?.find(d => d.invoice_id === invoice.id);
+              const invoiceDetail = invoiceDetails?.find(d => d.invoice_id === invoice.id) || {
+                status: 'pending',
+                amount: null,
+                invoice_date: invoice.date
+              };
               const isEditing = editingId === invoice.id;
               
               return (
                 <TableRow key={invoice.id} className="hover:bg-gray-50">
                   <TableCell>
                     <div className="flex items-center gap-2">
-                      {getStatusIcon(invoiceDetail?.status || 'pending')}
-                      <span className={`text-sm px-2.5 py-0.5 rounded-full border ${getStatusClass(invoiceDetail?.status || 'pending')}`}>
-                        {getStatusText(invoiceDetail?.status || 'pending')}
+                      {getStatusIcon(invoiceDetail.status)}
+                      <span className={`text-sm px-2.5 py-0.5 rounded-full border ${getStatusClass(invoiceDetail.status)}`}>
+                        {getStatusText(invoiceDetail.status)}
                       </span>
                     </div>
                   </TableCell>
@@ -208,13 +212,13 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
                     </div>
                   </TableCell>
                   <TableCell>
-                    {invoiceDetail?.invoice_date 
+                    {invoiceDetail.invoice_date 
                       ? new Date(invoiceDetail.invoice_date).toLocaleDateString()
-                      : '-'
+                      : new Date(invoice.date).toLocaleDateString()
                     }
                   </TableCell>
                   <TableCell>
-                    {invoiceDetail?.amount 
+                    {invoiceDetail.amount 
                       ? `${invoiceDetail.amount} €`
                       : '-'
                     }
