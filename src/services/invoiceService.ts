@@ -35,11 +35,38 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
       
       const invoicesWithDetails = await Promise.all(
         data.map(async (inv: any) => {
-          const { data: details } = await supabase
+          // Create invoice details if they don't exist
+          const { data: details, error: detailsError } = await supabase
             .from('invoicedetails')
             .select('*')
             .eq('invoice_id', inv.id)
             .single();
+
+          if (detailsError && detailsError.code === 'PGRST116') {
+            console.log('Creating missing invoice details for invoice:', inv.id);
+            const { data: newDetails, error: insertError } = await supabase
+              .from('invoicedetails')
+              .insert([{
+                invoice_id: inv.id,
+                status: 'pending',
+                created_at: new Date().toISOString()
+              }])
+              .select()
+              .single();
+
+            if (insertError) {
+              console.error('Error creating invoice details:', insertError);
+              throw insertError;
+            }
+
+            return {
+              id: inv.id,
+              name: inv.Names,
+              date: new Date(inv.created_at),
+              url: inv.url,
+              details: newDetails
+            };
+          }
           
           return {
             id: inv.id,
@@ -68,8 +95,22 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
       // Upload the file first
       const invoice = await uploadInvoiceFile(file);
       console.log('File uploaded successfully:', invoice);
+
+      // Create initial invoice details
+      const { error: detailsError } = await supabase
+        .from('invoicedetails')
+        .insert([{
+          invoice_id: invoice.id,
+          status: 'pending',
+          created_at: new Date().toISOString()
+        }]);
+
+      if (detailsError) {
+        console.error('Error creating initial invoice details:', detailsError);
+        throw detailsError;
+      }
       
-      // Immediately trigger the analysis
+      // Trigger the analysis
       console.log('Triggering invoice analysis...');
       const { error: analysisError } = await supabase.functions.invoke('analyze-invoice', {
         body: { fileUrl: invoice.url, invoiceId: invoice.id }
@@ -108,6 +149,17 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
       const invoiceToDelete = get().invoices.find((inv) => inv.id === id);
       
       if (invoiceToDelete) {
+        // Delete invoice details first
+        const { error: detailsError } = await supabase
+          .from('invoicedetails')
+          .delete()
+          .eq('invoice_id', id);
+
+        if (detailsError) {
+          console.error('Error deleting invoice details:', detailsError);
+          throw detailsError;
+        }
+
         await deleteInvoiceFile(invoiceToDelete.url.split('/').pop() || '');
         set((state) => ({
           invoices: state.invoices.filter((inv) => inv.id !== id)
