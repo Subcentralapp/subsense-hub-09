@@ -25,16 +25,16 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#9b87f5",
+          DEFAULT: "#1a237e", // Bleu nuit
           foreground: "#ffffff",
         },
         secondary: {
-          DEFAULT: "#7E69AB",
+          DEFAULT: "#121858", // Bleu nuit plus foncé
           foreground: "#ffffff",
         },
         neutral: {
-          DEFAULT: "#8E9196",
-          light: "#F1F0FB",
+          DEFAULT: "#4a4a4a", // Gris foncé
+          light: "#f8f9fa", // Gris très clair presque blanc
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
