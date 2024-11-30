@@ -6,26 +6,58 @@ import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function Auth() {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    // Check if user is already logged in
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        console.error("Error checking session:", error);
+        return;
+      }
       if (session) {
         navigate("/dashboard");
       }
     });
 
+    // Listen for auth state changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state changed:", event, session);
-      if (event === "SIGNED_IN") {
+      
+      if (event === 'SIGNED_IN') {
+        toast({
+          title: "Connexion réussie",
+          description: "Bienvenue !",
+        });
         navigate("/dashboard");
+      }
+
+      if (event === 'SIGNED_OUT') {
+        toast({
+          title: "Déconnexion réussie",
+          description: "À bientôt !",
+        });
+      }
+
+      if (event === 'USER_UPDATED') {
+        console.log("User profile updated");
+      }
+
+      // Handle specific error events
+      if (event === 'PASSWORD_RECOVERY') {
+        toast({
+          title: "Réinitialisation du mot de passe",
+          description: "Vérifiez votre boîte mail pour les instructions.",
+        });
       }
     });
 
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, toast]);
 
   return (
     <div className="min-h-[calc(100vh-4rem)] flex items-center justify-center bg-neutral-light p-4">
@@ -58,6 +90,9 @@ export default function Auth() {
               anchor: {
                 color: '#9b87f5',
               },
+              message: {
+                color: 'red',
+              },
             },
           }}
           providers={["google"]}
@@ -69,6 +104,8 @@ export default function Auth() {
                 button_label: 'Se connecter',
                 loading_button_label: 'Connexion en cours...',
                 link_text: 'Vous avez déjà un compte ? Connectez-vous',
+                email_input_placeholder: 'Votre adresse email',
+                password_input_placeholder: 'Votre mot de passe',
               },
               sign_up: {
                 email_label: 'Adresse email',
@@ -76,6 +113,8 @@ export default function Auth() {
                 button_label: "Créer mon compte",
                 loading_button_label: 'Inscription en cours...',
                 link_text: "Pas encore de compte ? Inscrivez-vous",
+                email_input_placeholder: 'Votre adresse email',
+                password_input_placeholder: 'Choisissez un mot de passe',
               },
               forgotten_password: {
                 link_text: 'Mot de passe oublié ?',
@@ -83,6 +122,7 @@ export default function Auth() {
                 loading_button_label: 'Envoi en cours...',
                 email_label: 'Adresse email',
                 password_label: 'Mot de passe',
+                email_input_placeholder: 'Votre adresse email',
               },
             },
           }}
