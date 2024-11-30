@@ -122,14 +122,24 @@ serve(async (req) => {
 
     let analysis;
     try {
-      analysis = JSON.parse(data.choices[0].message.content);
+      const content = data.choices[0].message.content.trim();
+      console.log('Raw OpenAI response content:', content);
+      analysis = JSON.parse(content);
       console.log('Analysis parsed successfully:', {
         appsAnalyzed: Object.keys(analysis).length,
-        totalCharacters: data.choices[0].message.content.length
+        totalCharacters: content.length
       });
     } catch (e) {
       console.error('Failed to parse OpenAI response:', e, data.choices[0].message.content);
       throw new Error('Invalid JSON response from OpenAI');
+    }
+
+    // Validate the analysis structure
+    for (const app of apps) {
+      if (!analysis[app.name]) {
+        console.error(`Missing analysis for app: ${app.name}`);
+        throw new Error(`Invalid analysis structure: missing data for ${app.name}`);
+      }
     }
 
     return new Response(JSON.stringify({ analysis }), {
