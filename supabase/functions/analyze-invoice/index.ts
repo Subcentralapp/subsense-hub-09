@@ -27,7 +27,7 @@ serve(async (req) => {
     console.log('PDF converted to base64');
 
     // Call Google Vision API with the correct API key
-    const visionApiKey = "2a8dbef566ac8d3f1ed9bd641590ef79b9e2f663";
+    const visionApiKey = "AIzaSyDIrE7dKomdArEnBopytuL1n1lEmngLAmE";
     
     const visionRequest = {
       requests: [{
