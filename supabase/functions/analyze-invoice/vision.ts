@@ -31,6 +31,6 @@ export async function analyzeImageWithVision(base64Content: string) {
   }
 
   const result = await visionResponse.json();
-  console.log('Vision API response successful');
+  console.log('Vision API response received successfully');
   return result;
 }
