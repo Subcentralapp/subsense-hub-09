@@ -26,12 +26,9 @@ serve(async (req) => {
     const base64Content = btoa(String.fromCharCode(...new Uint8Array(pdfBuffer)));
     console.log('PDF converted to base64');
 
-    // Call Google Vision API
-    const visionApiKey = Deno.env.get('Google Vision');
-    if (!visionApiKey) {
-      throw new Error('Google Vision API key not found');
-    }
-
+    // Call Google Vision API with the correct API key
+    const visionApiKey = "2a8dbef566ac8d3f1ed9bd641590ef79b9e2f663";
+    
     const visionRequest = {
       requests: [{
         image: { content: base64Content },
