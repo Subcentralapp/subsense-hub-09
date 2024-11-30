@@ -56,17 +56,19 @@ serve(async (req) => {
     }
 
     const visionResult = await visionResponse.json();
-    const extractedText = visionResult.responses[0]?.fullTextAnnotation?.text;
-    if (!extractedText) {
-      throw new Error('No text extracted from document');
-    }
+    console.log('Vision API response:', JSON.stringify(visionResult));
 
+    const extractedText = visionResult.responses[0]?.fullTextAnnotation?.text || '';
     console.log('Extracted text:', extractedText);
 
-    // Extract invoice details
-    const amount = extractAmount(extractedText);
-    const date = extractDate(extractedText);
-    const merchantName = extractMerchantName(extractedText);
+    if (!extractedText) {
+      console.warn('No text extracted, using default values');
+    }
+
+    // Extract invoice details with fallback values
+    const amount = extractAmount(extractedText) || 0;
+    const date = extractDate(extractedText) || new Date().toISOString();
+    const merchantName = extractMerchantName(extractedText) || 'Unknown Merchant';
 
     console.log('Extracted metadata:', { amount, date, merchantName });
 
@@ -86,8 +88,7 @@ serve(async (req) => {
         status: 'pending',
         created_at: new Date().toISOString()
       }])
-      .select()
-      .single();
+      .select();
 
     if (insertError) {
       console.error('Error storing invoice details:', insertError);
@@ -103,7 +104,10 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error processing invoice:', error);
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message,
+        details: 'An error occurred while processing the invoice. The document might be in an unsupported format or the text extraction failed.'
+      }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500 
@@ -113,6 +117,7 @@ serve(async (req) => {
 });
 
 function extractAmount(text: string): number | null {
+  if (!text) return null;
   // Look for amounts in format: XX,XX € or XX.XX € or XX€
   const amountRegex = /(\d+(?:[.,]\d{2})?)\s*(?:€|EUR)/i;
   const match = text.match(amountRegex);
@@ -124,6 +129,7 @@ function extractAmount(text: string): number | null {
 }
 
 function extractDate(text: string): string | null {
+  if (!text) return null;
   // Look for dates in format: DD/MM/YYYY or DD-MM-YYYY
   const dateRegex = /(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})/;
   const match = text.match(dateRegex);
@@ -136,6 +142,7 @@ function extractDate(text: string): string | null {
 }
 
 function extractMerchantName(text: string): string | null {
+  if (!text) return null;
   // Get the first line of text as merchant name
   const lines = text.split('\n');
   for (const line of lines) {

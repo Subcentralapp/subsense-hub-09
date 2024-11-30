@@ -38,7 +38,7 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
     date: "",
   });
 
-  const { data: invoiceDetails, refetch } = useInvoiceDetails();
+  const { data: invoiceDetails, isError: isDetailsError } = useInvoiceDetails();
 
   const handleEdit = async (invoiceId: string) => {
     if (editingId === invoiceId) {
@@ -54,7 +54,6 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
         });
 
         setEditingId(null);
-        refetch();
       } catch (error) {
         console.error("Erreur lors de la mise à jour:", error);
         toast({
@@ -149,6 +148,14 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
           return 0;
       }
     });
+
+  if (isDetailsError) {
+    toast({
+      title: "Erreur",
+      description: "Impossible de charger les détails des factures.",
+      variant: "destructive",
+    });
+  }
 
   return (
     <div className="space-y-4">

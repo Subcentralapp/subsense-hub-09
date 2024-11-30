@@ -17,7 +17,8 @@ export const useInvoiceDetails = () => {
       }
 
       console.log('Fetched invoice details:', data);
-      return data;
-    }
+      return data || [];
+    },
+    retry: 1,
   });
 };
