@@ -49,10 +49,10 @@ serve(async (req) => {
       }
     }`;
 
-    console.log('Initiating OpenAI API request with GPT-4...');
+    console.log('Initiating OpenAI API request with GPT-4 Turbo...');
 
     const openAIRequest = {
-      model: 'gpt-4',
+      model: 'gpt-4-turbo-preview',
       messages: [
         {
           role: 'system',
