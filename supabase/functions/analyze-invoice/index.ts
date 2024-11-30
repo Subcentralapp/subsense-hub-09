@@ -23,7 +23,6 @@ serve(async (req) => {
     const { fileUrl, invoiceId } = await req.json()
     console.log('Processing invoice:', { fileUrl, invoiceId })
 
-    // Initialize Supabase client
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
@@ -34,11 +33,11 @@ serve(async (req) => {
     const fileBuffer = await response.arrayBuffer()
     const base64Content = btoa(String.fromCharCode(...new Uint8Array(fileBuffer)))
 
+    console.log('Calling Google Vision API...')
     // Call Google Vision API
-    const visionResponse = await fetch('https://vision.googleapis.com/v1/images:annotate', {
+    const visionResponse = await fetch('https://vision.googleapis.com/v1/images:annotate?key=2a8dbef566ac8d3f1ed9bd641590ef79b9e2f663', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${Deno.env.get('GOOGLE_VISION_API_KEY')}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -56,16 +55,18 @@ serve(async (req) => {
     })
 
     const visionData: VisionResponse = await visionResponse.json()
-    console.log('Vision API response received')
+    console.log('Vision API response received:', visionData)
 
     // Extract text content
     const text = visionData.responses[0]?.fullTextAnnotation?.text || ''
     console.log('Extracted text:', text)
 
-    // Basic extraction logic (à améliorer selon vos besoins)
+    // Basic extraction logic
     const amount = extractAmount(text)
     const date = extractDate(text)
     const status = determineStatus(date)
+
+    console.log('Extracted metadata:', { amount, date, status })
 
     // Store metadata in invoicedetails
     const { data, error: insertError } = await supabase
