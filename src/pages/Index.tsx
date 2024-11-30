@@ -1,21 +1,18 @@
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
-import { BarChart, DollarSign, Plus, ArrowRightLeft, Lightbulb, Receipt } from "lucide-react";
+import { BarChart, Receipt, ArrowRightLeft, Apps } from "lucide-react";
 import DashboardStats from "@/components/DashboardStats";
 import SubscriptionList from "@/components/SubscriptionList";
 import ComparisonSection from "@/components/ComparisonSection";
-import RecommendationList from "@/components/recommendations/RecommendationList";
 import PaymentSection from "@/components/PaymentSection";
 import RandomAd from "@/components/RandomAd";
 import ApplicationImport from "@/components/ApplicationImport";
 import ApplicationList from "@/components/ApplicationList";
 import { Navbar } from "@/components/Navbar";
 import BudgetManager from "@/components/payment/budget/BudgetManager";
+import FeaturedApps from "@/components/FeaturedApps";
 
 const Index = () => {
-  const { toast } = useToast();
   const [activeTab, setActiveTab] = useState("dashboard");
 
   const renderContent = () => {
@@ -29,7 +26,6 @@ const Index = () => {
             </div>
             <SubscriptionList />
             <BudgetManager />
-            <RecommendationList />
             <ApplicationImport />
             <RandomAd />
           </div>
@@ -48,10 +44,10 @@ const Index = () => {
             <RandomAd />
           </>
         );
-      case "recommendations":
+      case "apps":
         return (
           <>
-            <RecommendationList />
+            <FeaturedApps />
             <RandomAd />
           </>
         );
@@ -95,12 +91,12 @@ const Index = () => {
               Comparer
             </Button>
             <Button
-              variant={activeTab === "recommendations" ? "default" : "ghost"}
-              onClick={() => setActiveTab("recommendations")}
+              variant={activeTab === "apps" ? "default" : "ghost"}
+              onClick={() => setActiveTab("apps")}
               className="hover-scale"
             >
-              <Lightbulb className="mr-2 h-4 w-4" />
-              Recommandations
+              <Apps className="mr-2 h-4 w-4" />
+              Nos Applications
             </Button>
           </nav>
 
