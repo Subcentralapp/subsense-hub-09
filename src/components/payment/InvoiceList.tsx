@@ -38,7 +38,7 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
     date: "",
   });
 
-  const { data: invoiceDetails, isError: isDetailsError } = useInvoiceDetails();
+  const { data: invoiceDetails = [], isError: isDetailsError } = useInvoiceDetails();
 
   const handleEdit = async (invoiceId: string) => {
     if (editingId === invoiceId) {
@@ -63,7 +63,11 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
         });
       }
     } else {
-      const invoiceDetail = invoiceDetails?.find(d => d.invoice_id === invoiceId);
+      // Find all details for this invoice and use the most recent one
+      const invoiceDetail = invoiceDetails
+        .filter(d => d.invoice_id === parseInt(invoiceId))
+        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
+
       setEditForm({
         price: invoiceDetail?.amount?.toString() || "",
         date: invoiceDetail?.invoice_date?.toString() || "",
@@ -92,8 +96,13 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
   const filteredInvoices = invoices
     .filter(invoice => invoice.name.toLowerCase().includes(searchTerm.toLowerCase()))
     .sort((a, b) => {
-      const detailsA = invoiceDetails?.find(d => d.invoice_id === a.id);
-      const detailsB = invoiceDetails?.find(d => d.invoice_id === b.id);
+      // Find the most recent details for each invoice
+      const detailsA = invoiceDetails
+        .filter(d => d.invoice_id === parseInt(a.id))
+        .sort((x, y) => new Date(y.created_at).getTime() - new Date(x.created_at).getTime())[0];
+      const detailsB = invoiceDetails
+        .filter(d => d.invoice_id === parseInt(b.id))
+        .sort((x, y) => new Date(y.created_at).getTime() - new Date(x.created_at).getTime())[0];
 
       switch (sortBy) {
         case "date":
@@ -142,11 +151,15 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
           </TableHeader>
           <TableBody>
             {filteredInvoices.map((invoice) => {
-              const invoiceDetail = invoiceDetails?.find(d => d.invoice_id === invoice.id) || {
-                status: 'pending',
-                amount: null,
-                invoice_date: invoice.date
-              };
+              // Get the most recent details for this invoice
+              const invoiceDetail = invoiceDetails
+                .filter(d => d.invoice_id === parseInt(invoice.id))
+                .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0] || {
+                  status: 'pending',
+                  amount: null,
+                  invoice_date: invoice.date
+                };
+              
               const isEditing = editingId === invoice.id;
               
               return (
