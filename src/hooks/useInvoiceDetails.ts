@@ -7,7 +7,7 @@ export const useInvoiceDetails = () => {
     queryFn: async () => {
       console.log('Fetching invoice details...');
       const { data, error } = await supabase
-        .from('invoicedetails')  // Table name in lowercase
+        .from('invoicedetails')  // Changed to lowercase to match table name
         .select('*')
         .order('created_at', { ascending: false });
       
