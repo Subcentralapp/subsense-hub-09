@@ -12,6 +12,7 @@ import RandomAd from "@/components/RandomAd";
 import ApplicationImport from "@/components/ApplicationImport";
 import ApplicationList from "@/components/ApplicationList";
 import { Navbar } from "@/components/Navbar";
+import BudgetManager from "@/components/payment/budget/BudgetManager";
 
 const Index = () => {
   const { toast } = useToast();
@@ -27,6 +28,7 @@ const Index = () => {
               <ApplicationList />
             </div>
             <SubscriptionList />
+            <BudgetManager />
             <RecommendationList />
             <ApplicationImport />
             <RandomAd />
