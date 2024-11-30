@@ -41,15 +41,14 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
             .select('*')
             .eq('invoice_id', inv.id)
             .order('created_at', { ascending: false })
-            .limit(1)
-            .single();
+            .limit(1);
           
           return {
             id: inv.id,
             name: inv.Names || inv.names,
             date: new Date(inv.created_at),
             url: inv.url,
-            details: details || undefined
+            details: details?.[0] || undefined
           };
         })
       );
@@ -68,7 +67,6 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
       set({ isLoading: true });
       console.log('Starting invoice upload process...');
       
-      // 1. Upload the file first and create invoice record
       const invoice = await uploadInvoiceFile(file);
       console.log('File uploaded and invoice created:', invoice);
 
@@ -76,7 +74,6 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
         throw new Error('Failed to create invoice record');
       }
 
-      // 2. Create initial invoice details
       const { error: detailsError } = await supabase
         .from('invoicedetails')
         .insert([{
@@ -93,7 +90,6 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
       
       console.log('Invoice details created successfully');
 
-      // Add the new invoice to the state
       set((state) => ({
         invoices: [{
           id: invoice.id,
@@ -121,6 +117,7 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
   updateInvoiceDetails: async (invoiceId: string, details: Partial<Invoice['details']>) => {
     try {
       set({ isLoading: true });
+      console.log('Updating invoice details:', { invoiceId, details });
       
       const { error } = await supabase
         .from('invoicedetails')
@@ -130,8 +127,12 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
           created_at: new Date().toISOString()
         }]);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error updating invoice details:', error);
+        throw error;
+      }
 
+      console.log('Invoice details updated successfully');
       await get().fetchInvoices();
     } catch (error) {
       console.error('Error updating invoice details:', error);
@@ -149,7 +150,6 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
       const invoiceToDelete = get().invoices.find((inv) => inv.id === id);
       
       if (invoiceToDelete) {
-        // 1. Delete invoice details first (due to foreign key constraint)
         const { error: detailsError } = await supabase
           .from('invoicedetails')
           .delete()
@@ -162,7 +162,6 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
 
         console.log('Invoice details deleted successfully');
 
-        // 2. Delete the invoice record and file
         const fileName = invoiceToDelete.url.split('/').pop();
         if (fileName) {
           await deleteInvoiceFile(fileName);
