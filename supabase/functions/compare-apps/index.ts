@@ -22,9 +22,7 @@ serve(async (req) => {
       throw new Error('OpenAI API key not configured');
     }
 
-    if (!openAIApiKey.startsWith('sk-')) {
-      throw new Error('Invalid OpenAI API key format - must start with sk-');
-    }
+    // Removed the sk- validation check since the format has changed
     
     const prompt = `Compare these applications in detail: ${apps.map(app => `${app.name} (${app.category})`).join(', ')}. 
     For each app, provide a detailed comparison focusing on:
@@ -73,12 +71,12 @@ serve(async (req) => {
 
     if (!response.ok) {
       const errorData = await response.text();
-      console.error('OpenAI API error:', errorData);
+      console.error('OpenAI API error response:', errorData);
       throw new Error(`OpenAI API error: ${response.status} ${errorData}`);
     }
 
     const data = await response.json();
-    console.log('OpenAI response:', data);
+    console.log('OpenAI response received');
 
     if (!data.choices?.[0]?.message?.content) {
       console.error('Invalid OpenAI response structure:', data);
@@ -88,7 +86,7 @@ serve(async (req) => {
     let analysis;
     try {
       analysis = JSON.parse(data.choices[0].message.content);
-      console.log('Parsed analysis:', analysis);
+      console.log('Analysis parsed successfully');
     } catch (e) {
       console.error('Failed to parse OpenAI response:', e, data.choices[0].message.content);
       throw new Error('Invalid JSON response from OpenAI');
