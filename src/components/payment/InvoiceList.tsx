@@ -1,21 +1,12 @@
 import { useState } from "react";
-import { FileText } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import InvoiceActions from "./invoice/InvoiceActions";
+import { Table, TableBody } from "@/components/ui/table";
 import InvoiceFilters from "./invoice/InvoiceFilters";
-import InvoiceStatusCell from "./invoice/InvoiceStatusCell";
-import InvoiceEditForm from "./invoice/InvoiceEditForm";
 import InvoiceExport from "./invoice/InvoiceExport";
 import { useInvoiceDetails } from "@/hooks/useInvoiceDetails";
 import { updateInvoiceDetails } from "@/services/invoiceOperations";
+import InvoiceTableHeader from "./invoice/InvoiceTableHeader";
+import InvoiceTableRow from "./invoice/InvoiceTableRow";
 
 interface Invoice {
   id: string;
@@ -83,23 +74,6 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
     }
   };
 
-  const handleDelete = async (id: string) => {
-    try {
-      await onDelete(id);
-      toast({
-        title: "Facture supprimée",
-        description: "La facture a été supprimée avec succès.",
-      });
-    } catch (error) {
-      console.error("Erreur lors de la suppression:", error);
-      toast({
-        title: "Erreur",
-        description: "Une erreur est survenue lors de la suppression.",
-        variant: "destructive",
-      });
-    }
-  };
-
   const filteredInvoices = invoices
     .filter(invoice => invoice.name.toLowerCase().includes(searchTerm.toLowerCase()))
     .sort((a, b) => {
@@ -149,16 +123,7 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
 
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Statut</TableHead>
-              <TableHead>Facture</TableHead>
-              <TableHead>Date</TableHead>
-              <TableHead>Montant</TableHead>
-              <TableHead>Marchand</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
+          <InvoiceTableHeader />
           <TableBody>
             {filteredInvoices.map((invoice) => {
               const invoiceDetail = invoiceDetails
@@ -170,56 +135,18 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
                   merchant_name: ''
                 };
               
-              const isEditing = editingId === invoice.id;
-              
               return (
-                <TableRow key={invoice.id} className="hover:bg-gray-50">
-                  <InvoiceStatusCell status={invoiceDetail.status} />
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <FileText className="h-5 w-5 text-primary" />
-                      <a 
-                        href={invoice.url} 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-sm font-medium hover:underline"
-                      >
-                        {invoice.name}
-                      </a>
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    {isEditing ? (
-                      <div className="w-40">
-                        <InvoiceEditForm editForm={editForm} setEditForm={setEditForm} />
-                      </div>
-                    ) : (
-                      <>
-                        {invoiceDetail.invoice_date 
-                          ? new Date(invoiceDetail.invoice_date).toLocaleDateString()
-                          : new Date(invoice.date).toLocaleDateString()
-                        }
-                      </>
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {!isEditing && (invoiceDetail.amount 
-                      ? `${invoiceDetail.amount} €`
-                      : '-'
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    {!isEditing && (invoiceDetail.merchant_name || '-')}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <InvoiceActions
-                      isEditing={isEditing}
-                      isLoading={isLoading}
-                      onEdit={() => handleEdit(invoice.id)}
-                      onDelete={() => onDelete(invoice.id)}
-                    />
-                  </TableCell>
-                </TableRow>
+                <InvoiceTableRow
+                  key={invoice.id}
+                  invoice={invoice}
+                  invoiceDetail={invoiceDetail}
+                  isEditing={editingId === invoice.id}
+                  isLoading={isLoading}
+                  editForm={editForm}
+                  setEditForm={setEditForm}
+                  onEdit={() => handleEdit(invoice.id)}
+                  onDelete={() => onDelete(invoice.id)}
+                />
               );
             })}
           </TableBody>

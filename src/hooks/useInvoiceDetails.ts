@@ -13,7 +13,7 @@ export const useInvoiceDetails = () => {
 
       if (error) {
         console.error('Error fetching invoice details:', error);
-        throw error; // Propagate error to be handled by error boundary
+        throw error;
       }
 
       console.log('Fetched invoice details:', data);
