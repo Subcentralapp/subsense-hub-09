@@ -12,31 +12,52 @@ export const BudgetForm = () => {
   const queryClient = useQueryClient();
 
   const handleSetBudget = async () => {
+    console.log("Tentative de mise à jour du budget:", newBudget);
     try {
       setIsLoading(true);
       
       const { data: { user }, error: userError } = await supabase.auth.getUser();
+      console.log("Utilisateur récupéré:", user?.id);
       
       if (userError || !user) {
+        console.error("Erreur d'authentification:", userError);
         throw new Error("Vous devez être connecté pour définir un budget");
       }
 
       const amount = parseFloat(newBudget);
       if (isNaN(amount) || amount <= 0) {
-        throw new Error("Montant invalide");
+        console.error("Montant invalide:", newBudget);
+        throw new Error("Le montant doit être un nombre positif");
       }
 
       const startDate = new Date();
       startDate.setDate(1); // Premier jour du mois
       const endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0); // Dernier jour du mois
 
+      console.log("Suppression de l'ancien budget pour la période:", {
+        startDate: startDate.toISOString(),
+        endDate: endDate.toISOString()
+      });
+
       // Suppression de l'ancien budget
-      await supabase
+      const { error: deleteError } = await supabase
         .from('budgets')
         .delete()
         .eq('user_id', user.id)
         .gte('period_start', startDate.toISOString())
         .lte('period_end', endDate.toISOString());
+
+      if (deleteError) {
+        console.error("Erreur lors de la suppression:", deleteError);
+        throw deleteError;
+      }
+
+      console.log("Insertion du nouveau budget:", {
+        amount,
+        period_start: startDate.toISOString(),
+        period_end: endDate.toISOString(),
+        user_id: user.id
+      });
 
       // Insertion du nouveau budget
       const { error: insertError } = await supabase
@@ -48,19 +69,23 @@ export const BudgetForm = () => {
           user_id: user.id
         });
 
-      if (insertError) throw insertError;
+      if (insertError) {
+        console.error("Erreur lors de l'insertion:", insertError);
+        throw insertError;
+      }
 
+      console.log("Budget mis à jour avec succès");
       await queryClient.invalidateQueries({ queryKey: ['current-budget'] });
       await queryClient.invalidateQueries({ queryKey: ['monthly-expenses'] });
 
       toast({
         title: "Budget mis à jour",
-        description: "Votre budget mensuel a été mis à jour avec succès.",
+        description: `Votre budget mensuel de ${amount}€ a été mis à jour avec succès.`,
       });
 
       setNewBudget("");
     } catch (error: any) {
-      console.error('Error setting budget:', error);
+      console.error('Erreur lors de la mise à jour du budget:', error);
       toast({
         title: "Erreur",
         description: error.message || "Une erreur est survenue lors de la mise à jour du budget.",
