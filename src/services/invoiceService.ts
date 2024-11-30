@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { uploadInvoiceFile, deleteInvoiceFile, fetchInvoicesFromStorage } from './storage/invoiceStorage';
+import { uploadInvoiceFile, deleteInvoiceFile, fetchInvoices } from './storage/invoiceStorage';
 import { supabase } from '@/lib/supabase';
 
 interface Invoice {
@@ -32,7 +32,7 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
   fetchInvoices: async () => {
     try {
       set({ isLoading: true });
-      const data = await fetchInvoicesFromStorage();
+      const data = await fetchInvoices();
       
       const invoicesWithDetails = await Promise.all(
         data.map(async (inv: any) => {
@@ -74,6 +74,7 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
         throw new Error('Failed to create invoice record');
       }
 
+      // Remove id from the insert operation
       const { error: detailsError } = await supabase
         .from('invoicedetails')
         .insert({
@@ -119,6 +120,7 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
       set({ isLoading: true });
       console.log('Updating invoice details:', { invoiceId, details });
       
+      // Remove id from the insert operation
       const { error } = await supabase
         .from('invoicedetails')
         .insert({
