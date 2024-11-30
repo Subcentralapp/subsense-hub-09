@@ -33,11 +33,10 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
       set({ isLoading: true });
       const data = await fetchInvoicesFromStorage();
       
-      // Fetch invoice details
       const invoicesWithDetails = await Promise.all(
         data.map(async (inv: any) => {
           const { data: details } = await supabase
-            .from('InvoiceDetails')
+            .from('invoicedetails')
             .select('*')
             .eq('invoice_id', inv.id)
             .single();
@@ -64,16 +63,24 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
   addInvoice: async (file: File) => {
     try {
       set({ isLoading: true });
-      const invoice = await uploadInvoiceFile(file);
+      console.log('Starting invoice upload process...');
       
-      // Analyze the invoice with Google Vision API
+      // Upload the file first
+      const invoice = await uploadInvoiceFile(file);
+      console.log('File uploaded successfully:', invoice);
+      
+      // Immediately trigger the analysis
+      console.log('Triggering invoice analysis...');
       const { error: analysisError } = await supabase.functions.invoke('analyze-invoice', {
         body: { fileUrl: invoice.url, invoiceId: invoice.id }
       });
 
       if (analysisError) {
         console.error('Error analyzing invoice:', analysisError);
+        throw analysisError;
       }
+
+      console.log('Invoice analysis completed successfully');
 
       set((state) => ({
         invoices: [{
@@ -87,7 +94,7 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
       // Refresh to get the analyzed details
       await get().fetchInvoices();
     } catch (error) {
-      console.error('Error adding invoice:', error);
+      console.error('Error in addInvoice:', error);
       throw error;
     } finally {
       set({ isLoading: false });

@@ -13,6 +13,7 @@ interface InvoiceUploaderProps {
 const InvoiceUploader = ({ isLoading, onUpload }: InvoiceUploaderProps) => {
   const { toast } = useToast();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploadStatus, setUploadStatus] = useState<string>("");
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -41,17 +42,20 @@ const InvoiceUploader = ({ isLoading, onUpload }: InvoiceUploaderProps) => {
     }
 
     try {
+      setUploadStatus("Téléchargement du fichier...");
       await onUpload(selectedFile);
       setSelectedFile(null);
+      setUploadStatus("");
       toast({
         title: "Succès",
-        description: `${selectedFile.name} a été ajouté avec succès.`,
+        description: `${selectedFile.name} a été ajouté et analysé avec succès.`,
       });
     } catch (error) {
       console.error("Erreur lors de l'upload:", error);
+      setUploadStatus("");
       toast({
         title: "Erreur",
-        description: "Une erreur est survenue lors de l'upload du fichier.",
+        description: "Une erreur est survenue lors du traitement du fichier.",
         variant: "destructive",
       });
     }
@@ -65,7 +69,7 @@ const InvoiceUploader = ({ isLoading, onUpload }: InvoiceUploaderProps) => {
           <p className="text-lg font-medium">Déposez votre facture ici</p>
           <p className="text-sm text-gray-500">Format accepté : PDF</p>
         </div>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 w-full max-w-sm">
           <Input
             type="file"
             accept=".pdf"
@@ -79,11 +83,16 @@ const InvoiceUploader = ({ isLoading, onUpload }: InvoiceUploaderProps) => {
             className="w-full"
           >
             {isLoading ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                {uploadStatus || "Traitement en cours..."}
+              </>
             ) : (
-              <Upload className="mr-2 h-4 w-4" />
+              <>
+                <Upload className="mr-2 h-4 w-4" />
+                {selectedFile ? "Uploader le fichier" : "Sélectionner un fichier"}
+              </>
             )}
-            {selectedFile ? "Uploader le fichier" : "Sélectionner un fichier"}
           </Button>
         </div>
       </div>
