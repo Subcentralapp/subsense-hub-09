@@ -19,7 +19,9 @@ export const ComparisonResult = ({
   isLoading,
   onNewComparison,
 }: ComparisonResultProps) => {
-  if (isLoading || !comparisonData) {
+  console.log("Rendering ComparisonResult with data:", { apps, comparisonData, isLoading });
+
+  if (isLoading) {
     return (
       <Card className="p-8">
         <div className="flex flex-col items-center justify-center space-y-4">
@@ -47,6 +49,7 @@ export const ComparisonResult = ({
 
   const winner = apps.reduce((prev, current) => {
     if (!comparisonData[prev.name] || !comparisonData[current.name]) {
+      console.log("Missing comparison data for:", { prev: prev.name, current: current.name });
       return prev;
     }
     const prevScore = comparisonData[prev.name].userExperienceScore;

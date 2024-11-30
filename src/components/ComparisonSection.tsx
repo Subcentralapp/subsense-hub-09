@@ -20,6 +20,7 @@ const ComparisonSection = () => {
   const { data: applications, isLoading: appsLoading } = useQuery({
     queryKey: ["applications"],
     queryFn: async () => {
+      console.log("Fetching applications...");
       const { data, error } = await supabase
         .from("applications")
         .select("*")
@@ -27,8 +28,14 @@ const ComparisonSection = () => {
       
       if (error) {
         console.error("Error fetching applications:", error);
+        toast({
+          title: "Erreur",
+          description: "Impossible de charger les applications",
+          variant: "destructive",
+        });
         return [];
       }
+      console.log("Applications fetched:", data);
       return data as Application[];
     },
   });
@@ -37,22 +44,25 @@ const ComparisonSection = () => {
     queryKey: ["comparison", selectedApps.map(app => app.name)],
     queryFn: async () => {
       if (selectedApps.length < 2) return null;
+      console.log("Starting comparison for apps:", selectedApps);
 
-      const response = await fetch('https://qhidxbdxcymhuyquyqgk.functions.supabase.co/compare-apps', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${process.env.SUPABASE_ANON_KEY}`,
-        },
-        body: JSON.stringify({ apps: selectedApps }),
-      });
+      try {
+        const response = await supabase.functions.invoke('compare-apps', {
+          body: { apps: selectedApps },
+        });
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch comparison data');
+        console.log("Comparison response:", response);
+        if (response.error) throw new Error(response.error.message);
+        return response.data.analysis;
+      } catch (error) {
+        console.error("Comparison error:", error);
+        toast({
+          title: "Erreur de comparaison",
+          description: "Impossible de comparer les applications sélectionnées",
+          variant: "destructive",
+        });
+        throw error;
       }
-
-      const data = await response.json();
-      return JSON.parse(data.analysis);
     },
     enabled: showComparison && selectedApps.length >= 2,
   });
@@ -70,6 +80,7 @@ const ComparisonSection = () => {
     setSelectedApps(prev => {
       const newApps = [...prev];
       newApps[index] = app;
+      console.log("Updated selected apps:", newApps);
       return newApps;
     });
     
@@ -89,6 +100,7 @@ const ComparisonSection = () => {
       });
       return;
     }
+    console.log("Starting comparison with apps:", selectedApps);
     setShowComparison(true);
   };
 
