@@ -4,7 +4,8 @@ export const updateInvoiceDetails = async (
   invoiceId: string,
   data: { amount: number; invoice_date: string }
 ) => {
-  console.log('Updating invoice details for ID:', invoiceId);
+  console.log('Updating invoice details for ID:', invoiceId, 'with data:', data);
+  
   const { error } = await supabase
     .from('invoicedetails')
     .update({
@@ -17,4 +18,6 @@ export const updateInvoiceDetails = async (
     console.error('Error updating invoice details:', error);
     throw error;
   }
+
+  console.log('Successfully updated invoice details');
 };

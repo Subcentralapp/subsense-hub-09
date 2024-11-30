@@ -124,6 +124,7 @@ export type Database = {
           created_at: string | null
           file_path: string | null
           id: number
+          merchant_name: string | null
           names: string | null
           url: string | null
         }
@@ -131,6 +132,7 @@ export type Database = {
           created_at?: string | null
           file_path?: string | null
           id?: never
+          merchant_name?: string | null
           names?: string | null
           url?: string | null
         }
@@ -138,6 +140,7 @@ export type Database = {
           created_at?: string | null
           file_path?: string | null
           id?: never
+          merchant_name?: string | null
           names?: string | null
           url?: string | null
         }

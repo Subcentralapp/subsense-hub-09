@@ -1,21 +1,21 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1"
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4';
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+console.log("Analyze Invoice function started");
 
 serve(async (req) => {
-  if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
-  }
-
   try {
     const { fileUrl, invoiceId } = await req.json();
     console.log('Processing invoice:', { fileUrl, invoiceId });
 
-    // Initialize Supabase client
+    if (!fileUrl || !invoiceId) {
+      console.error('Missing required parameters');
+      return new Response(
+        JSON.stringify({ error: 'Missing fileUrl or invoiceId' }),
+        { status: 400, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
+
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
@@ -32,14 +32,12 @@ serve(async (req) => {
       console.error('Invoice not found:', invoiceError);
       return new Response(
         JSON.stringify({ 
-          error: 'Invoice not found' 
+          error: 'Invoice not found',
+          details: invoiceError 
         }),
         { 
-          headers: { 
-            ...corsHeaders,
-            'Content-Type': 'application/json'
-          },
-          status: 404
+          status: 404,
+          headers: { 'Content-Type': 'application/json' }
         }
       );
     }
@@ -63,43 +61,27 @@ serve(async (req) => {
       console.error('Error storing metadata:', insertError);
       return new Response(
         JSON.stringify({ 
-          error: insertError.message 
+          error: 'Failed to store invoice metadata',
+          details: insertError 
         }),
         { 
-          headers: { 
-            ...corsHeaders,
-            'Content-Type': 'application/json'
-          },
-          status: 500
+          status: 500,
+          headers: { 'Content-Type': 'application/json' }
         }
       );
     }
 
-    console.log('Successfully stored metadata:', data);
-
+    console.log('Successfully stored invoice metadata:', data);
     return new Response(
       JSON.stringify({ success: true, data }),
-      { 
-        headers: { 
-          ...corsHeaders,
-          'Content-Type': 'application/json'
-        }
-      }
+      { headers: { 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
-    console.error('Error processing invoice:', error);
+    console.error('Unexpected error:', error);
     return new Response(
-      JSON.stringify({ 
-        error: error.message || 'An error occurred while processing the invoice'
-      }),
-      { 
-        headers: { 
-          ...corsHeaders,
-          'Content-Type': 'application/json'
-        },
-        status: 500
-      }
+      JSON.stringify({ error: 'Internal server error', details: error.message }),
+      { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
   }
 });

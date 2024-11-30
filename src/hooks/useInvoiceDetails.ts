@@ -8,7 +8,8 @@ export const useInvoiceDetails = () => {
       console.log('Fetching invoice details...');
       const { data, error } = await supabase
         .from('invoicedetails')
-        .select('*');
+        .select('*')
+        .order('created_at', { ascending: false });
 
       if (error) {
         console.error('Error fetching invoice details:', error);
