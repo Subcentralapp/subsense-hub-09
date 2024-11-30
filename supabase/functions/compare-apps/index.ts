@@ -16,13 +16,13 @@ serve(async (req) => {
     console.log('Comparing apps:', apps);
 
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+    console.log('OpenAI API Key status:', openAIApiKey ? 'Present' : 'Missing');
+    
     if (!openAIApiKey) {
-      console.error('OpenAI API key not configured');
       throw new Error('OpenAI API key not configured');
     }
 
     if (!openAIApiKey.startsWith('sk-')) {
-      console.error('Invalid OpenAI API key format');
       throw new Error('Invalid OpenAI API key format - must start with sk-');
     }
     
