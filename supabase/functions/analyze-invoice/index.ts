@@ -6,7 +6,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-// Configuration Google Cloud
 const CREDENTIALS = {
   type: "service_account",
   project_id: "lovelace-443112",
@@ -22,64 +21,81 @@ const CREDENTIALS = {
 };
 
 async function getAccessToken() {
-  const jwtHeader = {
-    alg: 'RS256',
-    typ: 'JWT'
-  };
+  try {
+    const iat = Math.floor(Date.now() / 1000);
+    const exp = iat + 3600; // Token expires in 1 hour
 
-  const now = Math.floor(Date.now() / 1000);
-  const jwtClaimSet = {
-    iss: CREDENTIALS.client_email,
-    scope: 'https://www.googleapis.com/auth/cloud-vision',
-    aud: CREDENTIALS.token_uri,
-    exp: now + 3600,
-    iat: now
-  };
+    const jwtHeader = {
+      alg: 'RS256',
+      typ: 'JWT'
+    };
 
-  // Create JWT
-  const encodedHeader = btoa(JSON.stringify(jwtHeader));
-  const encodedClaimSet = btoa(JSON.stringify(jwtClaimSet));
-  const signatureInput = `${encodedHeader}.${encodedClaimSet}`;
+    const jwtClaimSet = {
+      iss: CREDENTIALS.client_email,
+      scope: 'https://www.googleapis.com/auth/cloud-vision',
+      aud: CREDENTIALS.token_uri,
+      exp,
+      iat
+    };
 
-  // Sign the JWT
-  const encoder = new TextEncoder();
-  const privateKey = CREDENTIALS.private_key;
-  const keyData = privateKey.replace(/\\n/g, '\n');
-  
-  const key = await crypto.subtle.importKey(
-    'pkcs8',
-    new TextEncoder().encode(keyData),
-    {
-      name: 'RSASSA-PKCS1-v1_5',
-      hash: 'SHA-256',
-    },
-    false,
-    ['sign']
-  );
+    // Convert private key from PEM to ArrayBuffer
+    const privateKeyPEM = CREDENTIALS.private_key
+      .replace(/-----BEGIN PRIVATE KEY-----\n/, '')
+      .replace(/\n-----END PRIVATE KEY-----\n?/, '')
+      .replace(/\n/g, '');
+    
+    const binaryKey = Uint8Array.from(atob(privateKeyPEM), c => c.charCodeAt(0));
+    
+    // Import the private key
+    const privateKey = await crypto.subtle.importKey(
+      'pkcs8',
+      binaryKey,
+      {
+        name: 'RSASSA-PKCS1-v1_5',
+        hash: 'SHA-256',
+      },
+      false,
+      ['sign']
+    );
 
-  const signature = await crypto.subtle.sign(
-    'RSASSA-PKCS1-v1_5',
-    key,
-    encoder.encode(signatureInput)
-  );
+    // Create JWT
+    const headerB64 = btoa(JSON.stringify(jwtHeader));
+    const claimSetB64 = btoa(JSON.stringify(jwtClaimSet));
+    const signatureInput = `${headerB64}.${claimSetB64}`;
 
-  const jwt = `${signatureInput}.${btoa(String.fromCharCode(...new Uint8Array(signature)))}`;
+    // Sign the JWT
+    const signature = await crypto.subtle.sign(
+      'RSASSA-PKCS1-v1_5',
+      privateKey,
+      new TextEncoder().encode(signatureInput)
+    );
 
-  // Exchange JWT for access token
-  const tokenResponse = await fetch(CREDENTIALS.token_uri, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: new URLSearchParams({
-      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-      assertion: jwt,
-    }),
-  });
+    const signatureB64 = btoa(String.fromCharCode(...new Uint8Array(signature)));
+    const jwt = `${signatureInput}.${signatureB64}`;
 
-  const tokenData = await tokenResponse.json();
-  console.log('Token response:', tokenData);
-  return tokenData.access_token;
+    // Exchange JWT for access token
+    const tokenResponse = await fetch(CREDENTIALS.token_uri, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+        assertion: jwt,
+      }),
+    });
+
+    if (!tokenResponse.ok) {
+      throw new Error(`Token request failed: ${await tokenResponse.text()}`);
+    }
+
+    const tokenData = await tokenResponse.json();
+    console.log('Successfully obtained access token');
+    return tokenData.access_token;
+  } catch (error) {
+    console.error('Error getting access token:', error);
+    throw error;
+  }
 }
 
 serve(async (req) => {
@@ -93,6 +109,10 @@ serve(async (req) => {
 
     // Fetch the file content
     const response = await fetch(fileUrl);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch file: ${response.statusText}`);
+    }
+    
     const fileBuffer = await response.arrayBuffer();
     const base64Content = btoa(String.fromCharCode(...new Uint8Array(fileBuffer)));
 
@@ -100,9 +120,9 @@ serve(async (req) => {
 
     // Get access token
     const accessToken = await getAccessToken();
-    console.log('Got access token:', accessToken);
+    console.log('Got access token');
 
-    // Call Google Vision API with proper authentication
+    // Call Google Vision API
     const visionResponse = await fetch('https://vision.googleapis.com/v1/images:annotate', {
       method: 'POST',
       headers: {
@@ -130,7 +150,7 @@ serve(async (req) => {
     }
 
     const visionData = await visionResponse.json();
-    console.log('Vision API response received:', visionData);
+    console.log('Vision API response received');
 
     // Extract text content
     const text = visionData.responses[0]?.fullTextAnnotation?.text || '';
@@ -149,7 +169,7 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // Store metadata in invoicedetails
+    // Store metadata in invoicedetails (note the lowercase table name)
     const { data, error: insertError } = await supabaseClient
       .from('invoicedetails')
       .insert([{
@@ -195,7 +215,7 @@ serve(async (req) => {
   }
 });
 
-// Utility functions for text extraction
+// Utility functions
 function extractAmount(text: string): number | null {
   const amountRegex = /(\d+[.,]\d{2})\s*€/;
   const match = text.match(amountRegex);
