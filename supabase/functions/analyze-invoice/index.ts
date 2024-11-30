@@ -15,9 +15,14 @@ serve(async (req) => {
     const { fileUrl, invoiceId } = await req.json()
     console.log('Starting invoice analysis for:', { fileUrl, invoiceId })
 
+    if (!fileUrl || !invoiceId) {
+      throw new Error('Missing required parameters: fileUrl or invoiceId')
+    }
+
     // Fetch the PDF file
     const pdfResponse = await fetch(fileUrl)
     if (!pdfResponse.ok) {
+      console.error('Failed to fetch PDF:', pdfResponse.statusText)
       throw new Error(`Failed to fetch PDF: ${pdfResponse.statusText}`)
     }
 
@@ -27,7 +32,11 @@ serve(async (req) => {
     console.log('PDF converted to base64')
 
     // Call Google Vision API
-    const visionApiKey = 'AIzaSyDIrE7dKomdArEnBopytuL1n1lEmngLAmE'
+    const visionApiKey = Deno.env.get('Google Vision') || ''
+    if (!visionApiKey) {
+      throw new Error('Google Vision API key not configured')
+    }
+
     const visionRequest = {
       requests: [{
         image: { content: base64Content },
@@ -67,33 +76,53 @@ serve(async (req) => {
 
     console.log('Extracted metadata:', { amount, date, merchantName })
 
-    // Update invoice details in Supabase
+    // Initialize Supabase client
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
+    // First, verify if the invoice exists
+    const { data: invoice, error: invoiceError } = await supabase
+      .from('invoices')
+      .select('id')
+      .eq('id', invoiceId)
+      .single()
+
+    if (invoiceError || !invoice) {
+      console.error('Invoice not found:', invoiceError)
+      throw new Error('Invoice not found in database')
+    }
+
+    // Update invoice details
     const { error: updateError } = await supabase
       .from('invoicedetails')
-      .update({
+      .upsert({
+        invoice_id: invoiceId,
         amount: amount || null,
         invoice_date: date || null,
         merchant_name: merchantName || null,
         status: 'processed'
       })
-      .eq('invoice_id', invoiceId)
 
     if (updateError) {
       console.error('Error updating invoice details:', updateError)
       throw updateError
     }
 
+    console.log('Invoice details updated successfully')
+
     return new Response(
       JSON.stringify({ 
         success: true, 
         data: { amount, date, merchantName } 
       }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      { 
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json' 
+        } 
+      }
     )
 
   } catch (error) {
@@ -104,7 +133,10 @@ serve(async (req) => {
         details: 'An error occurred while processing the invoice.'
       }),
       { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json' 
+        },
         status: 500 
       }
     )
