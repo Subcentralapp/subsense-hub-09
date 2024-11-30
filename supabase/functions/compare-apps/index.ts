@@ -15,7 +15,7 @@ serve(async (req) => {
     const { apps } = await req.json();
     console.log('Starting comparison for apps:', apps);
 
-    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+    const openAIApiKey = "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";
     console.log('OpenAI API Key validation:', {
       present: !!openAIApiKey,
       keyPrefix: openAIApiKey?.substring(0, 7),
