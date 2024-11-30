@@ -13,16 +13,14 @@ serve(async (req) => {
 
   try {
     const { apps } = await req.json();
-    console.log('Comparing apps:', apps);
+    console.log('Starting comparison for apps:', apps);
 
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
-    console.log('OpenAI API Key status:', openAIApiKey ? 'Present' : 'Missing');
+    console.log('OpenAI API Key status:', openAIApiKey ? 'Present (starts with: ' + openAIApiKey.substring(0, 10) + '...)' : 'Missing');
     
     if (!openAIApiKey) {
       throw new Error('OpenAI API key not configured');
     }
-
-    // Removed the sk- validation check since the format has changed
     
     const prompt = `Compare these applications in detail: ${apps.map(app => `${app.name} (${app.category})`).join(', ')}. 
     For each app, provide a detailed comparison focusing on:
@@ -47,7 +45,7 @@ serve(async (req) => {
       }
     }`;
 
-    console.log('Sending request to OpenAI with prompt:', prompt);
+    console.log('Initiating OpenAI API request...');
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -56,7 +54,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4',
         messages: [
           {
             role: 'system',
@@ -69,6 +67,8 @@ serve(async (req) => {
       }),
     });
 
+    console.log('OpenAI API Response Status:', response.status);
+
     if (!response.ok) {
       const errorData = await response.text();
       console.error('OpenAI API error response:', errorData);
@@ -76,7 +76,7 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    console.log('OpenAI response received');
+    console.log('OpenAI response received successfully');
 
     if (!data.choices?.[0]?.message?.content) {
       console.error('Invalid OpenAI response structure:', data);
@@ -86,7 +86,7 @@ serve(async (req) => {
     let analysis;
     try {
       analysis = JSON.parse(data.choices[0].message.content);
-      console.log('Analysis parsed successfully');
+      console.log('Analysis parsed successfully, number of apps analyzed:', Object.keys(analysis).length);
     } catch (e) {
       console.error('Failed to parse OpenAI response:', e, data.choices[0].message.content);
       throw new Error('Invalid JSON response from OpenAI');
