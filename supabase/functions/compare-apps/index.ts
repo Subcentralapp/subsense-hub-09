@@ -16,7 +16,11 @@ serve(async (req) => {
     console.log('Starting comparison for apps:', apps);
 
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
-    console.log('OpenAI API Key status:', openAIApiKey ? 'Present (starts with: ' + openAIApiKey.substring(0, 10) + '...)' : 'Missing');
+    console.log('OpenAI API Key validation:', {
+      present: !!openAIApiKey,
+      keyPrefix: openAIApiKey?.substring(0, 7),
+      keyLength: openAIApiKey?.length
+    });
     
     if (!openAIApiKey) {
       throw new Error('OpenAI API key not configured');
@@ -45,7 +49,26 @@ serve(async (req) => {
       }
     }`;
 
-    console.log('Initiating OpenAI API request...');
+    console.log('Initiating OpenAI API request with GPT-4...');
+
+    const openAIRequest = {
+      model: 'gpt-4',
+      messages: [
+        {
+          role: 'system',
+          content: 'You are an expert in software analysis and comparison. Provide detailed, objective comparisons of applications. Always return valid JSON.'
+        },
+        { role: 'user', content: prompt }
+      ],
+      temperature: 0.7,
+      max_tokens: 2000,
+    };
+
+    console.log('OpenAI request configuration:', {
+      model: openAIRequest.model,
+      messageCount: openAIRequest.messages.length,
+      temperature: openAIRequest.temperature
+    });
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -53,21 +76,14 @@ serve(async (req) => {
         'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        model: 'gpt-4',
-        messages: [
-          {
-            role: 'system',
-            content: 'You are an expert in software analysis and comparison. Provide detailed, objective comparisons of applications. Always return valid JSON.'
-          },
-          { role: 'user', content: prompt }
-        ],
-        temperature: 0.7,
-        max_tokens: 2000,
-      }),
+      body: JSON.stringify(openAIRequest),
     });
 
-    console.log('OpenAI API Response Status:', response.status);
+    console.log('OpenAI API Response:', {
+      status: response.status,
+      statusText: response.statusText,
+      headers: Object.fromEntries(response.headers.entries())
+    });
 
     if (!response.ok) {
       const errorData = await response.text();
@@ -76,7 +92,11 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    console.log('OpenAI response received successfully');
+    console.log('OpenAI response received successfully:', {
+      model: data.model,
+      usage: data.usage,
+      choicesCount: data.choices?.length
+    });
 
     if (!data.choices?.[0]?.message?.content) {
       console.error('Invalid OpenAI response structure:', data);
@@ -86,7 +106,10 @@ serve(async (req) => {
     let analysis;
     try {
       analysis = JSON.parse(data.choices[0].message.content);
-      console.log('Analysis parsed successfully, number of apps analyzed:', Object.keys(analysis).length);
+      console.log('Analysis parsed successfully:', {
+        appsAnalyzed: Object.keys(analysis).length,
+        totalCharacters: data.choices[0].message.content.length
+      });
     } catch (e) {
       console.error('Failed to parse OpenAI response:', e, data.choices[0].message.content);
       throw new Error('Invalid JSON response from OpenAI');
