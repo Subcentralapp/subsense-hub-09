@@ -18,7 +18,7 @@ export const ComparisonResult = ({
   isLoading,
   onNewComparison,
 }: ComparisonResultProps) => {
-  if (isLoading) {
+  if (isLoading || !comparisonData) {
     return (
       <Card className="p-8">
         <div className="flex flex-col items-center justify-center space-y-4">
@@ -31,8 +31,26 @@ export const ComparisonResult = ({
     );
   }
 
+  // Ensure we have valid comparison data before proceeding
+  if (!comparisonData || Object.keys(comparisonData).length === 0) {
+    return (
+      <Card className="p-8">
+        <div className="flex flex-col items-center justify-center space-y-4">
+          <p className="text-lg font-medium text-gray-600">
+            Impossible de générer la comparaison. Veuillez réessayer.
+          </p>
+          <Button onClick={onNewComparison}>Nouvelle comparaison</Button>
+        </div>
+      </Card>
+    );
+  }
+
   // Determine the winner based on overall scores
+  // Only proceed if we have valid data for all apps
   const winner = apps.reduce((prev, current) => {
+    if (!comparisonData[prev.name] || !comparisonData[current.name]) {
+      return prev;
+    }
     const prevScore = comparisonData[prev.name].userExperienceScore;
     const currentScore = comparisonData[current.name].userExperienceScore;
     return currentScore > prevScore ? current : prev;
@@ -50,13 +68,13 @@ export const ComparisonResult = ({
           <ComparisonCard
             key={app.name}
             app={app}
-            isHighlighted={app.name === winner.name}
+            isHighlighted={app.name === winner?.name}
             onSelect={() => window.open(app.website_url, '_blank')}
           />
         ))}
       </div>
 
-      {winner && comparisonData && (
+      {winner && comparisonData && comparisonData[winner.name] && (
         <ComparisonWinner winner={winner} analysis={comparisonData} />
       )}
     </div>
