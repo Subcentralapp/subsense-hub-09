@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { uploadInvoiceFile, deleteInvoiceFile, fetchInvoices as fetchInvoicesFromStorage } from './storage/invoiceStorage';
+import { uploadInvoiceFile, deleteInvoiceFile, fetchInvoicesFromStorage } from './storage/invoiceStorage';
 import { supabase } from '@/lib/supabase';
 
 interface Invoice {
@@ -76,11 +76,11 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
 
       const { error: detailsError } = await supabase
         .from('invoicedetails')
-        .insert([{
+        .insert({
           invoice_id: invoice.id,
           status: 'pending',
           created_at: new Date().toISOString()
-        }]);
+        });
 
       if (detailsError) {
         console.error('Error creating invoice details:', detailsError);
@@ -121,11 +121,11 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
       
       const { error } = await supabase
         .from('invoicedetails')
-        .insert([{
+        .insert({
           invoice_id: invoiceId,
           ...details,
           created_at: new Date().toISOString()
-        }]);
+        });
 
       if (error) {
         console.error('Error updating invoice details:', error);

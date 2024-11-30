@@ -13,6 +13,8 @@ interface InvoiceTableRowProps {
   setEditForm: (form: any) => void;
   onEdit: () => void;
   onDelete: () => void;
+  onSave: () => Promise<void>;
+  onCancel: () => void;
 }
 
 const InvoiceTableRow = ({
@@ -24,6 +26,8 @@ const InvoiceTableRow = ({
   setEditForm,
   onEdit,
   onDelete,
+  onSave,
+  onCancel,
 }: InvoiceTableRowProps) => {
   return (
     <TableRow className="hover:bg-gray-50">
@@ -44,7 +48,13 @@ const InvoiceTableRow = ({
       <TableCell>
         {isEditing ? (
           <div className="w-40">
-            <InvoiceEditForm editForm={editForm} setEditForm={setEditForm} />
+            <InvoiceEditForm 
+              editForm={editForm} 
+              setEditForm={setEditForm}
+              onSave={onSave}
+              onCancel={onCancel}
+              isLoading={isLoading}
+            />
           </div>
         ) : (
           <>
