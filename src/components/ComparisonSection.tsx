@@ -1,14 +1,15 @@
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { Application } from "@/types/application";
-import { SearchDropdown } from "./search/SearchDropdown";
-import { ComparisonResult } from "./comparison/ComparisonResult";
-import { Loader2, Plus, Sparkles } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { motion } from "framer-motion";
+import { ComparisonResult } from "./comparison/ComparisonResult";
+import { ComparisonHero } from "./comparison/ComparisonHero";
+import { ComparisonSearch } from "./comparison/ComparisonSearch";
+import { TrustIndicators } from "./comparison/TrustIndicators";
 
 const ComparisonSection = () => {
   const [selectedApps, setSelectedApps] = useState<Application[]>([]);
@@ -98,29 +99,11 @@ const ComparisonSection = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
+          className="space-y-8"
         >
-          {/* Hero Banner */}
-          <div className="mb-12 text-center">
-            <motion.h1 
-              className="text-4xl font-bold text-primary mb-4"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              Comparez et Économisez
-            </motion.h1>
-            <motion.p 
-              className="text-lg text-gray-600 max-w-2xl mx-auto"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              Trouvez la meilleure application pour vos besoins en comparant les fonctionnalités, 
-              les prix et les avis utilisateurs.
-            </motion.p>
-          </div>
+          <ComparisonHero />
 
-          <Card className="p-8 bg-gradient-to-br from-white to-primary/5">
+          <div className="rounded-2xl p-8 bg-gradient-to-br from-white to-primary/5 shadow-lg">
             <div className="space-y-8">
               <div className="flex items-center justify-center gap-4">
                 <Sparkles className="h-6 w-6 text-primary" />
@@ -129,49 +112,25 @@ const ComparisonSection = () => {
                 </h2>
               </div>
               
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {[0, 1, 2].map((index) => (
-                  <motion.div 
-                    key={index}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                    className="relative"
-                  >
-                    <SearchDropdown
-                      searchTerm={searchTerms[index]}
-                      onSearchChange={(value) => {
-                        setSearchTerms(prev => {
-                          const newTerms = [...prev];
-                          newTerms[index] = value;
-                          return newTerms;
-                        });
-                      }}
-                      filteredApps={applications?.filter(app => {
-                        const searchLower = searchTerms[index].toLowerCase();
-                        return (
-                          app.name?.toLowerCase().includes(searchLower) ||
-                          app.category?.toLowerCase().includes(searchLower) ||
-                          app.description?.toLowerCase().includes(searchLower)
-                        );
-                      })}
-                      onSelectApp={(app) => handleAppSelect(app, index)}
-                      placeholder="Rechercher une application..."
-                    />
-                    {index < 2 && !selectedApps[index] && (
-                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <Plus className="h-6 w-6 text-gray-400" />
-                      </div>
-                    )}
-                  </motion.div>
-                ))}
-              </div>
+              <ComparisonSearch 
+                searchTerms={searchTerms}
+                onSearchChange={(value, index) => {
+                  setSearchTerms(prev => {
+                    const newTerms = [...prev];
+                    newTerms[index] = value;
+                    return newTerms;
+                  });
+                }}
+                applications={applications}
+                onSelectApp={handleAppSelect}
+                selectedApps={selectedApps}
+              />
 
               <div className="flex justify-center pt-4">
                 <Button
                   onClick={handleCompare}
                   disabled={selectedApps.length < 2 || appsLoading}
-                  className="px-8 py-6 text-lg shadow-lg hover:shadow-xl transition-all"
+                  className="px-8 py-6 text-lg shadow-lg hover:shadow-xl transition-all bg-primary hover:bg-primary/90"
                 >
                   {appsLoading ? (
                     <>
@@ -184,38 +143,9 @@ const ComparisonSection = () => {
                 </Button>
               </div>
             </div>
-          </Card>
-
-          {/* Trust Indicators */}
-          <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-            <motion.div 
-              className="text-center"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-            >
-              <h3 className="font-semibold text-lg mb-2">Comparaison Objective</h3>
-              <p className="text-gray-600">Analyses détaillées basées sur des critères précis</p>
-            </motion.div>
-            <motion.div 
-              className="text-center"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-            >
-              <h3 className="font-semibold text-lg mb-2">Données à Jour</h3>
-              <p className="text-gray-600">Prix et fonctionnalités mis à jour quotidiennement</p>
-            </motion.div>
-            <motion.div 
-              className="text-center"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 }}
-            >
-              <h3 className="font-semibold text-lg mb-2">Meilleurs Prix</h3>
-              <p className="text-gray-600">Accès aux meilleures offres et réductions</p>
-            </motion.div>
           </div>
+
+          <TrustIndicators />
         </motion.div>
       ) : (
         <ComparisonResult
