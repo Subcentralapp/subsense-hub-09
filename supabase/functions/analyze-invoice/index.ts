@@ -27,7 +27,10 @@ serve(async (req) => {
     console.log('PDF converted to base64');
 
     // Call Google Vision API with the correct API key
-    const visionApiKey = "AIzaSyDIrE7dKomdArEnBopytuL1n1lEmngLAmE";
+    const visionApiKey = Deno.env.get('GOOGLE_VISION_API_KEY');
+    if (!visionApiKey) {
+      throw new Error('Google Vision API key not configured');
+    }
     
     const visionRequest = {
       requests: [{
@@ -61,43 +64,39 @@ serve(async (req) => {
     const extractedText = visionResult.responses[0]?.fullTextAnnotation?.text || '';
     console.log('Extracted text:', extractedText);
 
-    if (!extractedText) {
-      console.warn('No text extracted, using default values');
-    }
-
-    // Extract invoice details with fallback values
-    const amount = extractAmount(extractedText) || 0;
-    const date = extractDate(extractedText) || new Date().toISOString();
-    const merchantName = extractMerchantName(extractedText) || 'Unknown Merchant';
+    // Extract structured information
+    const amount = extractAmount(extractedText);
+    const date = extractDate(extractedText);
+    const merchantName = extractMerchantName(extractedText);
 
     console.log('Extracted metadata:', { amount, date, merchantName });
 
-    // Store results in Supabase
-    const supabaseClient = createClient(
+    // Update invoice details in Supabase
+    const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { data, error: insertError } = await supabaseClient
+    const { error: updateError } = await supabase
       .from('invoicedetails')
-      .insert([{
-        invoice_id: invoiceId,
-        amount: amount,
-        invoice_date: date,
-        merchant_name: merchantName,
-        status: 'pending',
-        created_at: new Date().toISOString()
-      }])
-      .select();
+      .update({
+        amount: amount || null,
+        invoice_date: date || null,
+        merchant_name: merchantName || null,
+        status: 'processed'
+      })
+      .eq('invoice_id', invoiceId);
 
-    if (insertError) {
-      console.error('Error storing invoice details:', insertError);
-      throw insertError;
+    if (updateError) {
+      console.error('Error updating invoice details:', updateError);
+      throw updateError;
     }
 
-    console.log('Successfully stored invoice details:', data);
     return new Response(
-      JSON.stringify({ success: true, data }),
+      JSON.stringify({ 
+        success: true, 
+        data: { amount, date, merchantName } 
+      }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
@@ -106,7 +105,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         error: error.message,
-        details: 'An error occurred while processing the invoice. The document might be in an unsupported format or the text extraction failed.'
+        details: 'An error occurred while processing the invoice.'
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -118,38 +117,84 @@ serve(async (req) => {
 
 function extractAmount(text: string): number | null {
   if (!text) return null;
-  // Look for amounts in format: XX,XX € or XX.XX € or XX€
-  const amountRegex = /(\d+(?:[.,]\d{2})?)\s*(?:€|EUR)/i;
-  const match = text.match(amountRegex);
-  if (match) {
-    const amount = match[1].replace(',', '.');
-    return parseFloat(amount);
+  
+  // Look for amounts in various formats
+  const patterns = [
+    /Total\s*:\s*(\d+(?:[.,]\d{2})?)\s*(?:€|EUR)/i,
+    /Montant\s*(?:total|TTC)?\s*:\s*(\d+(?:[.,]\d{2})?)\s*(?:€|EUR)/i,
+    /(\d+(?:[.,]\d{2})?)\s*(?:€|EUR)/i
+  ];
+
+  for (const pattern of patterns) {
+    const match = text.match(pattern);
+    if (match) {
+      const amount = match[1].replace(',', '.');
+      return parseFloat(amount);
+    }
   }
+  
   return null;
 }
 
 function extractDate(text: string): string | null {
   if (!text) return null;
-  // Look for dates in format: DD/MM/YYYY or DD-MM-YYYY
-  const dateRegex = /(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})/;
-  const match = text.match(dateRegex);
-  if (match) {
-    const [_, day, month, year] = match;
-    const fullYear = year.length === 2 ? '20' + year : year;
-    return `${fullYear}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+
+  // Common French date formats
+  const patterns = [
+    // 30 Novembre 2024
+    /(\d{1,2})\s*(janvier|février|mars|avril|mai|juin|juillet|août|septembre|octobre|novembre|décembre)\s*(\d{4})/i,
+    // 30/11/2024 or 30-11-2024
+    /(\d{1,2})[/-](\d{1,2})[/-](\d{4})/,
+    // 2024-11-30
+    /(\d{4})-(\d{1,2})-(\d{1,2})/
+  ];
+
+  const monthMap: { [key: string]: string } = {
+    'janvier': '01', 'février': '02', 'mars': '03', 'avril': '04',
+    'mai': '05', 'juin': '06', 'juillet': '07', 'août': '08',
+    'septembre': '09', 'octobre': '10', 'novembre': '11', 'décembre': '12'
+  };
+
+  for (const pattern of patterns) {
+    const match = text.match(pattern);
+    if (match) {
+      if (match[2] in monthMap) {
+        // Format: 30 Novembre 2024
+        const day = match[1].padStart(2, '0');
+        const month = monthMap[match[2].toLowerCase()];
+        const year = match[3];
+        return `${year}-${month}-${day}`;
+      } else if (match[0].includes('-') || match[0].includes('/')) {
+        // Format: DD/MM/YYYY or YYYY-MM-DD
+        const parts = match[0].split(/[-/]/);
+        if (parts[0].length === 4) {
+          // YYYY-MM-DD
+          return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+        } else {
+          // DD/MM/YYYY
+          return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+        }
+      }
+    }
   }
+  
   return null;
 }
 
 function extractMerchantName(text: string): string | null {
   if (!text) return null;
-  // Get the first line of text as merchant name
+
+  // Get the first non-empty line that's not a date or amount
   const lines = text.split('\n');
   for (const line of lines) {
     const trimmed = line.trim();
-    if (trimmed && trimmed.length > 2) {
+    if (trimmed && 
+        trimmed.length > 2 && 
+        !trimmed.match(/^\d{1,2}[/-]\d{1,2}[/-]\d{4}$/) && // Skip dates
+        !trimmed.match(/^\d+(?:[.,]\d{2})?\s*(?:€|EUR)$/i)) { // Skip amounts
       return trimmed;
     }
   }
+  
   return null;
 }
