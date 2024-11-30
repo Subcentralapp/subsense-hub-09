@@ -12,15 +12,13 @@ export const Navbar = () => {
   const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    // Check initial auth state
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      console.log("Current user:", user);
-      setUser(user);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed in Navbar:", event, session);
+      setUser(session?.user ?? null);
     });
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state changed:", event, session);
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
     });
 

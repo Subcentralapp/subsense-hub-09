@@ -5,7 +5,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 
-// Fonction utilitaire pour générer des positions aléatoires
 const generateRandomLines = (count: number) => {
   return Array.from({ length: count }, () => ({
     top: Math.random() * 100,
@@ -21,12 +20,13 @@ export const Header = () => {
   const [randomLines] = useState(() => generateRandomLines(8));
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      setUser(user);
-    });
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state changed in Header:", event, session);
+      setUser(session?.user ?? null);
+    });
+
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null);
     });
 
@@ -37,7 +37,6 @@ export const Header = () => {
     <header className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-sm z-50">
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full">
-          {/* Lignes parallèles aléatoires */}
           {randomLines.map((line, i) => (
             <motion.div
               key={i}
