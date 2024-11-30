@@ -26,10 +26,10 @@ serve(async (req) => {
       throw new Error('OpenAI API key not configured');
     }
     
-    const prompt = `Compare these applications in detail: ${apps.map(app => `${app.name} (${app.category})`).join(', ')}. 
+    const prompt = `Compare these applications in detail: ${apps.map(app => `${app.name} (${app.category}) at ${app.price}€/month`).join(', ')}. 
     For each app, provide a detailed comparison focusing on:
     1. Main features and unique selling points
-    2. Pricing analysis and value proposition
+    2. Pricing analysis and value proposition (use the exact price provided, ${apps.map(app => `${app.price}€ for ${app.name}`).join(' and ')})
     3. User experience score (out of 10)
     4. Pros (list of 3-5 key advantages)
     5. Best use cases (list of 3-5 scenarios)
@@ -39,7 +39,7 @@ serve(async (req) => {
     {
       "appName": {
         "mainFeatures": ["feature1", "feature2", ...],
-        "pricingAnalysis": "detailed analysis",
+        "pricingAnalysis": "detailed analysis mentioning the exact monthly price of X€",
         "userExperienceScore": number,
         "pros": ["pro1", "pro2", ...],
         "bestUseCases": ["case1", "case2", ...],
@@ -47,7 +47,9 @@ serve(async (req) => {
           "description": "security description"
         }
       }
-    }`;
+    }
+
+    Important: Always use the exact prices provided in the input (${apps.map(app => `${app.price}€ for ${app.name}`).join(' and ')}) and mention them explicitly in the pricingAnalysis.`;
 
     console.log('Initiating OpenAI API request with gpt-3.5-turbo...');
 
@@ -56,7 +58,7 @@ serve(async (req) => {
       messages: [
         {
           role: 'system',
-          content: 'You are an expert in software analysis and comparison. Provide detailed, objective comparisons of applications. Always return valid JSON.'
+          content: 'You are an expert in software analysis and comparison. Provide detailed, objective comparisons of applications. Always return valid JSON and use the exact prices provided in the input.'
         },
         { role: 'user', content: prompt }
       ],
@@ -89,7 +91,6 @@ serve(async (req) => {
       const errorData = await response.text();
       console.error('OpenAI API error response:', errorData);
       
-      // Check specifically for quota exceeded error
       if (response.status === 429) {
         return new Response(
           JSON.stringify({
