@@ -2,11 +2,15 @@ import { supabase } from "@/lib/supabase";
 
 export const updateInvoiceDetails = async (
   invoiceId: string,
-  data: { amount: number; invoice_date: string }
+  data: { 
+    amount: number; 
+    invoice_date: string;
+    status: string;
+    merchant_name: string;
+  }
 ) => {
   console.log('Updating invoice details for ID:', invoiceId, 'with data:', data);
   
-  // Vérifions d'abord si un enregistrement existe
   const { data: existing, error: checkError } = await supabase
     .from('invoicedetails')
     .select('*')
@@ -19,14 +23,14 @@ export const updateInvoiceDetails = async (
   }
 
   if (!existing) {
-    // Si aucun enregistrement n'existe, on en crée un nouveau
     const { error: insertError } = await supabase
       .from('invoicedetails')
       .insert([{
         invoice_id: invoiceId,
         amount: data.amount,
         invoice_date: data.invoice_date,
-        status: 'pending'
+        status: data.status,
+        merchant_name: data.merchant_name
       }]);
 
     if (insertError) {
@@ -34,14 +38,15 @@ export const updateInvoiceDetails = async (
       throw insertError;
     }
   } else {
-    // Si un enregistrement existe, on le met à jour
     const { error: updateError } = await supabase
       .from('invoicedetails')
-      .update({
+      .insert([{
+        invoice_id: invoiceId,
         amount: data.amount,
         invoice_date: data.invoice_date,
-      })
-      .eq('invoice_id', invoiceId);
+        status: data.status,
+        merchant_name: data.merchant_name,
+      }]);
 
     if (updateError) {
       console.error('Error updating invoice details:', updateError);

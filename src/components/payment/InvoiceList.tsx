@@ -12,6 +12,8 @@ import {
 import InvoiceActions from "./invoice/InvoiceActions";
 import InvoiceFilters from "./invoice/InvoiceFilters";
 import InvoiceStatusCell from "./invoice/InvoiceStatusCell";
+import InvoiceEditForm from "./invoice/InvoiceEditForm";
+import InvoiceExport from "./invoice/InvoiceExport";
 import { useInvoiceDetails } from "@/hooks/useInvoiceDetails";
 import { updateInvoiceDetails } from "@/services/invoiceOperations";
 
@@ -36,6 +38,8 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
   const [editForm, setEditForm] = useState({
     price: "",
     date: "",
+    status: "pending",
+    merchantName: "",
   });
 
   const { data: invoiceDetails = [], isError: isDetailsError } = useInvoiceDetails();
@@ -46,6 +50,8 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
         await updateInvoiceDetails(invoiceId, {
           amount: parseFloat(editForm.price),
           invoice_date: editForm.date,
+          status: editForm.status,
+          merchant_name: editForm.merchantName,
         });
 
         toast({
@@ -63,7 +69,6 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
         });
       }
     } else {
-      // Find all details for this invoice and use the most recent one
       const invoiceDetail = invoiceDetails
         .filter(d => d.invoice_id === parseInt(invoiceId))
         .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
@@ -71,6 +76,8 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
       setEditForm({
         price: invoiceDetail?.amount?.toString() || "",
         date: invoiceDetail?.invoice_date?.toString() || "",
+        status: invoiceDetail?.status || "pending",
+        merchantName: invoiceDetail?.merchant_name || "",
       });
       setEditingId(invoiceId);
     }
@@ -96,7 +103,6 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
   const filteredInvoices = invoices
     .filter(invoice => invoice.name.toLowerCase().includes(searchTerm.toLowerCase()))
     .sort((a, b) => {
-      // Find the most recent details for each invoice
       const detailsA = invoiceDetails
         .filter(d => d.invoice_id === parseInt(a.id))
         .sort((x, y) => new Date(y.created_at).getTime() - new Date(x.created_at).getTime())[0];
@@ -129,7 +135,10 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
 
   return (
     <div className="space-y-4">
-      <h3 className="font-medium text-lg">Factures enregistrées</h3>
+      <div className="flex items-center justify-between">
+        <h3 className="font-medium text-lg">Factures enregistrées</h3>
+        <InvoiceExport invoices={invoices} invoiceDetails={invoiceDetails} />
+      </div>
       
       <InvoiceFilters
         searchTerm={searchTerm}
@@ -146,18 +155,19 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
               <TableHead>Facture</TableHead>
               <TableHead>Date</TableHead>
               <TableHead>Montant</TableHead>
+              <TableHead>Marchand</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredInvoices.map((invoice) => {
-              // Get the most recent details for this invoice
               const invoiceDetail = invoiceDetails
                 .filter(d => d.invoice_id === parseInt(invoice.id))
                 .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0] || {
                   status: 'pending',
                   amount: null,
-                  invoice_date: invoice.date
+                  invoice_date: invoice.date,
+                  merchant_name: ''
                 };
               
               const isEditing = editingId === invoice.id;
@@ -179,23 +189,34 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
                     </div>
                   </TableCell>
                   <TableCell>
-                    {invoiceDetail.invoice_date 
-                      ? new Date(invoiceDetail.invoice_date).toLocaleDateString()
-                      : new Date(invoice.date).toLocaleDateString()
-                    }
+                    {isEditing ? (
+                      <div className="w-40">
+                        <InvoiceEditForm editForm={editForm} setEditForm={setEditForm} />
+                      </div>
+                    ) : (
+                      <>
+                        {invoiceDetail.invoice_date 
+                          ? new Date(invoiceDetail.invoice_date).toLocaleDateString()
+                          : new Date(invoice.date).toLocaleDateString()
+                        }
+                      </>
+                    )}
                   </TableCell>
                   <TableCell>
-                    {invoiceDetail.amount 
+                    {!isEditing && (invoiceDetail.amount 
                       ? `${invoiceDetail.amount} €`
                       : '-'
-                    }
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {!isEditing && (invoiceDetail.merchant_name || '-')}
                   </TableCell>
                   <TableCell className="text-right">
                     <InvoiceActions
                       isEditing={isEditing}
                       isLoading={isLoading}
                       onEdit={() => handleEdit(invoice.id)}
-                      onDelete={() => handleDelete(invoice.id)}
+                      onDelete={() => onDelete(invoice.id)}
                     />
                   </TableCell>
                 </TableRow>
