@@ -13,7 +13,7 @@ export const useInvoiceDetails = () => {
 
       if (error) {
         console.error('Error fetching invoice details:', error);
-        throw error;
+        return []; // Retourner un tableau vide en cas d'erreur
       }
 
       console.log('Fetched invoice details:', data);

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { FileText, CheckCircle, AlertCircle, XCircle } from "lucide-react";
+import { FileText } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import {
   Table,
@@ -9,9 +9,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import InvoiceMetadata from "./invoice/InvoiceMetadata";
 import InvoiceActions from "./invoice/InvoiceActions";
 import InvoiceFilters from "./invoice/InvoiceFilters";
+import InvoiceStatusCell from "./invoice/InvoiceStatusCell";
 import { useInvoiceDetails } from "@/hooks/useInvoiceDetails";
 import { updateInvoiceDetails } from "@/services/invoiceOperations";
 
@@ -89,45 +89,6 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
     }
   };
 
-  const getStatusIcon = (status: string) => {
-    switch (status) {
-      case 'paid':
-        return <CheckCircle className="h-5 w-5 text-green-500" />;
-      case 'pending':
-        return <AlertCircle className="h-5 w-5 text-orange-500" />;
-      case 'overdue':
-        return <XCircle className="h-5 w-5 text-red-500" />;
-      default:
-        return <AlertCircle className="h-5 w-5 text-gray-500" />;
-    }
-  };
-
-  const getStatusText = (status: string) => {
-    switch (status) {
-      case 'paid':
-        return 'Payée';
-      case 'pending':
-        return 'En attente';
-      case 'overdue':
-        return 'En retard';
-      default:
-        return 'En attente';
-    }
-  };
-
-  const getStatusClass = (status: string) => {
-    switch (status) {
-      case 'paid':
-        return 'bg-green-50 text-green-700 border-green-200';
-      case 'pending':
-        return 'bg-orange-50 text-orange-700 border-orange-200';
-      case 'overdue':
-        return 'bg-red-50 text-red-700 border-red-200';
-      default:
-        return 'bg-gray-50 text-gray-700 border-gray-200';
-    }
-  };
-
   const filteredInvoices = invoices
     .filter(invoice => invoice.name.toLowerCase().includes(searchTerm.toLowerCase()))
     .sort((a, b) => {
@@ -190,14 +151,7 @@ const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
               
               return (
                 <TableRow key={invoice.id} className="hover:bg-gray-50">
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      {getStatusIcon(invoiceDetail.status)}
-                      <span className={`text-sm px-2.5 py-0.5 rounded-full border ${getStatusClass(invoiceDetail.status)}`}>
-                        {getStatusText(invoiceDetail.status)}
-                      </span>
-                    </div>
-                  </TableCell>
+                  <InvoiceStatusCell status={invoiceDetail.status} />
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <FileText className="h-5 w-5 text-primary" />
