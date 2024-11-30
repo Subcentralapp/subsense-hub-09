@@ -15,20 +15,28 @@ serve(async (req) => {
     const { fileUrl, invoiceId } = await req.json();
     console.log('Processing invoice:', { fileUrl, invoiceId });
 
+    // Convert PDF to base64
+    const pdfResponse = await fetch(fileUrl);
+    const pdfBuffer = await pdfResponse.arrayBuffer();
+    const base64Content = btoa(String.fromCharCode(...new Uint8Array(pdfBuffer)));
+
     // Prepare the request to Google Cloud Vision API
     const visionRequest = {
       requests: [{
         image: {
-          source: {
-            imageUri: fileUrl
-          }
+          content: base64Content
         },
         features: [{
           type: "DOCUMENT_TEXT_DETECTION"
-        }]
+        }],
+        imageContext: {
+          languageHints: ["fr"]
+        }
       }]
     };
 
+    console.log('Sending request to Vision API...');
+    
     // Call Google Cloud Vision API
     const response = await fetch(
       `https://vision.googleapis.com/v1/images:annotate?key=${Deno.env.get('GOOGLE_VISION_API_KEY')}`,
@@ -42,13 +50,20 @@ serve(async (req) => {
     );
 
     if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Vision API error:', errorText);
       throw new Error(`Vision API error: ${response.statusText}`);
     }
 
     const result = await response.json();
     console.log('Vision API response received');
 
-    const fullText = result.responses[0]?.fullTextAnnotation?.text || '';
+    const fullText = result.responses[0]?.fullTextAnnotation?.text;
+    if (!fullText) {
+      console.error('No text extracted from document');
+      throw new Error('No text could be extracted from the document');
+    }
+
     console.log('Extracted text:', fullText);
 
     // Extract metadata using pattern matching
@@ -56,6 +71,9 @@ serve(async (req) => {
     const date = extractDate(fullText);
     const merchantName = extractMerchantName(fullText);
 
+    console.log('Extracted metadata:', { amount, date, merchantName });
+
+    // Initialize Supabase client
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
@@ -87,25 +105,31 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error('Unexpected error:', error);
+    console.error('Error processing invoice:', error);
     return new Response(
-      JSON.stringify({ error: 'Internal server error', details: error.message }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      JSON.stringify({ error: error.message }),
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        status: 500 
+      }
     );
   }
 });
 
-// Helper functions to extract information from text
 function extractAmount(text: string): number | null {
-  const amountRegex = /(\d+[.,]\d{2})\s*(?:€|EUR)/i;
+  // Look for amounts in format: XX,XX € or XX.XX € or XX€
+  const amountRegex = /(\d+[.,]\d{2}|\d+)\s*(?:€|EUR)/i;
   const match = text.match(amountRegex);
   if (match) {
-    return parseFloat(match[1].replace(',', '.'));
+    // Convert amount string to number, handling both . and , as decimal separator
+    const amount = match[1].replace(',', '.');
+    return parseFloat(amount);
   }
   return null;
 }
 
 function extractDate(text: string): string | null {
+  // Look for dates in format: DD/MM/YYYY or DD-MM-YYYY
   const dateRegex = /(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})/;
   const match = text.match(dateRegex);
   if (match) {
@@ -117,6 +141,13 @@ function extractDate(text: string): string | null {
 }
 
 function extractMerchantName(text: string): string | null {
-  const firstLine = text.split('\n')[0];
-  return firstLine.trim() || null;
+  // Get the first line of text as merchant name
+  const lines = text.split('\n');
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (trimmed && trimmed.length > 2) { // Avoid single characters or empty lines
+      return trimmed;
+    }
+  }
+  return null;
 }
