@@ -113,7 +113,7 @@ export const deleteInvoiceFile = async (filePath: string) => {
   }
 };
 
-export const fetchInvoices = async () => {
+export const fetchInvoicesFromStorage = async () => {
   try {
     console.log('Fetching invoices from database...');
     
