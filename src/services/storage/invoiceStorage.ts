@@ -10,7 +10,24 @@ export const uploadInvoiceFile = async (file: File) => {
     
     console.log('Generated file name:', fileName);
     
-    // Upload the file
+    // 1. Create invoice record first
+    const { data: invoice, error: dbError } = await supabase
+      .from('invoices')
+      .insert([{
+        names: file.name,
+        created_at: new Date().toISOString()
+      }])
+      .select()
+      .single();
+
+    if (dbError) {
+      console.error('Database insert error:', dbError);
+      throw dbError;
+    }
+
+    console.log('Invoice record created:', invoice);
+
+    // 2. Upload the file
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('invoices')
       .upload(fileName, file, {
@@ -20,12 +37,14 @@ export const uploadInvoiceFile = async (file: File) => {
 
     if (uploadError) {
       console.error('Storage upload error:', uploadError);
+      // Clean up the invoice record if file upload fails
+      await supabase.from('invoices').delete().eq('id', invoice.id);
       throw uploadError;
     }
 
     console.log('File uploaded successfully:', uploadData);
 
-    // Get the public URL
+    // 3. Get the public URL
     const { data: urlData } = supabase.storage
       .from('invoices')
       .getPublicUrl(fileName);
@@ -36,27 +55,24 @@ export const uploadInvoiceFile = async (file: File) => {
 
     console.log('Generated public URL:', urlData.publicUrl);
 
-    // Save to database
-    const { data: invoice, error: dbError } = await supabase
-      .from('Invoices')
-      .insert([
-        {
-          Names: file.name,
-          file_path: fileName,
-          url: urlData.publicUrl,
-          created_at: new Date().toISOString()
-        }
-      ])
+    // 4. Update invoice record with file info
+    const { data: updatedInvoice, error: updateError } = await supabase
+      .from('invoices')
+      .update({
+        file_path: fileName,
+        url: urlData.publicUrl
+      })
+      .eq('id', invoice.id)
       .select()
       .single();
 
-    if (dbError) {
-      console.error('Database insert error:', dbError);
-      throw dbError;
+    if (updateError) {
+      console.error('Error updating invoice with file info:', updateError);
+      throw updateError;
     }
 
-    console.log('Invoice saved to database:', invoice);
-    return invoice;
+    console.log('Invoice updated with file info:', updatedInvoice);
+    return updatedInvoice;
   } catch (error) {
     console.error('Error in uploadInvoiceFile:', error);
     throw error;
@@ -67,7 +83,7 @@ export const deleteInvoiceFile = async (filePath: string) => {
   try {
     console.log('Starting invoice deletion:', filePath);
     
-    // Delete from storage
+    // Delete from storage first
     const { error: storageError } = await supabase.storage
       .from('invoices')
       .remove([filePath]);
@@ -81,7 +97,7 @@ export const deleteInvoiceFile = async (filePath: string) => {
 
     // Delete from database
     const { error: dbError } = await supabase
-      .from('Invoices')
+      .from('invoices')
       .delete()
       .eq('file_path', filePath);
 
@@ -102,7 +118,7 @@ export const fetchInvoices = async () => {
     console.log('Fetching invoices from database...');
     
     const { data, error } = await supabase
-      .from('Invoices')
+      .from('invoices')
       .select('*')
       .order('created_at', { ascending: false });
 
