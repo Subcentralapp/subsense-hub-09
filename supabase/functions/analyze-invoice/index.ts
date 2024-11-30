@@ -3,7 +3,7 @@ import { analyzeImageWithVision } from './vision.ts';
 import { extractAmount, extractDate, extractMerchantName } from './extractors.ts';
 import { updateInvoiceDetails } from './database.ts';
 
-serve(async (req) => {
+Deno.serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -15,6 +15,22 @@ serve(async (req) => {
 
     if (!fileUrl || !invoiceId) {
       throw new Error('Missing required parameters: fileUrl or invoiceId');
+    }
+
+    // Verify Google Vision API key
+    const visionApiKey = Deno.env.get('Google Vision');
+    if (!visionApiKey) {
+      console.error('Google Vision API key not configured');
+      return new Response(
+        JSON.stringify({
+          error: 'Configuration error',
+          details: 'Google Vision API key not configured'
+        }),
+        {
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          status: 500
+        }
+      );
     }
 
     // Fetch the PDF file
