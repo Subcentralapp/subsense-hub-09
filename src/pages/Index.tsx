@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { BarChart, Receipt, ArrowRightLeft, Apps } from "lucide-react";
+import { BarChart, Receipt, ArrowRightLeft, AppWindow } from "lucide-react";
 import DashboardStats from "@/components/DashboardStats";
 import SubscriptionList from "@/components/SubscriptionList";
 import ComparisonSection from "@/components/ComparisonSection";
@@ -95,7 +95,7 @@ const Index = () => {
               onClick={() => setActiveTab("apps")}
               className="hover-scale"
             >
-              <Apps className="mr-2 h-4 w-4" />
+              <AppWindow className="mr-2 h-4 w-4" />
               Nos Applications
             </Button>
           </nav>
