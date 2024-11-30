@@ -49,10 +49,10 @@ serve(async (req) => {
       }
     }`;
 
-    console.log('Initiating OpenAI API request with gpt-4o-mini...');
+    console.log('Initiating OpenAI API request with gpt-3.5-turbo...');
 
     const openAIRequest = {
-      model: 'gpt-4o-mini',
+      model: 'gpt-3.5-turbo',
       messages: [
         {
           role: 'system',
