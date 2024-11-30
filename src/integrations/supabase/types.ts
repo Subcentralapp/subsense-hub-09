@@ -16,11 +16,14 @@ export type Database = {
           description: string | null
           features: Json | null
           id: number
+          key_features: string[] | null
           logo_url: string | null
           name: string | null
           price: number | null
           pricing_plans: Json | null
           pros: string[] | null
+          rating: number | null
+          users_count: string | null
           website_url: string | null
         }
         Insert: {
@@ -29,11 +32,14 @@ export type Database = {
           description?: string | null
           features?: Json | null
           id?: number
+          key_features?: string[] | null
           logo_url?: string | null
           name?: string | null
           price?: number | null
           pricing_plans?: Json | null
           pros?: string[] | null
+          rating?: number | null
+          users_count?: string | null
           website_url?: string | null
         }
         Update: {
@@ -42,11 +48,14 @@ export type Database = {
           description?: string | null
           features?: Json | null
           id?: number
+          key_features?: string[] | null
           logo_url?: string | null
           name?: string | null
           price?: number | null
           pricing_plans?: Json | null
           pros?: string[] | null
+          rating?: number | null
+          users_count?: string | null
           website_url?: string | null
         }
         Relationships: []

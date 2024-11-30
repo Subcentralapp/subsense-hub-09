@@ -40,45 +40,6 @@ const ComparisonSection = () => {
     },
   });
 
-  const { data: comparisonData, isLoading: comparisonLoading } = useQuery({
-    queryKey: ["comparison", selectedApps.map(app => app.name)],
-    queryFn: async () => {
-      if (selectedApps.length < 2) return null;
-      console.log("Starting comparison for apps:", selectedApps);
-
-      try {
-        const response = await supabase.functions.invoke('compare-apps', {
-          body: { apps: selectedApps },
-        });
-
-        console.log("Comparison response:", response);
-        if (response.error) {
-          // Check for quota exceeded error
-          if (response.error.code === "QUOTA_EXCEEDED") {
-            toast({
-              title: "Service indisponible",
-              description: "Le service de comparaison est momentanément indisponible. Veuillez réessayer plus tard.",
-              variant: "destructive",
-            });
-            setShowComparison(false);
-            return null;
-          }
-          throw new Error(response.error.message);
-        }
-        return response.data.analysis;
-      } catch (error) {
-        console.error("Comparison error:", error);
-        toast({
-          title: "Erreur de comparaison",
-          description: "Impossible de comparer les applications sélectionnées",
-          variant: "destructive",
-        });
-        throw error;
-      }
-    },
-    enabled: showComparison && selectedApps.length >= 2,
-  });
-
   const handleAppSelect = (app: Application, index: number) => {
     if (selectedApps.some(selectedApp => selectedApp.name === app.name)) {
       toast({
@@ -174,8 +135,6 @@ const ComparisonSection = () => {
       ) : (
         <ComparisonResult
           apps={selectedApps}
-          comparisonData={comparisonData}
-          isLoading={comparisonLoading}
           onNewComparison={() => {
             setShowComparison(false);
             setSelectedApps([]);

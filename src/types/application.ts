@@ -13,4 +13,7 @@ export type Application = {
   cons?: string[];
   website_url?: string;
   logo_url?: string | null;
+  rating?: number;
+  users_count?: string;
+  key_features?: string[];
 };

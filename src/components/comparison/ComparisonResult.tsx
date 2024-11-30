@@ -8,38 +8,21 @@ import { motion } from "framer-motion";
 
 interface ComparisonResultProps {
   apps: Application[];
-  comparisonData: any;
-  isLoading: boolean;
   onNewComparison: () => void;
 }
 
 export const ComparisonResult = ({
   apps,
-  comparisonData,
-  isLoading,
   onNewComparison,
 }: ComparisonResultProps) => {
-  console.log("Rendering ComparisonResult with data:", { apps, comparisonData, isLoading });
+  console.log("Rendering ComparisonResult with apps:", apps);
 
-  if (isLoading) {
-    return (
-      <Card className="p-8">
-        <div className="flex flex-col items-center justify-center space-y-4">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-lg font-medium text-gray-600">
-            Analyse approfondie en cours...
-          </p>
-        </div>
-      </Card>
-    );
-  }
-
-  if (!comparisonData || Object.keys(comparisonData).length === 0) {
+  if (!apps || apps.length < 2) {
     return (
       <Card className="p-8">
         <div className="flex flex-col items-center justify-center space-y-4">
           <p className="text-lg font-medium text-gray-600">
-            Impossible de générer la comparaison. Veuillez réessayer.
+            Veuillez sélectionner au moins 2 applications à comparer.
           </p>
           <Button onClick={onNewComparison}>Nouvelle comparaison</Button>
         </div>
@@ -47,15 +30,26 @@ export const ComparisonResult = ({
     );
   }
 
+  // Calculer le gagnant basé sur le rating et le nombre de fonctionnalités
   const winner = apps.reduce((prev, current) => {
-    if (!comparisonData[prev.name] || !comparisonData[current.name]) {
-      console.log("Missing comparison data for:", { prev: prev.name, current: current.name });
-      return prev;
-    }
-    const prevScore = comparisonData[prev.name].userExperienceScore;
-    const currentScore = comparisonData[current.name].userExperienceScore;
+    const prevScore = (prev.rating || 0) + (prev.key_features?.length || 0) * 0.2;
+    const currentScore = (current.rating || 0) + (current.key_features?.length || 0) * 0.2;
     return currentScore > prevScore ? current : prev;
   }, apps[0]);
+
+  // Préparer les données d'analyse pour chaque application
+  const analysisData = apps.reduce((acc, app) => {
+    acc[app.name] = {
+      userExperienceScore: app.rating ? app.rating * 2 : 5, // Convertir le rating en score sur 10
+      pros: app.pros || [],
+      cons: app.cons || [],
+      bestUseCases: app.key_features || [],
+      securityFeatures: {
+        description: app.description || "Information non disponible"
+      }
+    };
+    return acc;
+  }, {} as Record<string, any>);
 
   return (
     <motion.div 
@@ -86,13 +80,13 @@ export const ComparisonResult = ({
         ))}
       </div>
 
-      {winner && comparisonData && comparisonData[winner.name] && (
+      {winner && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.3 }}
         >
-          <ComparisonWinner winner={winner} analysis={comparisonData} />
+          <ComparisonWinner winner={winner} analysis={analysisData} />
         </motion.div>
       )}
     </motion.div>
