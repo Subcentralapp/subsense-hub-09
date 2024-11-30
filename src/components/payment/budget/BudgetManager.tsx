@@ -35,6 +35,8 @@ const BudgetManager = () => {
       return data;
     },
     refetchInterval: 5000, // Rafraîchir toutes les 5 secondes
+    staleTime: 0, // Considérer les données comme périmées immédiatement
+    cacheTime: 0, // Ne pas mettre en cache les données
   });
 
   // Fetch total expenses (subscriptions) for current month
@@ -54,6 +56,8 @@ const BudgetManager = () => {
       console.log("Total monthly expenses:", total);
       return total;
     },
+    staleTime: 0,
+    cacheTime: 0,
   });
 
   const currentBudget = budget?.amount || 0;

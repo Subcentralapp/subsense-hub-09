@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/lib/supabase";
 import { useQueryClient } from "@tanstack/react-query";
+import { startOfMonth, endOfMonth } from "date-fns";
 
 export const BudgetForm = () => {
   const { toast } = useToast();
@@ -30,16 +31,17 @@ export const BudgetForm = () => {
         throw new Error("Le montant doit être un nombre positif");
       }
 
-      const startDate = new Date();
-      startDate.setDate(1); // Premier jour du mois
-      const endDate = new Date(startDate.getFullYear(), startDate.getMonth() + 1, 0); // Dernier jour du mois
+      // Utilisation de date-fns pour obtenir le début et la fin du mois actuel
+      const currentDate = new Date();
+      const startDate = startOfMonth(currentDate);
+      const endDate = endOfMonth(currentDate);
 
-      console.log("Suppression de l'ancien budget pour la période:", {
+      console.log("Période du budget:", {
         startDate: startDate.toISOString(),
         endDate: endDate.toISOString()
       });
 
-      // Suppression de l'ancien budget
+      // Suppression de l'ancien budget pour le mois en cours
       const { error: deleteError } = await supabase
         .from('budgets')
         .delete()
@@ -52,29 +54,26 @@ export const BudgetForm = () => {
         throw deleteError;
       }
 
-      console.log("Insertion du nouveau budget:", {
-        amount,
-        period_start: startDate.toISOString(),
-        period_end: endDate.toISOString(),
-        user_id: user.id
-      });
-
       // Insertion du nouveau budget
-      const { error: insertError } = await supabase
+      const { data: insertedBudget, error: insertError } = await supabase
         .from('budgets')
         .insert({
           amount,
           period_start: startDate.toISOString(),
           period_end: endDate.toISOString(),
           user_id: user.id
-        });
+        })
+        .select()
+        .single();
 
       if (insertError) {
         console.error("Erreur lors de l'insertion:", insertError);
         throw insertError;
       }
 
-      console.log("Budget mis à jour avec succès");
+      console.log("Budget inséré avec succès:", insertedBudget);
+
+      // Invalidation du cache pour forcer le rechargement des données
       await queryClient.invalidateQueries({ queryKey: ['current-budget'] });
       await queryClient.invalidateQueries({ queryKey: ['monthly-expenses'] });
 
