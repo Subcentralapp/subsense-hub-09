@@ -1,6 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.38.4';
-import { Vision } from 'https://esm.sh/@google-cloud/vision@4.0.2';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -16,15 +15,43 @@ serve(async (req) => {
     const { fileUrl, invoiceId } = await req.json();
     console.log('Processing invoice:', { fileUrl, invoiceId });
 
-    // Initialize Vision client
-    const vision = new Vision();
+    // Prepare the request to Google Cloud Vision API
+    const visionRequest = {
+      requests: [{
+        image: {
+          source: {
+            imageUri: fileUrl
+          }
+        },
+        features: [{
+          type: "DOCUMENT_TEXT_DETECTION"
+        }]
+      }]
+    };
 
-    // Get the image from the URL
-    const [result] = await vision.documentTextDetection(fileUrl);
-    const fullText = result.fullTextAnnotation.text;
+    // Call Google Cloud Vision API
+    const response = await fetch(
+      `https://vision.googleapis.com/v1/images:annotate?key=${Deno.env.get('GOOGLE_VISION_API_KEY')}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(visionRequest)
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Vision API error: ${response.statusText}`);
+    }
+
+    const result = await response.json();
+    console.log('Vision API response received');
+
+    const fullText = result.responses[0]?.fullTextAnnotation?.text || '';
     console.log('Extracted text:', fullText);
 
-    // Extract metadata using basic pattern matching
+    // Extract metadata using pattern matching
     const amount = extractAmount(fullText);
     const date = extractDate(fullText);
     const merchantName = extractMerchantName(fullText);
@@ -79,7 +106,6 @@ function extractAmount(text: string): number | null {
 }
 
 function extractDate(text: string): string | null {
-  // This regex looks for common date formats
   const dateRegex = /(\d{1,2})[/-](\d{1,2})[/-](\d{2,4})/;
   const match = text.match(dateRegex);
   if (match) {
@@ -91,7 +117,6 @@ function extractDate(text: string): string | null {
 }
 
 function extractMerchantName(text: string): string | null {
-  // This is a simple implementation - you might want to enhance it
   const firstLine = text.split('\n')[0];
   return firstLine.trim() || null;
 }
