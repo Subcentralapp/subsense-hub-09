@@ -3,7 +3,6 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Sparkles, RefreshCw } from "lucide-react";
 import { useState } from "react";
-import { supabase } from "@/lib/supabase";
 import { RecommendationCard } from "./RecommendationCard";
 import { useRecommendations } from "@/hooks/useRecommendations";
 
@@ -21,11 +20,11 @@ const RecommendationList = () => {
   }
 
   return (
-    <div className="space-y-6 p-4">
+    <div className="space-y-8">
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-primary animate-pulse" />
-          <h2 className="text-2xl font-semibold text-gray-900">
+          <h2 className="text-2xl font-bold text-neutral-900">
             Applications Recommandées
           </h2>
         </div>
@@ -33,26 +32,24 @@ const RecommendationList = () => {
           variant="outline"
           size="sm"
           onClick={handleRefresh}
-          className="hover-scale"
+          className="hover:bg-primary/10 hover:text-primary border-primary/20"
         >
           <RefreshCw className="h-4 w-4 mr-2" />
           Actualiser
         </Button>
       </div>
 
-      {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[1, 2, 3].map((i) => (
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {isLoading ? (
+          Array(4).fill(0).map((_, i) => (
             <Card key={i} className="h-48 animate-pulse bg-neutral-light" />
-          ))}
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {recommendations?.map((app) => (
+          ))
+        ) : (
+          recommendations?.map((app) => (
             <RecommendationCard key={app.name} app={app} />
-          ))}
-        </div>
-      )}
+          ))
+        )}
+      </div>
     </div>
   );
 };
