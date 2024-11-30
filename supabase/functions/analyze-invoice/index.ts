@@ -1,17 +1,9 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.7.1'
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.7.1"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
-
-interface VisionResponse {
-  responses: Array<{
-    fullTextAnnotation?: {
-      text: string;
-    };
-  }>;
 }
 
 serve(async (req) => {
@@ -23,17 +15,13 @@ serve(async (req) => {
     const { fileUrl, invoiceId } = await req.json()
     console.log('Processing invoice:', { fileUrl, invoiceId })
 
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
-
     // Fetch the file content
     const response = await fetch(fileUrl)
     const fileBuffer = await response.arrayBuffer()
     const base64Content = btoa(String.fromCharCode(...new Uint8Array(fileBuffer)))
 
-    console.log('Calling Google Vision API...')
+    console.log('File content fetched and converted to base64')
+
     // Call Google Vision API
     const visionResponse = await fetch('https://vision.googleapis.com/v1/images:annotate?key=2a8dbef566ac8d3f1ed9bd641590ef79b9e2f663', {
       method: 'POST',
@@ -54,22 +42,34 @@ serve(async (req) => {
       })
     })
 
-    const visionData: VisionResponse = await visionResponse.json()
-    console.log('Vision API response received:', visionData)
+    if (!visionResponse.ok) {
+      const error = await visionResponse.text()
+      console.error('Google Vision API error:', error)
+      throw new Error(`Google Vision API error: ${error}`)
+    }
+
+    const visionData = await visionResponse.json()
+    console.log('Vision API response received')
 
     // Extract text content
     const text = visionData.responses[0]?.fullTextAnnotation?.text || ''
     console.log('Extracted text:', text)
 
-    // Basic extraction logic
+    // Extract metadata
     const amount = extractAmount(text)
     const date = extractDate(text)
     const status = determineStatus(date)
 
     console.log('Extracted metadata:', { amount, date, status })
 
+    // Initialize Supabase client
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    )
+
     // Store metadata in invoicedetails
-    const { data, error: insertError } = await supabase
+    const { data, error: insertError } = await supabaseClient
       .from('invoicedetails')
       .insert([{
         invoice_id: invoiceId,
