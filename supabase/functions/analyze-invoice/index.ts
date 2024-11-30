@@ -17,8 +17,13 @@ serve(async (req) => {
 
     // Convert PDF to base64
     const pdfResponse = await fetch(fileUrl);
+    if (!pdfResponse.ok) {
+      throw new Error(`Failed to fetch PDF: ${pdfResponse.statusText}`);
+    }
+
     const pdfBuffer = await pdfResponse.arrayBuffer();
     const base64Content = btoa(String.fromCharCode(...new Uint8Array(pdfBuffer)));
+    console.log('PDF converted to base64');
 
     // Prepare the request to Google Cloud Vision API
     const visionRequest = {
@@ -27,10 +32,11 @@ serve(async (req) => {
           content: base64Content
         },
         features: [{
-          type: "DOCUMENT_TEXT_DETECTION"
+          type: "DOCUMENT_TEXT_DETECTION",
+          maxResults: 1
         }],
         imageContext: {
-          languageHints: ["fr"]
+          languageHints: ["fr-t-i0-handwrit"]
         }
       }]
     };
@@ -38,21 +44,25 @@ serve(async (req) => {
     console.log('Sending request to Vision API...');
     
     // Call Google Cloud Vision API
-    const response = await fetch(
-      `https://vision.googleapis.com/v1/images:annotate?key=${Deno.env.get('GOOGLE_VISION_API_KEY')}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(visionRequest)
-      }
-    );
+    const visionApiUrl = `https://vision.googleapis.com/v1/images:annotate`;
+    const visionApiKey = Deno.env.get('GOOGLE_VISION_API_KEY');
+    
+    if (!visionApiKey) {
+      throw new Error('Google Vision API key not configured');
+    }
+
+    const response = await fetch(`${visionApiUrl}?key=${visionApiKey}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(visionRequest)
+    });
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Vision API error:', errorText);
-      throw new Error(`Vision API error: ${response.statusText}`);
+      throw new Error(`Vision API error: ${response.statusText} - ${errorText}`);
     }
 
     const result = await response.json();
@@ -118,7 +128,7 @@ serve(async (req) => {
 
 function extractAmount(text: string): number | null {
   // Look for amounts in format: XX,XX € or XX.XX € or XX€
-  const amountRegex = /(\d+[.,]\d{2}|\d+)\s*(?:€|EUR)/i;
+  const amountRegex = /(\d+(?:[.,]\d{2})?)\s*(?:€|EUR)/i;
   const match = text.match(amountRegex);
   if (match) {
     // Convert amount string to number, handling both . and , as decimal separator
