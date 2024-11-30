@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Loader2, FileText, Download, Pencil, Save, X } from "lucide-react";
+import { FileText, Download, Pencil, X, Loader2 } from "lucide-react";
 import { format } from "date-fns";
+import InvoiceEditForm from "./invoice/InvoiceEditForm";
+import InvoiceDetails from "./invoice/InvoiceDetails";
 
 interface Invoice {
   id: string;
@@ -94,27 +94,13 @@ const InvoiceList = ({ invoices, isLoading, onDelete, onUpdateDetails }: Invoice
               </div>
               <div className="flex items-center space-x-2">
                 {editingId === invoice.id ? (
-                  <>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleSave(invoice.id)}
-                      disabled={isLoading}
-                    >
-                      {isLoading ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Save className="h-4 w-4" />
-                      )}
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setEditingId(null)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                  </>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setEditingId(null)}
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
                 ) : (
                   <>
                     <Button
@@ -142,83 +128,15 @@ const InvoiceList = ({ invoices, isLoading, onDelete, onUpdateDetails }: Invoice
             </div>
 
             {editingId === invoice.id ? (
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium">Montant</label>
-                  <Input
-                    type="number"
-                    value={editForm.amount || ''}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, amount: parseFloat(e.target.value) }))}
-                    placeholder="Montant"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Catégorie</label>
-                  <Input
-                    value={editForm.category || ''}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, category: e.target.value }))}
-                    placeholder="Catégorie"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Date de facture</label>
-                  <Input
-                    type="date"
-                    value={editForm.invoice_date ? format(new Date(editForm.invoice_date), 'yyyy-MM-dd') : ''}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, invoice_date: e.target.value }))}
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Marchand</label>
-                  <Input
-                    value={editForm.merchant_name || ''}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, merchant_name: e.target.value }))}
-                    placeholder="Nom du marchand"
-                  />
-                </div>
-                <div>
-                  <label className="text-sm font-medium">Statut</label>
-                  <Select
-                    value={editForm.status || 'pending'}
-                    onValueChange={(value) => setEditForm(prev => ({ ...prev, status: value }))}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="pending">En attente</SelectItem>
-                      <SelectItem value="paid">Payée</SelectItem>
-                      <SelectItem value="cancelled">Annulée</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
+              <InvoiceEditForm
+                editForm={editForm}
+                setEditForm={setEditForm}
+                onSave={() => handleSave(invoice.id)}
+                onCancel={() => setEditingId(null)}
+                isLoading={isLoading}
+              />
             ) : (
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <span className="font-medium">Montant:</span>{' '}
-                  {invoice.details?.amount ? `${invoice.details.amount}€` : 'Non défini'}
-                </div>
-                <div>
-                  <span className="font-medium">Catégorie:</span>{' '}
-                  {invoice.details?.category || 'Non définie'}
-                </div>
-                <div>
-                  <span className="font-medium">Date de facture:</span>{' '}
-                  {invoice.details?.invoice_date
-                    ? format(new Date(invoice.details.invoice_date), 'dd/MM/yyyy')
-                    : 'Non définie'}
-                </div>
-                <div>
-                  <span className="font-medium">Marchand:</span>{' '}
-                  {invoice.details?.merchant_name || 'Non défini'}
-                </div>
-                <div>
-                  <span className="font-medium">Statut:</span>{' '}
-                  {invoice.details?.status === 'pending' && 'En attente'}
-                  {invoice.details?.status === 'paid' && 'Payée'}
-                  {invoice.details?.status === 'cancelled' && 'Annulée'}
-                </div>
-              </div>
+              <InvoiceDetails details={invoice.details} />
             )}
           </div>
         ))}
