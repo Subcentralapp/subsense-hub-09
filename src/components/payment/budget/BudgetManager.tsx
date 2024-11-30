@@ -8,7 +8,7 @@ import { BudgetProgress } from "./BudgetProgress";
 
 const BudgetManager = () => {
   // Fetch current budget
-  const { data: budget } = useQuery({
+  const { data: budget, isLoading: isBudgetLoading } = useQuery({
     queryKey: ['current-budget'],
     queryFn: async () => {
       console.log("Fetching current budget...");
@@ -31,8 +31,10 @@ const BudgetManager = () => {
         .maybeSingle();
 
       if (error) throw error;
+      console.log("Current budget data:", data);
       return data;
     },
+    refetchInterval: 5000, // Rafraîchir toutes les 5 secondes
   });
 
   // Fetch total expenses (subscriptions) for current month
@@ -48,12 +50,24 @@ const BudgetManager = () => {
         .eq('user_id', user.id);
 
       if (error) throw error;
-      return data?.reduce((sum, sub) => sum + (Number(sub.price) || 0), 0) || 0;
+      const total = data?.reduce((sum, sub) => sum + (Number(sub.price) || 0), 0) || 0;
+      console.log("Total monthly expenses:", total);
+      return total;
     },
   });
 
   const currentBudget = budget?.amount || 0;
   const spentPercentage = currentBudget ? (totalExpenses / currentBudget) * 100 : 0;
+
+  if (isBudgetLoading) {
+    return (
+      <Card className="p-6 space-y-4 animate-pulse">
+        <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+        <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+        <div className="h-8 bg-gray-200 rounded"></div>
+      </Card>
+    );
+  }
 
   return (
     <Card className="p-6 space-y-4">

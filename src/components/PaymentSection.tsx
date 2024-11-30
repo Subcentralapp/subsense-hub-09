@@ -5,7 +5,6 @@ import UpcomingPayments from "./payment/UpcomingPayments";
 import InvoiceUploader from "./payment/InvoiceUploader";
 import InvoiceList from "./payment/InvoiceList";
 import PaymentCharts from "./payment/PaymentCharts";
-import BudgetManager from "./payment/budget/BudgetManager";
 
 const PaymentSection = () => {
   const { invoices, isLoading, addInvoice, removeInvoice, fetchInvoices, updateInvoiceDetails } = useInvoiceStore();
@@ -18,7 +17,6 @@ const PaymentSection = () => {
     <div className="space-y-6">
       <PaymentCharts />
       <UpcomingPayments />
-      <BudgetManager />
       
       <Card className="p-6 glass-card">
         <h2 className="text-xl font-semibold mb-4">Gestion des Factures</h2>
