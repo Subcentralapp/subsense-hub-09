@@ -90,22 +90,7 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
       
       console.log('Invoice details created successfully');
 
-      set((state) => ({
-        invoices: [{
-          id: invoice.id,
-          name: invoice.Names || invoice.names,
-          date: new Date(invoice.created_at),
-          url: invoice.url,
-          details: {
-            status: 'pending',
-            amount: 0,
-            category: '',
-            invoice_date: new Date().toISOString(),
-            merchant_name: ''
-          }
-        }, ...state.invoices]
-      }));
-
+      await get().fetchInvoices();
     } catch (error) {
       console.error('Error in addInvoice:', error);
       throw error;
@@ -167,7 +152,7 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
           await deleteInvoiceFile(fileName);
         }
 
-        console.log('Invoice deleted successfully');
+        console.log('Invoice file deleted successfully');
 
         set((state) => ({
           invoices: state.invoices.filter((inv) => inv.id !== id)
