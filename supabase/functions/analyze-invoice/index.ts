@@ -98,12 +98,74 @@ async function getAccessToken() {
   }
 }
 
+async function testGoogleVisionConnection() {
+  try {
+    console.log('Testing Google Vision API connection...');
+    
+    // Test avec une petite image en base64 (1x1 pixel blanc)
+    const testImageBase64 = 'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==';
+    
+    const accessToken = await getAccessToken();
+    console.log('Access token obtained successfully');
+
+    const testResponse = await fetch('https://vision.googleapis.com/v1/images:annotate', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        requests: [{
+          image: {
+            content: testImageBase64
+          },
+          features: [{ type: 'TEXT_DETECTION' }]
+        }]
+      })
+    });
+
+    const testResult = await testResponse.json();
+    console.log('Test API response:', JSON.stringify(testResult, null, 2));
+
+    if (testResponse.ok) {
+      console.log('Google Vision API connection test successful');
+      return true;
+    } else {
+      console.error('Google Vision API test failed:', testResult.error);
+      return false;
+    }
+  } catch (error) {
+    console.error('Error testing Google Vision API:', error);
+    return false;
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    // Test de connexion avant de procéder
+    const isConnected = await testGoogleVisionConnection();
+    if (!isConnected) {
+      console.error('Failed to connect to Google Vision API');
+      return new Response(
+        JSON.stringify({ 
+          error: 'Unable to establish connection with Google Vision API' 
+        }),
+        { 
+          headers: { 
+            ...corsHeaders,
+            'Content-Type': 'application/json'
+          },
+          status: 500
+        }
+      );
+    }
+
+    console.log('Connection to Google Vision API verified, proceeding with invoice analysis...');
+    
     const { fileUrl, invoiceId } = await req.json();
     console.log('Processing invoice:', { fileUrl, invoiceId });
 
