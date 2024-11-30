@@ -88,6 +88,22 @@ serve(async (req) => {
     if (!response.ok) {
       const errorData = await response.text();
       console.error('OpenAI API error response:', errorData);
+      
+      // Check specifically for quota exceeded error
+      if (response.status === 429) {
+        return new Response(
+          JSON.stringify({
+            error: "Service temporairement indisponible",
+            message: "Le service de comparaison est momentanément indisponible. Veuillez réessayer plus tard.",
+            code: "QUOTA_EXCEEDED"
+          }), 
+          {
+            status: 503,
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+          }
+        );
+      }
+      
       throw new Error(`OpenAI API error: ${response.status} ${errorData}`);
     }
 

@@ -52,7 +52,19 @@ const ComparisonSection = () => {
         });
 
         console.log("Comparison response:", response);
-        if (response.error) throw new Error(response.error.message);
+        if (response.error) {
+          // Check for quota exceeded error
+          if (response.error.code === "QUOTA_EXCEEDED") {
+            toast({
+              title: "Service indisponible",
+              description: "Le service de comparaison est momentanément indisponible. Veuillez réessayer plus tard.",
+              variant: "destructive",
+            });
+            setShowComparison(false);
+            return null;
+          }
+          throw new Error(response.error.message);
+        }
         return response.data.analysis;
       } catch (error) {
         console.error("Comparison error:", error);
