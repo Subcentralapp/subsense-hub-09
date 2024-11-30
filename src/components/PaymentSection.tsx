@@ -8,7 +8,7 @@ import PaymentCharts from "./payment/PaymentCharts";
 import BudgetManager from "./payment/budget/BudgetManager";
 
 const PaymentSection = () => {
-  const { invoices, isLoading, addInvoice, removeInvoice, fetchInvoices } = useInvoiceStore();
+  const { invoices, isLoading, addInvoice, removeInvoice, fetchInvoices, updateInvoiceDetails } = useInvoiceStore();
 
   useEffect(() => {
     fetchInvoices();
@@ -29,6 +29,7 @@ const PaymentSection = () => {
               invoices={invoices}
               isLoading={isLoading}
               onDelete={removeInvoice}
+              onUpdateDetails={updateInvoiceDetails}
             />
           )}
         </div>

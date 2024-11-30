@@ -1,156 +1,227 @@
 import { useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
-import { Table, TableBody } from "@/components/ui/table";
-import InvoiceFilters from "./invoice/InvoiceFilters";
-import InvoiceExport from "./invoice/InvoiceExport";
-import { useInvoiceDetails } from "@/hooks/useInvoiceDetails";
-import { updateInvoiceDetails } from "@/services/invoiceOperations";
-import InvoiceTableHeader from "./invoice/InvoiceTableHeader";
-import InvoiceTableRow from "./invoice/InvoiceTableRow";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Loader2, FileText, Download, Pencil, Save, X } from "lucide-react";
+import { format } from "date-fns";
 
 interface Invoice {
   id: string;
   name: string;
   date: Date;
   url: string;
+  details?: {
+    amount: number;
+    category: string;
+    invoice_date: string;
+    merchant_name: string;
+    status: string;
+  };
 }
 
 interface InvoiceListProps {
   invoices: Invoice[];
   isLoading: boolean;
   onDelete: (id: string) => Promise<void>;
+  onUpdateDetails: (id: string, details: Partial<Invoice['details']>) => Promise<void>;
 }
 
-const InvoiceList = ({ invoices, isLoading, onDelete }: InvoiceListProps) => {
-  const { toast } = useToast();
+const InvoiceList = ({ invoices, isLoading, onDelete, onUpdateDetails }: InvoiceListProps) => {
   const [editingId, setEditingId] = useState<string | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [sortBy, setSortBy] = useState<"date" | "name" | "price" | "status">("date");
-  const [editForm, setEditForm] = useState({
-    price: "",
-    date: "",
-    status: "pending",
-    merchantName: "",
-  });
+  const [editForm, setEditForm] = useState<Partial<Invoice['details']>>({});
 
-  const { data: invoiceDetails = [], isError: isDetailsError } = useInvoiceDetails();
+  const handleEdit = (invoice: Invoice) => {
+    setEditingId(invoice.id);
+    setEditForm(invoice.details || {});
+  };
 
-  const handleEdit = async (invoiceId: string) => {
-    if (editingId === invoiceId) {
-      try {
-        await updateInvoiceDetails(invoiceId, {
-          amount: parseFloat(editForm.price),
-          invoice_date: editForm.date,
-          status: editForm.status,
-          merchant_name: editForm.merchantName,
-        });
-
-        toast({
-          title: "Modifications enregistrées",
-          description: "Les informations de la facture ont été mises à jour.",
-        });
-
-        setEditingId(null);
-      } catch (error) {
-        console.error("Erreur lors de la mise à jour:", error);
-        toast({
-          title: "Erreur",
-          description: "Une erreur est survenue lors de la mise à jour.",
-          variant: "destructive",
-        });
-      }
-    } else {
-      const invoiceDetail = invoiceDetails
-        .filter(d => d.invoice_id === parseInt(invoiceId))
-        .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0];
-
-      setEditForm({
-        price: invoiceDetail?.amount?.toString() || "",
-        date: invoiceDetail?.invoice_date?.toString() || "",
-        status: invoiceDetail?.status || "pending",
-        merchantName: invoiceDetail?.merchant_name || "",
-      });
-      setEditingId(invoiceId);
+  const handleSave = async (id: string) => {
+    try {
+      await onUpdateDetails(id, editForm);
+      setEditingId(null);
+      setEditForm({});
+    } catch (error) {
+      console.error('Error saving invoice details:', error);
     }
   };
 
-  const filteredInvoices = invoices
-    .filter(invoice => invoice.name.toLowerCase().includes(searchTerm.toLowerCase()))
-    .sort((a, b) => {
-      const detailsA = invoiceDetails
-        .filter(d => d.invoice_id === parseInt(a.id))
-        .sort((x, y) => new Date(y.created_at).getTime() - new Date(x.created_at).getTime())[0];
-      const detailsB = invoiceDetails
-        .filter(d => d.invoice_id === parseInt(b.id))
-        .sort((x, y) => new Date(y.created_at).getTime() - new Date(x.created_at).getTime())[0];
+  const exportToCSV = () => {
+    const headers = ['Nom', 'Date', 'Montant', 'Catégorie', 'Date de facture', 'Marchand', 'Statut'];
+    const data = invoices.map(inv => [
+      inv.name,
+      format(new Date(inv.date), 'dd/MM/yyyy'),
+      inv.details?.amount || '',
+      inv.details?.category || '',
+      inv.details?.invoice_date ? format(new Date(inv.details.invoice_date), 'dd/MM/yyyy') : '',
+      inv.details?.merchant_name || '',
+      inv.details?.status || ''
+    ]);
 
-      switch (sortBy) {
-        case "date":
-          return new Date(detailsB?.invoice_date || b.date).getTime() - 
-                 new Date(detailsA?.invoice_date || a.date).getTime();
-        case "name":
-          return a.name.localeCompare(b.name);
-        case "price":
-          return (detailsB?.amount || 0) - (detailsA?.amount || 0);
-        case "status":
-          return (detailsA?.status || "pending").localeCompare(detailsB?.status || "pending");
-        default:
-          return 0;
-      }
-    });
+    const csvContent = [
+      headers.join(','),
+      ...data.map(row => row.join(','))
+    ].join('\n');
 
-  if (isDetailsError) {
-    toast({
-      title: "Erreur",
-      description: "Impossible de charger les détails des factures.",
-      variant: "destructive",
-    });
-  }
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `factures_${format(new Date(), 'yyyy-MM-dd')}.csv`;
+    link.click();
+  };
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="font-medium text-lg">Factures enregistrées</h3>
-        <InvoiceExport invoices={invoices} invoiceDetails={invoiceDetails} />
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-medium">Liste des Factures</h3>
+        <Button onClick={exportToCSV} variant="outline" size="sm">
+          <Download className="h-4 w-4 mr-2" />
+          Exporter CSV
+        </Button>
       </div>
       
-      <InvoiceFilters
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        sortBy={sortBy}
-        setSortBy={setSortBy}
-      />
+      <div className="space-y-4">
+        {invoices.map((invoice) => (
+          <div key={invoice.id} className="border rounded-lg p-4 space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <FileText className="h-8 w-8 text-gray-400" />
+                <div>
+                  <h4 className="font-medium">{invoice.name}</h4>
+                  <p className="text-sm text-gray-500">
+                    Ajouté le {format(new Date(invoice.date), 'dd/MM/yyyy')}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                {editingId === invoice.id ? (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleSave(invoice.id)}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Save className="h-4 w-4" />
+                      )}
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setEditingId(null)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleEdit(invoice)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => onDelete(invoice.id)}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <X className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </>
+                )}
+              </div>
+            </div>
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <Table>
-          <InvoiceTableHeader />
-          <TableBody>
-            {filteredInvoices.map((invoice) => {
-              const invoiceDetail = invoiceDetails
-                .filter(d => d.invoice_id === parseInt(invoice.id))
-                .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0] || {
-                  status: 'pending',
-                  amount: null,
-                  invoice_date: invoice.date,
-                  merchant_name: ''
-                };
-              
-              return (
-                <InvoiceTableRow
-                  key={invoice.id}
-                  invoice={invoice}
-                  invoiceDetail={invoiceDetail}
-                  isEditing={editingId === invoice.id}
-                  isLoading={isLoading}
-                  editForm={editForm}
-                  setEditForm={setEditForm}
-                  onEdit={() => handleEdit(invoice.id)}
-                  onDelete={() => onDelete(invoice.id)}
-                />
-              );
-            })}
-          </TableBody>
-        </Table>
+            {editingId === invoice.id ? (
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-sm font-medium">Montant</label>
+                  <Input
+                    type="number"
+                    value={editForm.amount || ''}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, amount: parseFloat(e.target.value) }))}
+                    placeholder="Montant"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Catégorie</label>
+                  <Input
+                    value={editForm.category || ''}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, category: e.target.value }))}
+                    placeholder="Catégorie"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Date de facture</label>
+                  <Input
+                    type="date"
+                    value={editForm.invoice_date ? format(new Date(editForm.invoice_date), 'yyyy-MM-dd') : ''}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, invoice_date: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Marchand</label>
+                  <Input
+                    value={editForm.merchant_name || ''}
+                    onChange={(e) => setEditForm(prev => ({ ...prev, merchant_name: e.target.value }))}
+                    placeholder="Nom du marchand"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-medium">Statut</label>
+                  <Select
+                    value={editForm.status || 'pending'}
+                    onValueChange={(value) => setEditForm(prev => ({ ...prev, status: value }))}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pending">En attente</SelectItem>
+                      <SelectItem value="paid">Payée</SelectItem>
+                      <SelectItem value="cancelled">Annulée</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="font-medium">Montant:</span>{' '}
+                  {invoice.details?.amount ? `${invoice.details.amount}€` : 'Non défini'}
+                </div>
+                <div>
+                  <span className="font-medium">Catégorie:</span>{' '}
+                  {invoice.details?.category || 'Non définie'}
+                </div>
+                <div>
+                  <span className="font-medium">Date de facture:</span>{' '}
+                  {invoice.details?.invoice_date
+                    ? format(new Date(invoice.details.invoice_date), 'dd/MM/yyyy')
+                    : 'Non définie'}
+                </div>
+                <div>
+                  <span className="font-medium">Marchand:</span>{' '}
+                  {invoice.details?.merchant_name || 'Non défini'}
+                </div>
+                <div>
+                  <span className="font-medium">Statut:</span>{' '}
+                  {invoice.details?.status === 'pending' && 'En attente'}
+                  {invoice.details?.status === 'paid' && 'Payée'}
+                  {invoice.details?.status === 'cancelled' && 'Annulée'}
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
       </div>
     </div>
   );

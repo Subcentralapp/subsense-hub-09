@@ -22,6 +22,7 @@ interface InvoiceStore {
   addInvoice: (file: File) => Promise<void>;
   removeInvoice: (id: string) => Promise<void>;
   fetchInvoices: () => Promise<void>;
+  updateInvoiceDetails: (invoiceId: string, details: Partial<Invoice['details']>) => Promise<void>;
 }
 
 export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
@@ -39,6 +40,8 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
             .from('invoicedetails')
             .select('*')
             .eq('invoice_id', inv.id)
+            .order('created_at', { ascending: false })
+            .limit(1)
             .single();
           
           return {
@@ -84,25 +87,11 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
 
       if (detailsError) {
         console.error('Error creating invoice details:', detailsError);
-        // If details creation fails, clean up the invoice
         await supabase.from('invoices').delete().eq('id', invoice.id);
         throw detailsError;
       }
       
       console.log('Invoice details created successfully');
-
-      // 3. Trigger the analysis
-      console.log('Triggering invoice analysis...');
-      const { error: analysisError } = await supabase.functions.invoke('analyze-invoice', {
-        body: { fileUrl: invoice.url, invoiceId: invoice.id }
-      });
-
-      if (analysisError) {
-        console.error('Error analyzing invoice:', analysisError);
-        throw analysisError;
-      }
-
-      console.log('Invoice analysis completed successfully');
 
       // Add the new invoice to the state
       set((state) => ({
@@ -110,14 +99,42 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
           id: invoice.id,
           name: invoice.Names || invoice.names,
           date: new Date(invoice.created_at),
-          url: invoice.url
+          url: invoice.url,
+          details: {
+            status: 'pending',
+            amount: 0,
+            category: '',
+            invoice_date: new Date().toISOString(),
+            merchant_name: ''
+          }
         }, ...state.invoices]
       }));
 
-      // Refresh to get the analyzed details
-      await get().fetchInvoices();
     } catch (error) {
       console.error('Error in addInvoice:', error);
+      throw error;
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  updateInvoiceDetails: async (invoiceId: string, details: Partial<Invoice['details']>) => {
+    try {
+      set({ isLoading: true });
+      
+      const { error } = await supabase
+        .from('invoicedetails')
+        .insert([{
+          invoice_id: invoiceId,
+          ...details,
+          created_at: new Date().toISOString()
+        }]);
+
+      if (error) throw error;
+
+      await get().fetchInvoices();
+    } catch (error) {
+      console.error('Error updating invoice details:', error);
       throw error;
     } finally {
       set({ isLoading: false });
