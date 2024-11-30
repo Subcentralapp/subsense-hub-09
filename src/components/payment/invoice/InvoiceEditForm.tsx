@@ -40,7 +40,7 @@ const InvoiceEditForm = ({ editForm, setEditForm, onSave, onCancel, isLoading }:
           <Input
             type="number"
             value={editForm.amount || ''}
-            onChange={(e) => setEditForm(prev => ({ ...prev, amount: parseFloat(e.target.value) }))}
+            onChange={(e) => setEditForm({ ...editForm, amount: parseFloat(e.target.value) })}
             placeholder="0.00"
           />
         </div>
@@ -48,15 +48,15 @@ const InvoiceEditForm = ({ editForm, setEditForm, onSave, onCancel, isLoading }:
           <label className="text-sm font-medium">Date de facture</label>
           <Input
             type="date"
-            value={editForm.invoice_date ? format(new Date(editForm.invoice_date), 'yyyy-MM-dd') : ''}
-            onChange={(e) => setEditForm(prev => ({ ...prev, invoice_date: e.target.value }))}
+            value={editForm.invoice_date || ''}
+            onChange={(e) => setEditForm({ ...editForm, invoice_date: e.target.value })}
           />
         </div>
         <div>
           <label className="text-sm font-medium">Marchand</label>
           <Input
             value={editForm.merchant_name || ''}
-            onChange={(e) => setEditForm(prev => ({ ...prev, merchant_name: e.target.value }))}
+            onChange={(e) => setEditForm({ ...editForm, merchant_name: e.target.value })}
             placeholder="Nom du marchand"
           />
         </div>
@@ -64,7 +64,7 @@ const InvoiceEditForm = ({ editForm, setEditForm, onSave, onCancel, isLoading }:
           <label className="text-sm font-medium">Statut</label>
           <Select
             value={editForm.status || 'pending'}
-            onValueChange={(value) => setEditForm(prev => ({ ...prev, status: value }))}>
+            onValueChange={(value) => setEditForm({ ...editForm, status: value })}>
             <SelectTrigger>
               <SelectValue />
             </SelectTrigger>
