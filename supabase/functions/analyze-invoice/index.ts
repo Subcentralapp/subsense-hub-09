@@ -21,7 +21,7 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // First verify that the invoice exists
+    // Verify that the invoice exists
     const { data: invoice, error: invoiceError } = await supabaseClient
       .from('invoices')
       .select('id')
@@ -44,17 +44,20 @@ serve(async (req) => {
       );
     }
 
-    // For now, just store basic metadata since we're troubleshooting
+    // Pour l'instant, on stocke des métadonnées basiques
+    // TODO: Implémenter l'analyse OCR plus tard
     const { data, error: insertError } = await supabaseClient
       .from('invoicedetails')
       .insert([{
         invoice_id: invoiceId,
-        amount: 0, // Default amount
+        amount: 0,
         invoice_date: new Date().toISOString(),
         status: 'pending',
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        merchant_name: 'À déterminer'
       }])
-      .select();
+      .select()
+      .single();
 
     if (insertError) {
       console.error('Error storing metadata:', insertError);
