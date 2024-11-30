@@ -82,6 +82,7 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
 
       console.log('Invoice analysis completed successfully');
 
+      // Add the new invoice to the state
       set((state) => ({
         invoices: [{
           id: invoice.id,

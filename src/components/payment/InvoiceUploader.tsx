@@ -42,7 +42,7 @@ const InvoiceUploader = ({ isLoading, onUpload }: InvoiceUploaderProps) => {
     }
 
     try {
-      setUploadStatus("Téléchargement du fichier...");
+      setUploadStatus("Téléchargement et analyse du fichier...");
       await onUpload(selectedFile);
       setSelectedFile(null);
       setUploadStatus("");

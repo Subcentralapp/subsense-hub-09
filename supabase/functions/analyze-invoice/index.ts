@@ -25,7 +25,6 @@ serve(async (req) => {
     console.log('Extracted text:', fullText);
 
     // Extract metadata using basic pattern matching
-    // This is a simple example - you might want to enhance this with more sophisticated parsing
     const amount = extractAmount(fullText);
     const date = extractDate(fullText);
     const merchantName = extractMerchantName(fullText);
@@ -51,16 +50,7 @@ serve(async (req) => {
 
     if (insertError) {
       console.error('Error storing metadata:', insertError);
-      return new Response(
-        JSON.stringify({ 
-          error: 'Failed to store invoice metadata',
-          details: insertError 
-        }),
-        { 
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 500 
-        }
-      );
+      throw insertError;
     }
 
     console.log('Successfully stored invoice metadata:', data);
