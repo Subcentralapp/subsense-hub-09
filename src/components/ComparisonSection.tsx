@@ -24,7 +24,7 @@ const ComparisonSection = () => {
       const { data, error } = await supabase
         .from("applications")
         .select("*")
-        .order("name");
+        .order("NOM");
       
       if (error) {
         console.error("Error fetching applications:", error);
@@ -36,11 +36,11 @@ const ComparisonSection = () => {
         return [];
       }
 
-      // Map the data to match our Application type
-      const mappedData = data.map((app: any) => ({
+      console.log("Applications fetched:", data);
+      return data.map(app => ({
         id: app.id,
         name: app.NOM,
-        price: parseFloat(app.PRICE) || 0,
+        price: parseFloat(app.PRICE),
         category: app.CATÉGORIE,
         description: app.DESCRIPTION,
         features: app.CARACTÉRISTIQUES,
@@ -50,11 +50,8 @@ const ComparisonSection = () => {
         logo_url: app["URL DU LOGO"],
         rating: app.NOTE,
         review: app.REVUE,
-        users_count: app["NOMBRE D'UTILISATEURS"]?.toString(),
+        users_count: app["NOMBRE D'UTILISATEURS"]?.toString()
       }));
-
-      console.log("Applications fetched and mapped:", mappedData);
-      return mappedData;
     },
   });
 
