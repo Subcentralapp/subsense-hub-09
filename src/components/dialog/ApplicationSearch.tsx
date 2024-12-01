@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { Application } from "@/types/application";
+import { Badge } from "@/components/ui/badge";
 
 interface ApplicationSearchProps {
   applications: Application[] | undefined;
@@ -12,21 +13,25 @@ const ApplicationSearch = ({ applications, onSearch }: ApplicationSearchProps) =
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
+  const categories = useMemo(() => {
+    if (!applications) return [];
+    const uniqueCategories = new Set(applications.map(app => app.category).filter(Boolean));
+    return Array.from(uniqueCategories).sort();
+  }, [applications]);
+
   const handleSearch = (newSearchTerm: string) => {
     setSearchTerm(newSearchTerm);
     onSearch(newSearchTerm, selectedCategory);
   };
 
-  const handleCategoryChange = (category: string) => {
-    setSelectedCategory(category || null);
-    onSearch(searchTerm, category || null);
+  const handleCategoryChange = (category: string | null) => {
+    setSelectedCategory(category);
+    onSearch(searchTerm, category);
   };
 
-  const categories = [...new Set(applications?.map(app => app.category))];
-
   return (
-    <div className="flex gap-4">
-      <div className="relative flex-1">
+    <div className="space-y-4">
+      <div className="relative">
         <Search className="absolute left-3 top-3 h-4 w-4 text-gray-400" />
         <Input
           placeholder="Rechercher une application..."
@@ -35,16 +40,26 @@ const ApplicationSearch = ({ applications, onSearch }: ApplicationSearchProps) =
           className="pl-9"
         />
       </div>
-      <select
-        value={selectedCategory || ""}
-        onChange={(e) => handleCategoryChange(e.target.value)}
-        className="px-4 py-2 rounded-md border border-gray-200 focus:outline-none focus:ring-2 focus:ring-primary/20"
-      >
-        <option value="">Toutes les catégories</option>
+      
+      <div className="flex flex-wrap gap-2">
+        <Badge
+          variant={selectedCategory === null ? "default" : "outline"}
+          className="cursor-pointer"
+          onClick={() => handleCategoryChange(null)}
+        >
+          Toutes les catégories
+        </Badge>
         {categories.map(category => (
-          <option key={category} value={category}>{category}</option>
+          <Badge
+            key={category}
+            variant={selectedCategory === category ? "default" : "outline"}
+            className="cursor-pointer"
+            onClick={() => handleCategoryChange(category)}
+          >
+            {category}
+          </Badge>
         ))}
-      </select>
+      </div>
     </div>
   );
 };

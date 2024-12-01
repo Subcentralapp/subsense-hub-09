@@ -1,5 +1,6 @@
 import { ApplicationCard } from "../ApplicationCard";
 import { Application } from "@/types/application";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface ApplicationGridProps {
   applications: Application[] | undefined;
@@ -16,20 +17,26 @@ const ApplicationGrid = ({ applications, isLoading, onAddSubscription }: Applica
     );
   }
 
-  if (!applications) {
-    return null;
+  if (!applications?.length) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[200px] text-gray-500">
+        <p>Aucune application trouvée</p>
+      </div>
+    );
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto p-2">
-      {applications.map((app) => (
-        <ApplicationCard 
-          key={app.name}
-          app={app}
-          onAdd={onAddSubscription}
-        />
-      ))}
-    </div>
+    <ScrollArea className="h-[60vh]">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-2">
+        {applications.map((app) => (
+          <ApplicationCard 
+            key={app.id}
+            app={app}
+            onAdd={onAddSubscription}
+          />
+        ))}
+      </div>
+    </ScrollArea>
   );
 };
 

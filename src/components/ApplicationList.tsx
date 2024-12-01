@@ -8,7 +8,7 @@ import SubscriptionCustomizeDialog from "./dialog/SubscriptionCustomizeDialog";
 import { useState } from "react";
 
 const fetchApplications = async () => {
-  console.log("Tentative de récupération des applications depuis Supabase...");
+  console.log("Récupération des applications depuis Supabase...");
   try {
     const { data, error } = await supabase
       .from("applications")
@@ -36,7 +36,7 @@ const fetchApplications = async () => {
       users_count: app["NOMBRE D'UTILISATEURS"]
     }));
 
-    console.log("Applications récupérées et mappées:", mappedData);
+    console.log(`${mappedData.length} applications récupérées et mappées`);
     return mappedData;
   } catch (error) {
     console.error("Erreur lors de la récupération:", error);
@@ -53,6 +53,8 @@ const ApplicationList = () => {
   const { data: applications, isLoading } = useQuery({
     queryKey: ["applications"],
     queryFn: fetchApplications,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+    cacheTime: 30 * 60 * 1000, // Keep in cache for 30 minutes
   });
 
   const handleAddSubscription = async (app: Application) => {
