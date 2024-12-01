@@ -30,7 +30,7 @@ const PREDEFINED_APPS = {
         description: "Solution bancaire tout-en-un avec crypto et trading",
         price: 7.99,
         website_url: "https://www.revolut.com",
-        category: "Crypto et finance",
+        category: "Finance",
         features: [
           "Cartes virtuelles illimitées",
           "Trading crypto sans frais",
@@ -51,7 +51,7 @@ const PREDEFINED_APPS = {
         description: "Assistant d'écriture IA pour du contenu de qualité",
         price: 24.99,
         website_url: "https://www.jasper.ai",
-        category: "Applications IA",
+        category: "Intelligence Artificielle",
         features: [
           "Rédaction assistée par IA",
           "Plus de 50+ templates",
@@ -72,7 +72,7 @@ const PREDEFINED_APPS = {
         description: "Plateforme de design graphique intuitive",
         price: 12.99,
         website_url: "https://www.canva.com",
-        category: "Outils de création graphique",
+        category: "Design",
         features: [
           "Millions de templates",
           "Outils de design pro",
@@ -93,7 +93,7 @@ const PREDEFINED_APPS = {
         description: "La plus grande plateforme d'échange de cryptomonnaies",
         price: 0,
         website_url: "https://www.binance.com",
-        category: "Crypto et finance",
+        category: "Crypto",
         features: [
           "Trading spot et futures",
           "Staking de cryptomonnaies",
@@ -114,7 +114,7 @@ const PREDEFINED_APPS = {
         description: "Plateforme tout-en-un pour la gestion de projets",
         price: 5.99,
         website_url: "https://www.clickup.com",
-        category: "Gestion de projets",
+        category: "Productivité",
         features: [
           "Gestion de tâches avancée",
           "Vues personnalisables",
