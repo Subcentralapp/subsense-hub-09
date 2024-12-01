@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { Sparkles, ArrowRight, ExternalLink } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -16,6 +16,7 @@ const RecommendationSection = () => {
     description: string;
     saving: string;
     details?: string;
+    websiteUrl?: string;
   }>(null);
 
   const recommendations = [
@@ -24,12 +25,14 @@ const RecommendationSection = () => {
       description: "Vous avez Netflix et Disney+. Envisagez un abonnement groupé pour économiser 20%.",
       saving: "5,99 €/mois",
       details: "En regroupant vos abonnements Netflix et Disney+ via une offre combinée, vous pouvez réaliser une économie significative. Plusieurs opérateurs proposent des packages incluant ces deux services avec une réduction allant jusqu'à 20%. Cela représente une économie annuelle de plus de 70€.",
+      websiteUrl: "https://www.sfr.fr/offre-internet/box-plus",
     },
     {
       title: "Double Musique",
       description: "Vous avez Spotify et Apple Music. Nous recommandons de garder uniquement Spotify.",
       saving: "9,99 €/mois",
       details: "Avoir deux services de streaming musical n'est pas optimal. Spotify offre un catalogue très similaire à Apple Music. En gardant uniquement Spotify, vous économisez le coût d'Apple Music sans perdre d'accès à la musique. De plus, Spotify propose des fonctionnalités uniques comme les playlists collaboratives et une meilleure découverte musicale.",
+      websiteUrl: "https://www.spotify.com/fr/premium/",
     },
   ];
 
@@ -84,6 +87,15 @@ const RecommendationSection = () => {
                   Économie potentielle: {selectedRec?.saving}
                 </p>
               </div>
+              {selectedRec?.websiteUrl && (
+                <Button 
+                  className="w-full mt-4 group"
+                  onClick={() => window.open(selectedRec.websiteUrl, '_blank')}
+                >
+                  Voir l'offre
+                  <ExternalLink className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                </Button>
+              )}
             </DialogDescription>
           </DialogHeader>
         </DialogContent>
