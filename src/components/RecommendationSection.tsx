@@ -54,86 +54,59 @@ const RecommendationSection = () => {
         if (subsError) throw subsError;
         setSubscriptions(userSubs || []);
 
-        // Fetch all applications
-        const { data: allApps, error: appsError } = await supabase
-          .from('applications')
-          .select('*');
-
-        if (appsError) throw appsError;
-        
-        // Map the data to match our Application type
-        const mappedApps = (allApps || []).map(app => ({
-          id: app.id,
-          name: app.NOM,
-          price: parseFloat(app.PRICE || "0"),
-          category: app.CATÉGORIE,
-          description: app.DESCRIPTION,
-          features: app.CARACTÉRISTIQUES as string[],
-          pros: app.AVANTAGES,
-          cons: app.INCONVÉNIENTS,
-          website_url: app["URL DU SITE WEB"],
-          logo_url: app["URL DU LOGO"],
-          rating: app.NOTE,
-          review: app.REVUE,
-          users_count: app["NOMBRE D'UTILISATEURS"]
-        }));
-        
-        setApplications(mappedApps);
-
-        // Generate optimization recommendations
-        const optimizations = userSubs?.map(sub => {
-          const currentApp = mappedApps.find(app => 
-            app.name?.toLowerCase() === sub.name.toLowerCase()
-          );
-          
-          if (!currentApp?.category) return null;
-
-          const alternatives = mappedApps.filter(app => 
-            app.category === currentApp.category && 
-            app.price < sub.price &&
-            app.name?.toLowerCase() !== sub.name.toLowerCase()
-          );
-
-          if (!alternatives?.length) return null;
-
-          const bestAlternative = alternatives.sort((a, b) => 
-            a.price - b.price
-          )[0];
-
-          return {
-            title: `Optimisation pour ${sub.name}`,
-            description: `Une alternative plus économique avec des fonctionnalités similaires`,
-            saving: sub.price - bestAlternative.price,
-            currentApp,
-            alternativeApp: bestAlternative,
-            type: 'optimization'
-          };
-        }).filter(Boolean);
-
-        setRecommendations(optimizations || []);
-
         // Generate category recommendations
-        if (mappedApps) {
-          const categories = [...new Set(mappedApps.map(app => app.category))].filter(Boolean);
-          const categoryRecs = categories.slice(0, 6).map((category, index) => {
-            const appsInCategory = mappedApps.filter(app => app.category === category);
-            const avgRating = appsInCategory.reduce((sum, app) => sum + (app.rating || 0), 0) / appsInCategory.length;
-            
-            return {
-              category: category as string,
-              name: `${category} Essentiels`,
-              description: `Découvrez les meilleures applications dans la catégorie ${category}`,
-              rating: avgRating || 4.5,
-              progress: 60 + Math.random() * 40,
-              color: [
-                'bg-red-100', 'bg-green-100', 'bg-orange-100',
-                'bg-blue-100', 'bg-purple-100', 'bg-pink-100'
-              ][index % 6],
-              apps: appsInCategory
-            };
-          });
-          setCategoryRecommendations(categoryRecs);
-        }
+        const categories = [
+          {
+            category: "Productivité",
+            name: "Productivité Essentiels",
+            description: "Les meilleurs outils pour booster votre productivité",
+            rating: 4.8,
+            progress: 85,
+            color: 'bg-blue-100'
+          },
+          {
+            category: "Finance",
+            name: "Finance Essentiels",
+            description: "Solutions financières innovantes",
+            rating: 4.7,
+            progress: 80,
+            color: 'bg-green-100'
+          },
+          {
+            category: "Intelligence Artificielle",
+            name: "IA Essentiels",
+            description: "Les meilleurs outils d'IA",
+            rating: 4.9,
+            progress: 90,
+            color: 'bg-purple-100'
+          },
+          {
+            category: "Design",
+            name: "Design Essentiels",
+            description: "Outils de design professionnels",
+            rating: 4.6,
+            progress: 75,
+            color: 'bg-pink-100'
+          },
+          {
+            category: "Crypto",
+            name: "Crypto Essentiels",
+            description: "Plateformes crypto de confiance",
+            rating: 4.5,
+            progress: 70,
+            color: 'bg-yellow-100'
+          },
+          {
+            category: "Automatisation",
+            name: "Automatisation Essentiels",
+            description: "Automatisez vos tâches répétitives",
+            rating: 4.8,
+            progress: 85,
+            color: 'bg-orange-100'
+          }
+        ];
+
+        setCategoryRecommendations(categories);
 
       } catch (error) {
         console.error("Error fetching recommendations:", error);
@@ -157,29 +130,8 @@ const RecommendationSection = () => {
     setSelectedRec(rec);
   };
 
-  const handleExploreCategory = async (category: string) => {
-    try {
-      const { data: apps } = await supabase
-        .from('applications')
-        .select('*')
-        .eq('CATÉGORIE', category);
-      
-      if (apps && apps.length > 0) {
-        navigate(`/applications?category=${encodeURIComponent(category)}`);
-      } else {
-        toast({
-          title: "Aucune application trouvée",
-          description: `Aucune application n'est disponible dans la catégorie ${category}.`,
-        });
-      }
-    } catch (error) {
-      console.error("Error exploring category:", error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de charger les applications de cette catégorie.",
-        variant: "destructive",
-      });
-    }
+  const handleExploreCategory = (category: string) => {
+    navigate(`/applications?category=${encodeURIComponent(category)}`);
   };
 
   if (loading) {
@@ -209,23 +161,6 @@ const RecommendationSection = () => {
           </Alert>
         ) : (
           <div className="space-y-8">
-            {recommendations.length > 0 && (
-              <div className="space-y-4">
-                <h3 className="text-lg font-medium text-gray-800">Optimisations Suggérées</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {recommendations.map((rec, index) => (
-                    <OptimizationCard
-                      key={index}
-                      rec={rec}
-                      onSelect={handleSelectRecommendation}
-                      currentPrice={rec.currentApp.price}
-                      alternativePrice={rec.alternativeApp.price}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
-
             <div className="space-y-4">
               <h3 className="text-lg font-medium text-gray-800">Découvrez par Catégorie</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
