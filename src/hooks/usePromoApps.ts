@@ -6,13 +6,20 @@ const PREDEFINED_APPS = {
       app: {
         id: 1,
         name: "Make",
-        description: "Plateforme d'automatisation no-code pour connecter vos applications et automatiser vos workflows",
+        description: "Plateforme d'automatisation no-code pour connecter vos applications",
         price: 9.99,
         website_url: "https://www.make.com",
-        category: "Automatisation"
+        category: "Automatisation",
+        features: [
+          "Automatisation illimitée",
+          "Plus de 1000+ intégrations",
+          "Support premium",
+          "Templates prêts à l'emploi"
+        ],
+        isPopular: true
       },
       promoCode: {
-        code: "PROMO2024",
+        code: "MAKE2024",
         discount_amount: 20,
         discount_type: "percentage",
         description: "+3 mois EXTRA offerts"
@@ -24,10 +31,16 @@ const PREDEFINED_APPS = {
       app: {
         id: 2,
         name: "Revolut",
-        description: "Solution bancaire tout-en-un avec des fonctionnalités crypto et des cartes virtuelles",
+        description: "Solution bancaire tout-en-un avec crypto",
         price: 7.99,
         website_url: "https://www.revolut.com",
-        category: "Crypto et finance"
+        category: "Crypto et finance",
+        features: [
+          "Cartes virtuelles illimitées",
+          "Trading crypto sans frais",
+          "Transferts internationaux",
+          "Cashback sur achats"
+        ]
       },
       promoCode: {
         code: "REVOLUT2024",
@@ -40,10 +53,16 @@ const PREDEFINED_APPS = {
       app: {
         id: 3,
         name: "Binance",
-        description: "La plus grande plateforme d'échange de cryptomonnaies au monde",
+        description: "La plus grande plateforme d'échange de cryptomonnaies",
         price: 0,
         website_url: "https://www.binance.com",
-        category: "Crypto et finance"
+        category: "Crypto et finance",
+        features: [
+          "Trading spot et futures",
+          "Staking de cryptomonnaies",
+          "Paiements P2P",
+          "Carte Visa Binance"
+        ]
       },
       promoCode: {
         code: "BINANCE2024",
@@ -58,10 +77,17 @@ const PREDEFINED_APPS = {
       app: {
         id: 4,
         name: "ClickUp",
-        description: "Plateforme tout-en-un pour gérer projets, tâches et collaboration d'équipe",
+        description: "Plateforme tout-en-un pour la gestion de projets",
         price: 5.99,
         website_url: "https://www.clickup.com",
-        category: "Gestion de projets"
+        category: "Gestion de projets",
+        features: [
+          "Gestion de tâches avancée",
+          "Vues personnalisables",
+          "Collaboration en temps réel",
+          "Intégrations natives"
+        ],
+        isPopular: true
       },
       promoCode: {
         code: "CLICKUP2024",
@@ -76,10 +102,16 @@ const PREDEFINED_APPS = {
       app: {
         id: 5,
         name: "Canva",
-        description: "Plateforme de design graphique intuitive pour créer des visuels professionnels",
+        description: "Plateforme de design graphique intuitive",
         price: 12.99,
         website_url: "https://www.canva.com",
-        category: "Outils de création graphique"
+        category: "Outils de création graphique",
+        features: [
+          "Millions de templates",
+          "Outils de design pro",
+          "Collaboration en équipe",
+          "Brand Kit personnalisé"
+        ]
       },
       promoCode: {
         code: "CANVA2024",
@@ -94,10 +126,16 @@ const PREDEFINED_APPS = {
       app: {
         id: 6,
         name: "Jasper AI",
-        description: "Assistant d'écriture IA pour créer du contenu de qualité rapidement",
+        description: "Assistant d'écriture IA pour du contenu de qualité",
         price: 24.99,
         website_url: "https://www.jasper.ai",
-        category: "Applications IA"
+        category: "Applications IA",
+        features: [
+          "Rédaction assistée par IA",
+          "Plus de 50+ templates",
+          "Support multilingue",
+          "Intégration SEO"
+        ]
       },
       promoCode: {
         code: "JASPER2024",
