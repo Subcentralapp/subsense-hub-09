@@ -4,16 +4,42 @@ import { TrendingAppCard } from "./TrendingAppCard";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
+interface PromoCodeWithApp {
+  code: string;
+  discount_amount: number;
+  discount_type: string | null;
+  description: string | null;
+  applications: {
+    id: number;
+    NOM: string | null;
+    PRICE: string | null;
+    DESCRIPTION: string | null;
+    CATÉGORIE: string | null;
+    "URL DU LOGO": string | null;
+    "URL DU SITE WEB": string | null;
+  } | null;
+}
+
 export const TrendingAppsSection = () => {
   const { data: trendingApps, isLoading } = useQuery({
     queryKey: ['trending-apps-with-promos'],
     queryFn: async () => {
       console.log("Fetching trending apps with promo codes...");
       
-      // First, fetch all active promo codes
       const { data: promoData, error: promoError } = await supabase
         .from('promo_codes')
-        .select('*, applications!promo_codes_application_id_fkey(id, NOM, PRICE, DESCRIPTION, CATÉGORIE, "URL DU LOGO", "URL DU SITE WEB")')
+        .select(`
+          *,
+          applications (
+            id,
+            NOM,
+            PRICE,
+            DESCRIPTION,
+            CATÉGORIE,
+            "URL DU LOGO",
+            "URL DU SITE WEB"
+          )
+        `)
         .eq('is_active', true)
         .gte('valid_until', new Date().toISOString());
 
@@ -25,7 +51,7 @@ export const TrendingAppsSection = () => {
       console.log("Fetched promo data:", promoData);
 
       // Group apps by category
-      const groupedApps = promoData.reduce((acc: any, promo) => {
+      const groupedApps = (promoData as PromoCodeWithApp[]).reduce((acc: Record<string, any[]>, promo) => {
         const app = promo.applications;
         if (!app || !app.CATÉGORIE) return acc;
 
