@@ -8,10 +8,12 @@ export const TrendingAppsSection = () => {
     queryKey: ["trending-apps"],
     queryFn: async () => {
       console.log("Fetching trending apps...");
+      
+      // Modification de la requête pour utiliser OR et des conditions plus précises
       const { data: applications, error } = await supabase
         .from("applications")
         .select("*")
-        .in("NOM", ["Make", "Revolut", "Jasper AI", "Canva", "Binance", "ClickUp"])
+        .or('NOM.eq.Make,NOM.eq.Revolut,NOM.eq.Jasper AI,NOM.eq.Canva,NOM.eq.Binance,NOM.eq.ClickUp')
         .limit(6);
 
       if (error) {
@@ -19,31 +21,37 @@ export const TrendingAppsSection = () => {
         throw error;
       }
 
-      console.log("Fetched applications:", applications);
+      console.log("Fetched applications raw data:", applications);
 
-      const { data: promoCodes } = await supabase
-        .from("promo_codes")
-        .select("*")
-        .in("application_id", applications.map(app => app.id));
+      // Vérification des données avant mapping
+      if (!applications || applications.length === 0) {
+        console.error("No applications found");
+        return [];
+      }
 
-      console.log("Fetched promo codes:", promoCodes);
+      // Mapping avec vérification des données
+      const mappedApps = applications.map(app => {
+        console.log("Mapping application:", app.NOM);
+        return {
+          app: {
+            id: app.id,
+            name: app.NOM || "Unknown",
+            description: app.DESCRIPTION || "No description available",
+            price: parseFloat(app.PRICE || "0"),
+            website_url: app["URL DU SITE WEB"],
+            category: app.CATÉGORIE || "Other",
+            features: app.CARACTÉRISTIQUES || []
+          },
+          promoCode: {
+            code: `${app.NOM?.toUpperCase?.() || 'APP'}2024`,
+            discount_amount: 20,
+            description: "20% de réduction sur l'abonnement annuel"
+          }
+        };
+      });
 
-      return applications.map(app => ({
-        app: {
-          id: app.id,
-          name: app.NOM,
-          description: app.DESCRIPTION,
-          price: parseFloat(app.PRICE || "0"),
-          website_url: app["URL DU SITE WEB"],
-          category: app.CATÉGORIE,
-          features: app.CARACTÉRISTIQUES || []
-        },
-        promoCode: {
-          code: "PROMO2024",
-          discount_amount: 20,
-          description: "20% de réduction sur l'abonnement annuel"
-        }
-      }));
+      console.log("Mapped applications:", mappedApps);
+      return mappedApps;
     }
   });
 
@@ -56,8 +64,11 @@ export const TrendingAppsSection = () => {
   }
 
   if (!apps || apps.length === 0) {
+    console.log("No apps to display");
     return null;
   }
+
+  console.log("Rendering apps:", apps);
 
   return (
     <div className="space-y-6">
@@ -71,7 +82,7 @@ export const TrendingAppsSection = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {apps.map((item, index) => (
           <PricingCard
-            key={item.app.id}
+            key={`${item.app.id}-${index}`}
             app={item.app}
             promoCode={item.promoCode}
           />
