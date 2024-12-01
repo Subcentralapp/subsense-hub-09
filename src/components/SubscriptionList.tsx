@@ -19,13 +19,18 @@ interface Subscription {
 }
 
 const findAlternatives = (subscription: Subscription, allApps: Application[]) => {
-  const currentApp = allApps.find(app => app.name.toLowerCase() === subscription.name.toLowerCase());
-  if (!currentApp) return null;
+  if (!subscription?.name || !allApps?.length) return null;
+  
+  const currentApp = allApps.find(app => 
+    app?.name?.toLowerCase() === subscription.name.toLowerCase()
+  );
+  
+  if (!currentApp?.category) return null;
 
   const alternatives = allApps.filter(app => 
-    app.category === currentApp.category && 
-    app.price < currentApp.price &&
-    app.name.toLowerCase() !== currentApp.name.toLowerCase()
+    app?.category === currentApp.category && 
+    (app?.price || 0) < subscription.price &&
+    app?.name?.toLowerCase() !== subscription.name.toLowerCase()
   );
 
   if (alternatives.length === 0) return null;
