@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Check, Star } from "lucide-react";
+import { Check, Gift } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface PricingCardProps {
@@ -35,44 +35,40 @@ export const PricingCard = ({ app, promoCode }: PricingCardProps) => {
       transition={{ duration: 0.3 }}
       className="group"
     >
-      <Card className={`relative p-6 ${app.isPopular ? 'bg-gradient-to-br from-violet-500 to-violet-600 text-white' : 'bg-white'} hover:shadow-xl transition-all duration-300 h-full flex flex-col`}>
-        {app.isPopular && (
-          <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-yellow-500 text-black">
-            <Star className="w-3 h-3 mr-1" />
-            Meilleure offre
+      <Card className="relative p-6 bg-[#1A1F2C] text-white hover:shadow-xl transition-all duration-300 h-full flex flex-col">
+        <div className="absolute top-4 right-4">
+          <Badge className="bg-indigo-600 text-white">
+            <Gift className="w-3 h-3 mr-1" />
+            Promo
           </Badge>
-        )}
+        </div>
 
         <div className="space-y-6">
           <div className="space-y-2">
-            <span className={`text-sm ${app.isPopular ? 'text-violet-200' : 'text-violet-600'}`}>
-              {app.category}
-            </span>
-            <h3 className={`text-2xl font-bold ${app.isPopular ? 'text-white' : 'text-gray-900'}`}>
-              {app.name}
-            </h3>
+            <span className="text-sm text-gray-400">{app.category}</span>
+            <h3 className="text-2xl font-bold text-white">{app.name}</h3>
           </div>
 
           <div className="space-y-1">
             <div className="flex items-baseline gap-1">
-              <span className={`text-3xl font-bold ${app.isPopular ? 'text-white' : 'text-gray-900'}`}>
-                {app.price}€
-              </span>
-              <span className={app.isPopular ? 'text-violet-200' : 'text-gray-500'}>
-                /mois
-              </span>
+              <span className="text-3xl font-bold text-white">${app.price}</span>
+              <span className="text-gray-400">/mois</span>
             </div>
-            <p className={`text-sm ${app.isPopular ? 'text-violet-200' : 'text-violet-600'}`}>
+            <p className="text-sm text-indigo-400">
               {promoCode.description}
             </p>
           </div>
+
+          <p className="text-sm text-gray-300 line-clamp-2">
+            {app.description}
+          </p>
 
           {app.features && (
             <ul className="space-y-2">
               {app.features.map((feature, index) => (
                 <li key={index} className="flex items-center gap-2">
-                  <Check className={`w-4 h-4 ${app.isPopular ? 'text-violet-200' : 'text-violet-500'}`} />
-                  <span className={`text-sm ${app.isPopular ? 'text-violet-100' : 'text-gray-600'}`}>
+                  <Check className="w-4 h-4 text-indigo-400" />
+                  <span className="text-sm text-gray-300">
                     {feature}
                   </span>
                 </li>
@@ -82,16 +78,12 @@ export const PricingCard = ({ app, promoCode }: PricingCardProps) => {
 
           <Button 
             onClick={handleVisitSite}
-            className={`w-full ${
-              app.isPopular 
-                ? 'bg-white text-violet-600 hover:bg-violet-50' 
-                : 'bg-violet-600 text-white hover:bg-violet-700'
-            }`}
+            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
           >
-            Commencer maintenant
+            J'en profite !
           </Button>
 
-          <p className={`text-xs text-center ${app.isPopular ? 'text-violet-200' : 'text-gray-500'}`}>
+          <p className="text-xs text-center text-gray-400">
             Garantie satisfait ou remboursé sous 30 jours
           </p>
         </div>

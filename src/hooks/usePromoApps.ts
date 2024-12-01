@@ -21,7 +21,6 @@ const PREDEFINED_APPS = {
       promoCode: {
         code: "MAKE2024",
         discount_amount: 20,
-        discount_type: "percentage",
         description: "+3 mois EXTRA offerts"
       }
     }
@@ -31,7 +30,7 @@ const PREDEFINED_APPS = {
       app: {
         id: 2,
         name: "Revolut",
-        description: "Solution bancaire tout-en-un avec crypto",
+        description: "Solution bancaire tout-en-un avec crypto et trading",
         price: 7.99,
         website_url: "https://www.revolut.com",
         category: "Crypto et finance",
@@ -45,7 +44,6 @@ const PREDEFINED_APPS = {
       promoCode: {
         code: "REVOLUT2024",
         discount_amount: 25,
-        discount_type: "percentage",
         description: "25% de réduction sur l'abonnement annuel"
       }
     },
@@ -67,7 +65,6 @@ const PREDEFINED_APPS = {
       promoCode: {
         code: "BINANCE2024",
         discount_amount: 10,
-        discount_type: "percentage",
         description: "10% de réduction sur les frais de trading"
       }
     }
@@ -92,7 +89,6 @@ const PREDEFINED_APPS = {
       promoCode: {
         code: "CLICKUP2024",
         discount_amount: 30,
-        discount_type: "percentage",
         description: "30% de réduction sur le plan annuel"
       }
     }
@@ -116,7 +112,6 @@ const PREDEFINED_APPS = {
       promoCode: {
         code: "CANVA2024",
         discount_amount: 45,
-        discount_type: "percentage",
         description: "45% de réduction sur l'abonnement Pro"
       }
     }
@@ -140,7 +135,6 @@ const PREDEFINED_APPS = {
       promoCode: {
         code: "JASPER2024",
         discount_amount: 20,
-        discount_type: "percentage",
         description: "20% de réduction sur le premier mois"
       }
     }
@@ -154,7 +148,6 @@ export const usePromoApps = () => {
     queryKey: ['trending-apps'],
     queryFn: async () => {
       console.log("Fetching trending apps data...");
-      console.log("Apps data structure:", PREDEFINED_APPS);
       return PREDEFINED_APPS;
     },
   });
