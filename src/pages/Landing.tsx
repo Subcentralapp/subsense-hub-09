@@ -20,45 +20,64 @@ const Landing = () => {
     });
   }, [navigate]);
 
+  const benefits = [
+    "Économisez jusqu'à 30% sur vos abonnements",
+    "Interface intuitive et moderne",
+    "Support client 24/7",
+    "Mise en route en moins de 5 minutes"
+  ];
+
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       <Header />
       <HeroSection />
       <FeaturesSection />
       
       {/* CTA Section */}
-      <div className="bg-[#1A1F2C] text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-4xl font-bold mb-6"
-          >
-            Prêt à Reprendre le Contrôle ?
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto"
-          >
-            Rejoignez des milliers d'utilisateurs qui optimisent déjà leurs finances.
-          </motion.p>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
-          >
-            <Button 
-              size="lg"
-              onClick={() => navigate("/auth")}
-              className="text-lg px-8 py-6 bg-primary hover:bg-primary/90"
+      <div className="bg-primary text-white py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="lg:w-1/2 space-y-6"
             >
-              Commencer Gratuitement
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
-          </motion.div>
+              <h2 className="text-4xl font-bold">
+                Prêt à Optimiser vos Finances ?
+              </h2>
+              <div className="space-y-4">
+                {benefits.map((benefit, index) => (
+                  <motion.div
+                    key={benefit}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                    className="flex items-center gap-2"
+                  >
+                    <Check className="h-5 w-5 text-white" />
+                    <span>{benefit}</span>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
+            
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="lg:w-1/2 flex justify-center"
+            >
+              <Button 
+                size="lg"
+                onClick={() => navigate("/auth")}
+                className="text-lg px-8 py-6 bg-white text-primary hover:bg-white/90 group"
+              >
+                Commencer Gratuitement
+                <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+              </Button>
+            </motion.div>
+          </div>
         </div>
       </div>
     </div>

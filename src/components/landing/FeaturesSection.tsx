@@ -5,7 +5,9 @@ import {
   CreditCard, 
   PieChart, 
   Wallet, 
-  Zap 
+  Zap,
+  Shield,
+  TrendingUp
 } from "lucide-react";
 
 const features = [
@@ -34,15 +36,15 @@ const features = [
     color: "from-orange-500/20 to-yellow-500/20"
   },
   {
-    icon: <CreditCard className="w-8 h-8 text-primary" />,
-    title: "Multi-Comptes",
-    description: "Gérez tous vos abonnements au même endroit, quelle que soit la source",
+    icon: <Shield className="w-8 h-8 text-primary" />,
+    title: "Sécurité Maximale",
+    description: "Vos données sont protégées avec les plus hauts standards de sécurité",
     color: "from-green-500/20 to-emerald-500/20"
   },
   {
-    icon: <Zap className="w-8 h-8 text-primary" />,
-    title: "Recommandations",
-    description: "Découvrez des opportunités d'économies grâce à notre système de recommandations",
+    icon: <TrendingUp className="w-8 h-8 text-primary" />,
+    title: "Optimisation Continue",
+    description: "Des recommandations personnalisées pour optimiser vos dépenses",
     color: "from-teal-500/20 to-cyan-500/20"
   }
 ];
@@ -66,7 +68,7 @@ export const FeaturesSection = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-xl text-gray-600 max-w-3xl mx-auto"
           >
-            Découvrez toutes les fonctionnalités qui font de notre plateforme
+            Découvrez toutes les fonctionnalités qui font de SubaCentral
             la solution idéale pour gérer vos finances
           </motion.p>
         </div>
