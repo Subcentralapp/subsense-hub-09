@@ -35,8 +35,26 @@ const ComparisonSection = () => {
         });
         return [];
       }
-      console.log("Applications fetched:", data);
-      return data as Application[];
+
+      // Map the data to match our Application type
+      const mappedData = data.map((app: any) => ({
+        id: app.id,
+        name: app.NOM,
+        price: parseFloat(app.PRICE) || 0,
+        category: app.CATÉGORIE,
+        description: app.DESCRIPTION,
+        features: app.CARACTÉRISTIQUES,
+        pros: app.AVANTAGES ? [app.AVANTAGES] : [],
+        cons: app.INCONVÉNIENTS ? [app.INCONVÉNIENTS] : [],
+        website_url: app["URL DU SITE WEB"],
+        logo_url: app["URL DU LOGO"],
+        rating: app.NOTE,
+        review: app.REVUE,
+        users_count: app["NOMBRE D'UTILISATEURS"]?.toString(),
+      }));
+
+      console.log("Applications fetched and mapped:", mappedData);
+      return mappedData;
     },
   });
 

@@ -1,19 +1,16 @@
 export type Application = {
-  name: string;
-  price: number;
-  category: string;
-  description: string | null;
-  features?: string[];
-  pricing_plans?: Array<{
-    name: string;
-    price: number;
-    features: string[];
-  }>;
-  pros?: string[];
-  cons?: string[];
-  website_url?: string;
+  id?: number;
+  name?: string | null;
+  price?: number | null;
+  category?: string | null;
+  description?: string | null;
+  features?: any | null;
+  pros?: string[] | null;
+  cons?: string[] | null;
+  website_url?: string | null;
   logo_url?: string | null;
-  rating?: number;
-  users_count?: string;
-  key_features?: string[];
+  rating?: number | null;
+  review?: string | null;
+  users_count?: string | null;
+  key_features?: string[] | null;
 };

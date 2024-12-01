@@ -47,7 +47,7 @@ const getClearbitLogoUrl = (appName: string, websiteUrl?: string) => {
 
 export const ApplicationCard = ({ app, onAdd }: ApplicationCardProps) => {
   const [logoError, setLogoError] = useState(false);
-  const logoUrl = app.logo_url || (logoError ? null : getClearbitLogoUrl(app.name, app.website_url));
+  const logoUrl = app.logo_url || (logoError ? null : getClearbitLogoUrl(app.name || '', app.website_url));
 
   return (
     <div className="flex flex-col p-4 bg-white rounded-lg border border-gray-100 hover:border-primary/20 transition-all hover:shadow-md">
@@ -63,7 +63,7 @@ export const ApplicationCard = ({ app, onAdd }: ApplicationCardProps) => {
             }}
           />
         ) : (
-          getAppIcon(app.category, app.name)
+          getAppIcon(app.category || null, app.name || '')
         )}
         <div>
           <h4 className="font-medium text-gray-900">{app.name}</h4>

@@ -11,52 +11,49 @@ export type Database = {
     Tables: {
       applications: {
         Row: {
-          category: string | null
-          cons: string[] | null
-          description: string | null
-          features: Json | null
+          AVANTAGES: string | null
+          CARACTÉRISTIQUES: Json | null
+          CATÉGORIE: string | null
+          DESCRIPTION: string | null
           id: number
-          key_features: string[] | null
-          logo_url: string | null
-          name: string | null
-          price: number | null
-          pricing_plans: Json | null
-          pros: string[] | null
-          rating: number | null
-          users_count: string | null
-          website_url: string | null
+          INCONVÉNIENTS: string | null
+          NOM: string | null
+          "NOMBRE D'UTILISATEURS": number | null
+          NOTE: number | null
+          PRICE: string | null
+          REVUE: string | null
+          "URL DU LOGO": string | null
+          "URL DU SITE WEB": string | null
         }
         Insert: {
-          category?: string | null
-          cons?: string[] | null
-          description?: string | null
-          features?: Json | null
+          AVANTAGES?: string | null
+          CARACTÉRISTIQUES?: Json | null
+          CATÉGORIE?: string | null
+          DESCRIPTION?: string | null
           id?: number
-          key_features?: string[] | null
-          logo_url?: string | null
-          name?: string | null
-          price?: number | null
-          pricing_plans?: Json | null
-          pros?: string[] | null
-          rating?: number | null
-          users_count?: string | null
-          website_url?: string | null
+          INCONVÉNIENTS?: string | null
+          NOM?: string | null
+          "NOMBRE D'UTILISATEURS"?: number | null
+          NOTE?: number | null
+          PRICE?: string | null
+          REVUE?: string | null
+          "URL DU LOGO"?: string | null
+          "URL DU SITE WEB"?: string | null
         }
         Update: {
-          category?: string | null
-          cons?: string[] | null
-          description?: string | null
-          features?: Json | null
+          AVANTAGES?: string | null
+          CARACTÉRISTIQUES?: Json | null
+          CATÉGORIE?: string | null
+          DESCRIPTION?: string | null
           id?: number
-          key_features?: string[] | null
-          logo_url?: string | null
-          name?: string | null
-          price?: number | null
-          pricing_plans?: Json | null
-          pros?: string[] | null
-          rating?: number | null
-          users_count?: string | null
-          website_url?: string | null
+          INCONVÉNIENTS?: string | null
+          NOM?: string | null
+          "NOMBRE D'UTILISATEURS"?: number | null
+          NOTE?: number | null
+          PRICE?: string | null
+          REVUE?: string | null
+          "URL DU LOGO"?: string | null
+          "URL DU SITE WEB"?: string | null
         }
         Relationships: []
       }
