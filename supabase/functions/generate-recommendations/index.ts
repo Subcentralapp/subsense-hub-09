@@ -20,6 +20,8 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
+    console.log("Fetching subscriptions for user:", user?.id);
+
     // Get user's subscriptions
     const { data: subscriptions, error: subError } = await supabase
       .from('subscriptions')
@@ -27,10 +29,10 @@ serve(async (req) => {
       .eq('user_id', user?.id);
 
     if (subError) {
+      console.error("Error fetching subscriptions:", subError);
       throw subError;
     }
 
-    console.log("Analyzing subscriptions for user:", user?.id);
     console.log("Current subscriptions:", subscriptions);
 
     // Get all available applications for comparison
@@ -39,20 +41,43 @@ serve(async (req) => {
       .select('*');
 
     if (appsError) {
+      console.error("Error fetching applications:", appsError);
       throw appsError;
     }
 
-    const systemPrompt = {
-      role: 'system',
-      content: 'Vous êtes un expert en optimisation des coûts SaaS. Analysez les abonnements et suggérez des optimisations. Répondez avec un objet JSON contenant un tableau "recommendations". Format: {"recommendations": [{"title": "string", "description": "string", "saving": number, "details": "string", "type": "string", "affected_subscriptions": ["string"], "suggested_action": "string"}]}'
-    };
+    console.log("Available applications:", allApps);
 
-    const userPrompt = {
-      role: 'user',
-      content: `Analysez ces abonnements: ${JSON.stringify(subscriptions)} et ces applications disponibles: ${JSON.stringify(allApps)}. Identifiez les doublons, trouvez des alternatives moins chères, calculez les économies mensuelles. Répondez uniquement en JSON valide.`
-    };
+    const prompt = `
+En tant qu'expert en optimisation des coûts d'abonnements SaaS, analysez les données suivantes :
 
-    console.log("Sending request to OpenAI");
+Abonnements actuels de l'utilisateur :
+${JSON.stringify(subscriptions, null, 2)}
+
+Applications disponibles :
+${JSON.stringify(allApps, null, 2)}
+
+Générez des recommandations personnalisées en :
+1. Identifiant les doublons potentiels
+2. Suggérant des alternatives moins chères mais équivalentes
+3. Calculant précisément les économies mensuelles
+4. Expliquant clairement l'intérêt de chaque suggestion
+
+Répondez UNIQUEMENT avec un objet JSON valide de cette forme exacte :
+{
+  "recommendations": [
+    {
+      "title": "Titre court et descriptif",
+      "description": "Description courte de l'économie",
+      "saving": 12.99,
+      "details": "Explication détaillée",
+      "type": "alternative",
+      "affected_subscriptions": ["Nom de l'app"],
+      "suggested_action": "Action suggérée"
+    }
+  ]
+}`;
+
+    console.log("Sending request to OpenAI with prompt:", prompt);
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -62,9 +87,12 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         model: 'gpt-4o-mini',
-        messages: [systemPrompt, userPrompt],
-        temperature: 0.5,
-        max_tokens: 1500,
+        messages: [
+          { role: 'system', content: 'Vous êtes un assistant spécialisé dans l\'analyse des coûts SaaS qui répond uniquement en JSON valide.' },
+          { role: 'user', content: prompt }
+        ],
+        temperature: 0.3,
+        max_tokens: 2000,
       }),
     });
 
@@ -79,7 +107,11 @@ serve(async (req) => {
       const content = data.choices[0].message.content.trim();
       console.log("Content to parse:", content);
       
-      const recommendations = JSON.parse(content);
+      // Remove any potential markdown formatting
+      const cleanContent = content.replace(/```json\n?|\n?```/g, '').trim();
+      console.log("Cleaned content:", cleanContent);
+      
+      const recommendations = JSON.parse(cleanContent);
       console.log("Parsed recommendations:", recommendations);
 
       if (!recommendations?.recommendations || !Array.isArray(recommendations.recommendations)) {
