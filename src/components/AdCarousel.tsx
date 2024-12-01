@@ -6,6 +6,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 
 const partnerAds = [
   {
@@ -33,7 +34,13 @@ const partnerAds = [
 
 const AdCarousel = () => {
   return (
-    <div className="w-full">
+    <div className="w-full space-y-8">
+      <div className="space-y-4">
+        <Separator className="my-8" />
+        <h2 className="text-2xl font-bold text-center">Nos Partenaires Premium</h2>
+        <p className="text-muted-foreground text-center">Découvrez les offres exclusives de nos partenaires</p>
+      </div>
+      
       <Carousel
         opts={{
           align: "start",
