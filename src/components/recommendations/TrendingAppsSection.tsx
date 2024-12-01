@@ -10,20 +10,10 @@ export const TrendingAppsSection = () => {
     queryFn: async () => {
       console.log("Fetching trending apps with promo codes...");
       
+      // First, fetch all active promo codes
       const { data: promoData, error: promoError } = await supabase
         .from('promo_codes')
-        .select(`
-          *,
-          application: application_id (
-            id,
-            "NOM",
-            "PRICE",
-            "DESCRIPTION",
-            "CATÉGORIE",
-            "URL DU LOGO",
-            "URL DU SITE WEB"
-          )
-        `)
+        .select('*, applications!promo_codes_application_id_fkey(id, NOM, PRICE, DESCRIPTION, CATÉGORIE, "URL DU LOGO", "URL DU SITE WEB")')
         .eq('is_active', true)
         .gte('valid_until', new Date().toISOString());
 
@@ -32,24 +22,27 @@ export const TrendingAppsSection = () => {
         throw promoError;
       }
 
+      console.log("Fetched promo data:", promoData);
+
       // Group apps by category
       const groupedApps = promoData.reduce((acc: any, promo) => {
-        const category = promo.application.CATÉGORIE;
-        if (!category) return acc;
+        const app = promo.applications;
+        if (!app || !app.CATÉGORIE) return acc;
 
+        const category = app.CATÉGORIE;
         if (!acc[category]) {
           acc[category] = [];
         }
 
         acc[category].push({
           app: {
-            id: promo.application.id,
-            name: promo.application.NOM,
-            price: parseFloat(promo.application.PRICE || "0"),
-            description: promo.application.DESCRIPTION,
-            category: promo.application.CATÉGORIE,
-            logo_url: promo.application["URL DU LOGO"],
-            website_url: promo.application["URL DU SITE WEB"],
+            id: app.id,
+            name: app.NOM,
+            price: parseFloat(app.PRICE || "0"),
+            description: app.DESCRIPTION,
+            category: app.CATÉGORIE,
+            logo_url: app["URL DU LOGO"],
+            website_url: app["URL DU SITE WEB"],
           },
           promoCode: {
             code: promo.code,
@@ -62,6 +55,7 @@ export const TrendingAppsSection = () => {
         return acc;
       }, {});
 
+      console.log("Grouped apps by category:", groupedApps);
       return groupedApps;
     },
   });

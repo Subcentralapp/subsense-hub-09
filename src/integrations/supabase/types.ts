@@ -215,6 +215,53 @@ export type Database = {
         }
         Relationships: []
       }
+      promo_codes: {
+        Row: {
+          application_id: number | null
+          code: string
+          created_at: string | null
+          description: string | null
+          discount_amount: number
+          discount_type: string | null
+          id: number
+          is_active: boolean | null
+          valid_from: string | null
+          valid_until: string | null
+        }
+        Insert: {
+          application_id?: number | null
+          code: string
+          created_at?: string | null
+          description?: string | null
+          discount_amount: number
+          discount_type?: string | null
+          id?: number
+          is_active?: boolean | null
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Update: {
+          application_id?: number | null
+          code?: string
+          created_at?: string | null
+          description?: string | null
+          discount_amount?: number
+          discount_type?: string | null
+          id?: number
+          is_active?: boolean | null
+          valid_from?: string | null
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "promo_codes_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscriptions: {
         Row: {
           category: string | null
