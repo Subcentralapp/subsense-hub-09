@@ -6,7 +6,6 @@ import SubscriptionList from "@/components/SubscriptionList";
 import ComparisonSection from "@/components/ComparisonSection";
 import PaymentSection from "@/components/PaymentSection";
 import RandomAd from "@/components/RandomAd";
-import ApplicationImport from "@/components/ApplicationImport";
 import ApplicationList from "@/components/ApplicationList";
 import { Navbar } from "@/components/Navbar";
 import BudgetManager from "@/components/payment/budget/BudgetManager";
@@ -30,7 +29,6 @@ const Index = () => {
             <BudgetManager />
             <RecommendationSection />
             <TechnicalStackSuggestion />
-            <ApplicationImport />
             <RandomAd />
           </div>
         );
