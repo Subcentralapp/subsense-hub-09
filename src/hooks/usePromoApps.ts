@@ -30,10 +30,10 @@ const PREDEFINED_APPS = {
         category: "Crypto et finance"
       },
       promoCode: {
-        code: "PROMO2024",
-        discount_amount: 20,
+        code: "REVOLUT2024",
+        discount_amount: 25,
         discount_type: "percentage",
-        description: "+3 mois EXTRA offerts"
+        description: "25% de réduction sur l'abonnement annuel"
       }
     },
     {
@@ -46,10 +46,10 @@ const PREDEFINED_APPS = {
         category: "Crypto et finance"
       },
       promoCode: {
-        code: "PROMO2024",
-        discount_amount: 20,
+        code: "BINANCE2024",
+        discount_amount: 10,
         discount_type: "percentage",
-        description: "+3 mois EXTRA offerts"
+        description: "10% de réduction sur les frais de trading"
       }
     }
   ],
@@ -64,10 +64,10 @@ const PREDEFINED_APPS = {
         category: "Gestion de projets"
       },
       promoCode: {
-        code: "PROMO2024",
-        discount_amount: 20,
+        code: "CLICKUP2024",
+        discount_amount: 30,
         discount_type: "percentage",
-        description: "+3 mois EXTRA offerts"
+        description: "30% de réduction sur le plan annuel"
       }
     }
   ],
@@ -82,10 +82,10 @@ const PREDEFINED_APPS = {
         category: "Outils de création graphique"
       },
       promoCode: {
-        code: "PROMO2024",
-        discount_amount: 20,
+        code: "CANVA2024",
+        discount_amount: 45,
         discount_type: "percentage",
-        description: "+3 mois EXTRA offerts"
+        description: "45% de réduction sur l'abonnement Pro"
       }
     }
   ],
@@ -100,21 +100,23 @@ const PREDEFINED_APPS = {
         category: "Applications IA"
       },
       promoCode: {
-        code: "PROMO2024",
+        code: "JASPER2024",
         discount_amount: 20,
         discount_type: "percentage",
-        description: "+3 mois EXTRA offerts"
+        description: "20% de réduction sur le premier mois"
       }
     }
   ]
 };
 
 export const usePromoApps = () => {
+  console.log("Initializing usePromoApps hook");
+  
   return useQuery({
     queryKey: ['trending-apps'],
     queryFn: async () => {
-      console.log("Fetching apps data...");
-      console.log("Apps data:", PREDEFINED_APPS);
+      console.log("Fetching trending apps data...");
+      console.log("Apps data structure:", PREDEFINED_APPS);
       return PREDEFINED_APPS;
     },
   });
