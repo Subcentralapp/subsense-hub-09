@@ -60,32 +60,50 @@ const RecommendationSection = () => {
           .select('*');
 
         if (appsError) throw appsError;
-        setApplications(allApps || []);
+        
+        // Map the data to match our Application type
+        const mappedApps = (allApps || []).map(app => ({
+          id: app.id,
+          name: app.NOM,
+          price: parseFloat(app.PRICE || "0"),
+          category: app.CATÉGORIE,
+          description: app.DESCRIPTION,
+          features: app.CARACTÉRISTIQUES as string[],
+          pros: app.AVANTAGES,
+          cons: app.INCONVÉNIENTS,
+          website_url: app["URL DU SITE WEB"],
+          logo_url: app["URL DU LOGO"],
+          rating: app.NOTE,
+          review: app.REVUE,
+          users_count: app["NOMBRE D'UTILISATEURS"]
+        }));
+        
+        setApplications(mappedApps);
 
         // Generate optimization recommendations
         const optimizations = userSubs?.map(sub => {
-          const currentApp = allApps?.find(app => 
-            app.NOM?.toLowerCase() === sub.name.toLowerCase()
+          const currentApp = mappedApps.find(app => 
+            app.name?.toLowerCase() === sub.name.toLowerCase()
           );
           
-          if (!currentApp?.CATÉGORIE) return null;
+          if (!currentApp?.category) return null;
 
-          const alternatives = allApps?.filter(app => 
-            app.CATÉGORIE === currentApp.CATÉGORIE && 
-            Number(app.PRICE) < sub.price &&
-            app.NOM?.toLowerCase() !== sub.name.toLowerCase()
+          const alternatives = mappedApps.filter(app => 
+            app.category === currentApp.category && 
+            app.price < sub.price &&
+            app.name?.toLowerCase() !== sub.name.toLowerCase()
           );
 
           if (!alternatives?.length) return null;
 
           const bestAlternative = alternatives.sort((a, b) => 
-            Number(a.PRICE) - Number(b.PRICE)
+            a.price - b.price
           )[0];
 
           return {
             title: `Optimisation pour ${sub.name}`,
             description: `Une alternative plus économique avec des fonctionnalités similaires`,
-            saving: sub.price - Number(bestAlternative.PRICE),
+            saving: sub.price - bestAlternative.price,
             currentApp,
             alternativeApp: bestAlternative,
             type: 'optimization'
@@ -95,11 +113,11 @@ const RecommendationSection = () => {
         setRecommendations(optimizations || []);
 
         // Generate category recommendations
-        if (allApps) {
-          const categories = [...new Set(allApps.map(app => app.CATÉGORIE))].filter(Boolean);
+        if (mappedApps) {
+          const categories = [...new Set(mappedApps.map(app => app.category))].filter(Boolean);
           const categoryRecs = categories.slice(0, 6).map((category, index) => {
-            const appsInCategory = allApps.filter(app => app.CATÉGORIE === category);
-            const avgRating = appsInCategory.reduce((sum, app) => sum + (app.NOTE || 0), 0) / appsInCategory.length;
+            const appsInCategory = mappedApps.filter(app => app.category === category);
+            const avgRating = appsInCategory.reduce((sum, app) => sum + (app.rating || 0), 0) / appsInCategory.length;
             
             return {
               category: category as string,
@@ -134,18 +152,9 @@ const RecommendationSection = () => {
   }, []);
 
   const handleSelectRecommendation = (rec: Recommendation) => {
-    const currentAppData = applications.find(app => 
-      app.NOM?.toLowerCase() === rec.currentApp.NOM?.toLowerCase()
-    );
-    const alternativeAppData = applications.find(app => 
-      app.NOM?.toLowerCase() === rec.alternativeApp.NOM?.toLowerCase()
-    );
-
-    if (currentAppData && alternativeAppData) {
-      setCurrentApp(currentAppData);
-      setAlternativeApp(alternativeAppData);
-      setSelectedRec(rec);
-    }
+    setCurrentApp(rec.currentApp);
+    setAlternativeApp(rec.alternativeApp);
+    setSelectedRec(rec);
   };
 
   const handleExploreCategory = async (category: string) => {
@@ -209,8 +218,8 @@ const RecommendationSection = () => {
                       key={index}
                       rec={rec}
                       onSelect={handleSelectRecommendation}
-                      currentPrice={Number(rec.currentApp.PRICE)}
-                      alternativePrice={Number(rec.alternativeApp.PRICE)}
+                      currentPrice={rec.currentApp.price}
+                      alternativePrice={rec.alternativeApp.price}
                     />
                   ))}
                 </div>
