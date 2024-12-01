@@ -1,33 +1,18 @@
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Sparkles, Star } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "./ui/use-toast";
 import { Alert, AlertDescription } from "./ui/alert";
-import { motion } from "framer-motion";
-import { Application } from "@/types/application";
-
-interface Recommendation {
-  title: string;
-  description: string;
-  saving: number;
-  details?: string;
-  websiteUrl?: string;
-  type?: string;
-}
-
-interface CategoryRecommendation {
-  category: string;
-  name: string;
-  description: string;
-  rating: number;
-  progress: number;
-  color: string;
-}
+import { OptimizationCard } from "./recommendations/OptimizationCard";
+import { CategoryCard } from "./recommendations/CategoryCard";
+import { RecommendationDialog } from "./recommendations/RecommendationDialog";
+import { Recommendation, CategoryRecommendation } from "@/types/recommendation";
+import { useNavigate } from "react-router-dom";
 
 const RecommendationSection = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [selectedRec, setSelectedRec] = useState<Recommendation | null>(null);
   const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [categoryRecommendations, setCategoryRecommendations] = useState<CategoryRecommendation[]>([]);
@@ -59,9 +44,10 @@ const RecommendationSection = () => {
             .map(sub => ({
               title: `Optimisation pour ${sub.name}`,
               description: `Nous avons détecté une opportunité d'économie sur votre abonnement ${sub.name}.`,
-              saving: Math.round(sub.price * 0.2), // Example: 20% potential saving
+              saving: Math.round(sub.price * 0.2),
               details: `Découvrez comment optimiser votre abonnement ${sub.name} et économiser jusqu'à ${Math.round(sub.price * 0.2)}€ par mois.`,
-              type: 'optimization'
+              type: 'optimization',
+              websiteUrl: sub.website_url
             }));
           setRecommendations(optimizations);
         }
@@ -103,6 +89,32 @@ const RecommendationSection = () => {
     fetchRecommendations();
   }, []);
 
+  const handleExploreCategory = async (category: string) => {
+    try {
+      const { data: apps } = await supabase
+        .from('applications')
+        .select('*')
+        .eq('CATÉGORIE', category);
+      
+      if (apps && apps.length > 0) {
+        // Redirect to a category view or show apps in a dialog
+        navigate(`/applications?category=${encodeURIComponent(category)}`);
+      } else {
+        toast({
+          title: "Aucune application trouvée",
+          description: `Aucune application n'est disponible dans la catégorie ${category}.`,
+        });
+      }
+    } catch (error) {
+      console.error("Error exploring category:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les applications de cette catégorie.",
+        variant: "destructive",
+      });
+    }
+  };
+
   if (loading) {
     return (
       <Card className="p-8">
@@ -130,96 +142,41 @@ const RecommendationSection = () => {
           </Alert>
         ) : (
           <div className="space-y-8">
-            {/* Optimization Recommendations */}
             {recommendations.length > 0 && (
               <div className="space-y-4">
                 <h3 className="text-lg font-medium text-gray-800">Optimisations Suggérées</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {recommendations.map((rec, index) => (
-                    <motion.div
+                    <OptimizationCard
                       key={index}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="p-6 bg-white rounded-xl border border-gray-100 hover:shadow-md transition-all hover:border-primary/20"
-                    >
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between">
-                          <div className="p-2 bg-primary/10 rounded-lg">
-                            <Sparkles className="h-5 w-5 text-primary" />
-                          </div>
-                          <span className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-sm font-medium">
-                            -{rec.saving}€/mois
-                          </span>
-                        </div>
-                        <div>
-                          <h4 className="font-medium text-gray-900">{rec.title}</h4>
-                          <p className="text-sm text-gray-500 mt-1">{rec.description}</p>
-                        </div>
-                        <Button 
-                          variant="ghost" 
-                          className="w-full hover:bg-primary/10 hover:text-primary"
-                          onClick={() => setSelectedRec(rec)}
-                        >
-                          Voir les détails
-                        </Button>
-                      </div>
-                    </motion.div>
+                      rec={rec}
+                      onSelect={setSelectedRec}
+                    />
                   ))}
                 </div>
               </div>
             )}
 
-            {/* Category Recommendations */}
             <div className="space-y-4">
               <h3 className="text-lg font-medium text-gray-800">Découvrez par Catégorie</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {categoryRecommendations.map((rec, index) => (
-                  <motion.div
+                  <CategoryCard
                     key={index}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: index * 0.1 }}
-                    className={`${rec.color} rounded-xl p-6 hover:shadow-lg transition-all duration-300`}
-                  >
-                    <div className="space-y-4">
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs font-medium text-gray-600">
-                          {rec.category}
-                        </span>
-                        <div className="flex items-center gap-1">
-                          <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                          <span className="text-sm font-medium">{rec.rating.toFixed(1)}</span>
-                        </div>
-                      </div>
-                      
-                      <div>
-                        <h4 className="text-xl font-semibold text-gray-900">{rec.name}</h4>
-                        <p className="text-sm text-gray-600 mt-1 line-clamp-2">
-                          {rec.description}
-                        </p>
-                      </div>
-
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-600">Progression</span>
-                          <span className="font-medium">{Math.round(rec.progress)}%</span>
-                        </div>
-                        <div className="h-2 bg-white/50 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-primary/60 rounded-full transition-all duration-500"
-                            style={{ width: `${rec.progress}%` }}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
+                    rec={rec}
+                    onExplore={handleExploreCategory}
+                  />
                 ))}
               </div>
             </div>
           </div>
         )}
       </Card>
+
+      <RecommendationDialog
+        recommendation={selectedRec}
+        onClose={() => setSelectedRec(null)}
+      />
     </div>
   );
 };
