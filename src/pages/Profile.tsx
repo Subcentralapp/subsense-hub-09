@@ -14,6 +14,8 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import { PasswordManagement } from "@/components/profile/PasswordManagement";
+import { AccountDeletion } from "@/components/profile/AccountDeletion";
 
 interface Profile {
   username?: string;
@@ -238,9 +240,10 @@ export default function Profile() {
         </Card>
 
         <Tabs defaultValue="account" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="account">Compte</TabsTrigger>
             <TabsTrigger value="security">Sécurité</TabsTrigger>
+            <TabsTrigger value="danger">Zone de danger</TabsTrigger>
           </TabsList>
           
           <TabsContent value="account" className="space-y-4">
@@ -296,6 +299,11 @@ export default function Profile() {
                 </div>
               </div>
             </Card>
+            <PasswordManagement />
+          </TabsContent>
+
+          <TabsContent value="danger" className="space-y-4">
+            <AccountDeletion />
           </TabsContent>
         </Tabs>
       </div>
