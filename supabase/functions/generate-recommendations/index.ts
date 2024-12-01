@@ -22,13 +22,26 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     // Get user's subscriptions
-    const { data: subscriptions } = await supabase
+    const { data: subscriptions, error: subError } = await supabase
       .from('subscriptions')
       .select('*')
       .eq('user_id', user?.id);
 
+    if (subError) {
+      throw subError;
+    }
+
     console.log("Generating recommendations for user:", user?.id);
     console.log("Current subscriptions:", subscriptions);
+
+    // Get all available applications for comparison
+    const { data: allApps, error: appsError } = await supabase
+      .from('applications')
+      .select('*');
+
+    if (appsError) {
+      throw appsError;
+    }
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -41,16 +54,18 @@ serve(async (req) => {
         messages: [
           { 
             role: 'system', 
-            content: `Tu es un expert en optimisation des coûts d'abonnements. 
-            Analyse les abonnements actuels de l'utilisateur et suggère des alternatives plus économiques.
-            Réponds en français et en JSON avec le format suivant:
+            content: `Tu es un expert en optimisation des coûts d'abonnements SaaS.
+            Analyse les abonnements actuels de l'utilisateur et suggère des alternatives plus économiques
+            en te basant sur la liste complète des applications disponibles.
+            
+            Réponds uniquement en JSON avec le format suivant:
             {
               "recommendations": [
                 {
                   "title": "Titre de la recommandation",
-                  "description": "Description courte",
-                  "saving": "Montant de l'économie par mois",
-                  "details": "Description détaillée",
+                  "description": "Description courte et persuasive",
+                  "saving": "Montant de l'économie mensuelle en euros",
+                  "details": "Description détaillée des avantages",
                   "websiteUrl": "URL de l'offre alternative"
                 }
               ]
@@ -59,7 +74,12 @@ serve(async (req) => {
           { 
             role: 'user', 
             content: `Voici les abonnements actuels de l'utilisateur: ${JSON.stringify(subscriptions)}
-            Suggère 2-3 alternatives plus économiques avec des services similaires.` 
+            Et voici toutes les applications disponibles: ${JSON.stringify(allApps)}
+            
+            Suggère 2-3 alternatives plus économiques avec des services similaires,
+            en te basant uniquement sur les applications disponibles dans la liste fournie.
+            Assure-toi que les URLs des sites web sont valides.
+            Calcule précisément les économies potentielles.` 
           }
         ],
       }),
@@ -72,7 +92,7 @@ serve(async (req) => {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error in generate-recommendations function:', error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
