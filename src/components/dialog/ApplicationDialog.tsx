@@ -18,7 +18,6 @@ interface ApplicationDialogProps {
 
 const ApplicationDialog = ({ applications, isLoading, onAddSubscription }: ApplicationDialogProps) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [showCustomForm, setShowCustomForm] = useState(false);
   const [customApp, setCustomApp] = useState<Partial<Application>>({
     name: "",
@@ -41,17 +40,16 @@ const ApplicationDialog = ({ applications, isLoading, onAddSubscription }: Appli
     if (!applications) return [];
     
     return applications.filter(app => {
-      const matchesSearch = app.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          app.description?.toLowerCase().includes(searchTerm.toLowerCase());
-      const matchesCategory = !selectedCategory || app.category === selectedCategory;
+      const appName = app.name?.toLowerCase() || '';
+      const appDescription = app.description?.toLowerCase() || '';
+      const searchTermLower = searchTerm.toLowerCase();
       
-      return matchesSearch && matchesCategory;
+      return appName.includes(searchTermLower) || appDescription.includes(searchTermLower);
     });
-  }, [applications, searchTerm, selectedCategory]);
+  }, [applications, searchTerm]);
 
-  const handleSearch = (newSearchTerm: string, category: string | null) => {
+  const handleSearch = (newSearchTerm: string) => {
     setSearchTerm(newSearchTerm);
-    setSelectedCategory(category);
   };
 
   const handleCustomSubmit = async (e: React.FormEvent) => {
