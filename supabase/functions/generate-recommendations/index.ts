@@ -43,6 +43,39 @@ serve(async (req) => {
       throw appsError;
     }
 
+    const systemPrompt = {
+      role: 'system',
+      content: `En tant qu'expert en optimisation des coûts d'abonnements SaaS, analysez les abonnements et suggérez des optimisations.
+      Répondez UNIQUEMENT avec un objet JSON valide contenant un tableau 'recommendations'.
+      Chaque recommandation doit avoir exactement cette structure:
+      {
+        "title": "string court et descriptif",
+        "description": "string court expliquant l'économie",
+        "saving": number (montant économisé),
+        "details": "string détaillant la recommandation",
+        "type": "consolidation" ou "alternative",
+        "affected_subscriptions": ["string"],
+        "suggested_action": "string"
+      }`
+    };
+
+    const userPrompt = {
+      role: 'user',
+      content: `Voici les abonnements actuels: ${JSON.stringify(subscriptions)}
+      Et voici toutes les applications disponibles: ${JSON.stringify(allApps)}
+      
+      Analysez ces données et suggérez des optimisations pertinentes.
+      Assurez-vous de:
+      1. Identifier les doublons potentiels
+      2. Trouver des alternatives moins chères mais équivalentes
+      3. Calculer précisément les économies mensuelles potentielles
+      4. Expliquer clairement pourquoi chaque suggestion est pertinente
+      
+      IMPORTANT: Répondez uniquement avec un objet JSON valide.`
+    };
+
+    console.log("Sending request to OpenAI with prompts:", { systemPrompt, userPrompt });
+
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -51,41 +84,32 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         model: 'gpt-4o-mini',
-        messages: [
-          { 
-            role: 'system', 
-            content: "Tu es un expert en optimisation des coûts d'abonnements SaaS. Analyse les abonnements actuels de l'utilisateur et suggère des optimisations en: 1. Identifiant les abonnements redondants ou similaires qui pourraient être consolidés 2. Trouvant des alternatives moins chères avec des fonctionnalités similaires 3. Calculant les économies potentielles mensuelles pour chaque suggestion. Format de réponse attendu: {\"recommendations\": [{\"title\": \"string\", \"description\": \"string\", \"saving\": \"number\", \"details\": \"string\", \"type\": \"string\", \"affected_subscriptions\": [\"string\"], \"suggested_action\": \"string\"}]}"
-          },
-          { 
-            role: 'user', 
-            content: `Voici les abonnements actuels de l'utilisateur: ${JSON.stringify(subscriptions)}
-            Et voici toutes les applications disponibles: ${JSON.stringify(allApps)}
-            
-            Analyse ces données et suggère des optimisations pertinentes.
-            Assure-toi de:
-            1. Identifier les doublons potentiels (ex: plusieurs services de streaming)
-            2. Trouver des alternatives moins chères mais équivalentes
-            3. Calculer précisément les économies mensuelles potentielles
-            4. Expliquer clairement pourquoi chaque suggestion est pertinente` 
-          }
-        ],
+        messages: [systemPrompt, userPrompt],
+        temperature: 0.7,
+        max_tokens: 2000,
       }),
     });
 
     const data = await response.json();
-    console.log("OpenAI response:", data);
+    console.log("OpenAI raw response:", data);
 
     if (!data.choices?.[0]?.message?.content) {
       throw new Error("Format de réponse OpenAI invalide");
     }
 
-    // Ensure we're getting valid JSON from OpenAI
     try {
-      const recommendations = JSON.parse(data.choices[0].message.content);
-      console.log("Parsed recommendations:", recommendations);
+      const rawContent = data.choices[0].message.content.trim();
+      console.log("Raw content to parse:", rawContent);
+      
+      // Try to clean the response if it contains markdown
+      const cleanedContent = rawContent.replace(/```json\n?|\n?```/g, '');
+      console.log("Cleaned content:", cleanedContent);
+      
+      const recommendations = JSON.parse(cleanedContent);
+      console.log("Successfully parsed recommendations:", recommendations);
 
-      // Validate the structure
       if (!recommendations?.recommendations || !Array.isArray(recommendations.recommendations)) {
+        console.error("Invalid recommendations structure:", recommendations);
         throw new Error("Structure de recommandations invalide");
       }
 
@@ -94,7 +118,7 @@ serve(async (req) => {
       });
     } catch (parseError) {
       console.error("Error parsing OpenAI response:", parseError);
-      console.log("Raw content:", data.choices[0].message.content);
+      console.log("Failed content:", data.choices[0].message.content);
       throw new Error("Impossible de parser la réponse d'OpenAI");
     }
   } catch (error) {
