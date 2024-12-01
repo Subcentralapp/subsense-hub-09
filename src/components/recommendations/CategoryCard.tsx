@@ -2,6 +2,7 @@ import { Star } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { CategoryRecommendation } from "@/types/recommendation";
+import { TrendingAppsSection } from "./TrendingAppsSection";
 
 interface CategoryCardProps {
   rec: CategoryRecommendation;
@@ -53,6 +54,11 @@ export const CategoryCard = ({ rec, onExplore }: CategoryCardProps) => {
         >
           Explorer la catégorie
         </Button>
+      </div>
+
+      {/* Trending Apps Section */}
+      <div className="mt-6">
+        <TrendingAppsSection />
       </div>
     </motion.div>
   );
