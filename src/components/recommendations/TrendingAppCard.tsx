@@ -52,7 +52,7 @@ export const TrendingAppCard = ({ app, promoCode }: TrendingAppCardProps) => {
               <span className="text-gray-400">/mois</span>
             </div>
             <p className="text-sm text-indigo-400">
-              -{promoCode.discount_amount}% avec le code {promoCode.code}
+              {promoCode.description}
             </p>
           </div>
 

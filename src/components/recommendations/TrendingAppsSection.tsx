@@ -29,13 +29,13 @@ export const TrendingAppsSection = () => {
       </div>
 
       <Tabs defaultValue={categories[0]} className="w-full">
-        <ScrollArea className="w-full">
-          <TabsList className="w-full justify-start">
+        <ScrollArea className="w-full whitespace-nowrap rounded-md">
+          <TabsList className="inline-flex h-10 items-center justify-center rounded-md p-1 text-muted-foreground w-full">
             {categories.map((category) => (
               <TabsTrigger
                 key={category}
                 value={category}
-                className="min-w-[150px]"
+                className="inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
               >
                 {category}
               </TabsTrigger>
