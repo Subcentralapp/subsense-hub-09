@@ -31,7 +31,7 @@ serve(async (req) => {
       throw subError;
     }
 
-    console.log("Generating recommendations for user:", user?.id);
+    console.log("Analyzing subscriptions for user:", user?.id);
     console.log("Current subscriptions:", subscriptions);
 
     // Get all available applications for comparison
@@ -50,13 +50,15 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4',  // Correction du nom du modèle
+        model: 'gpt-4o-mini',
         messages: [
           { 
             role: 'system', 
             content: `Tu es un expert en optimisation des coûts d'abonnements SaaS.
-            Analyse les abonnements actuels de l'utilisateur et suggère des alternatives plus économiques
-            en te basant sur la liste complète des applications disponibles.
+            Analyse les abonnements actuels de l'utilisateur et suggère des optimisations en:
+            1. Identifiant les abonnements redondants ou similaires qui pourraient être consolidés
+            2. Trouvant des alternatives moins chères avec des fonctionnalités similaires
+            3. Calculant les économies potentielles mensuelles pour chaque suggestion
             
             Réponds uniquement en JSON avec le format suivant:
             {
@@ -65,8 +67,10 @@ serve(async (req) => {
                   "title": "Titre de la recommandation",
                   "description": "Description courte et persuasive",
                   "saving": "Montant de l'économie mensuelle en euros",
-                  "details": "Description détaillée des avantages",
-                  "websiteUrl": "URL de l'offre alternative"
+                  "details": "Description détaillée expliquant pourquoi cette optimisation est pertinente",
+                  "type": "consolidation" ou "alternative",
+                  "affected_subscriptions": ["nom des abonnements concernés"],
+                  "suggested_action": "Action recommandée (ex: 'Remplacer X par Y', 'Consolider X et Y')"
                 }
               ]
             }`
@@ -76,10 +80,12 @@ serve(async (req) => {
             content: `Voici les abonnements actuels de l'utilisateur: ${JSON.stringify(subscriptions)}
             Et voici toutes les applications disponibles: ${JSON.stringify(allApps)}
             
-            Suggère 2-3 alternatives plus économiques avec des services similaires,
-            en te basant uniquement sur les applications disponibles dans la liste fournie.
-            Assure-toi que les URLs des sites web sont valides.
-            Calcule précisément les économies potentielles.` 
+            Analyse ces données et suggère des optimisations pertinentes.
+            Assure-toi de:
+            1. Identifier les doublons potentiels (ex: plusieurs services de streaming)
+            2. Trouver des alternatives moins chères mais équivalentes
+            3. Calculer précisément les économies mensuelles potentielles
+            4. Expliquer clairement pourquoi chaque suggestion est pertinente` 
           }
         ],
       }),
