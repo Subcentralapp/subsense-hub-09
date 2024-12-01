@@ -1,12 +1,51 @@
-import { usePromoApps } from "@/hooks/usePromoApps";
+import { useQuery } from "@tanstack/react-query";
 import { PricingCard } from "./PricingCard";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import { Sparkles } from "lucide-react";
+import { supabase } from "@/lib/supabase";
 
 export const TrendingAppsSection = () => {
-  const { data: trendingApps, isLoading } = usePromoApps();
-  console.log("Trending Apps Data:", trendingApps);
+  const { data: apps, isLoading } = useQuery({
+    queryKey: ["trending-apps"],
+    queryFn: async () => {
+      console.log("Fetching trending apps...");
+      const { data: applications, error } = await supabase
+        .from("applications")
+        .select("*")
+        .in("NOM", ["Make", "Revolut", "Jasper AI", "Canva", "Binance", "ClickUp"])
+        .limit(6);
+
+      if (error) {
+        console.error("Error fetching apps:", error);
+        throw error;
+      }
+
+      console.log("Fetched applications:", applications);
+
+      const { data: promoCodes } = await supabase
+        .from("promo_codes")
+        .select("*")
+        .in("application_id", applications.map(app => app.id));
+
+      console.log("Fetched promo codes:", promoCodes);
+
+      return applications.map(app => ({
+        app: {
+          id: app.id,
+          name: app.NOM,
+          description: app.DESCRIPTION,
+          price: parseFloat(app.PRICE || "0"),
+          website_url: app["URL DU SITE WEB"],
+          category: app.CATÉGORIE,
+          features: app.CARACTÉRISTIQUES || []
+        },
+        promoCode: {
+          code: "PROMO2024",
+          discount_amount: 20,
+          description: "20% de réduction sur l'abonnement annuel"
+        }
+      }));
+    }
+  });
 
   if (isLoading) {
     return (
@@ -16,12 +55,9 @@ export const TrendingAppsSection = () => {
     );
   }
 
-  if (!trendingApps) {
+  if (!apps || apps.length === 0) {
     return null;
   }
-
-  const categories = Object.keys(trendingApps);
-  console.log("Categories:", categories);
 
   return (
     <div className="space-y-6">
@@ -33,7 +69,7 @@ export const TrendingAppsSection = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {trendingApps["Applications Recommandées"].map((item: any) => (
+        {apps.map((item, index) => (
           <PricingCard
             key={item.app.id}
             app={item.app}

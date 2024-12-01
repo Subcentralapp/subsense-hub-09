@@ -6,22 +6,24 @@ import { motion } from "framer-motion";
 
 interface PricingCardProps {
   app: {
+    id: number;
     name: string;
     category: string;
     description: string;
     price: number;
     website_url: string | null;
     features?: string[];
-    isPopular?: boolean;
   };
   promoCode: {
     code: string;
     discount_amount: number;
-    description: string | null;
+    description: string;
   };
 }
 
 export const PricingCard = ({ app, promoCode }: PricingCardProps) => {
+  console.log("Rendering PricingCard for app:", app);
+
   const handleVisitSite = () => {
     if (app.website_url) {
       window.open(app.website_url, '_blank');
@@ -51,7 +53,7 @@ export const PricingCard = ({ app, promoCode }: PricingCardProps) => {
 
           <div className="space-y-1">
             <div className="flex items-baseline gap-1">
-              <span className="text-3xl font-bold text-white">${app.price}</span>
+              <span className="text-3xl font-bold text-white">{app.price}€</span>
               <span className="text-gray-400">/mois</span>
             </div>
             <p className="text-sm text-indigo-400">
@@ -63,7 +65,7 @@ export const PricingCard = ({ app, promoCode }: PricingCardProps) => {
             {app.description}
           </p>
 
-          {app.features && (
+          {app.features && app.features.length > 0 && (
             <ul className="space-y-2">
               {app.features.map((feature, index) => (
                 <li key={index} className="flex items-center gap-2">
@@ -84,7 +86,7 @@ export const PricingCard = ({ app, promoCode }: PricingCardProps) => {
           </Button>
 
           <p className="text-xs text-center text-gray-400">
-            Garantie satisfait ou remboursé sous 30 jours
+            Code promo : {promoCode.code}
           </p>
         </div>
       </Card>
