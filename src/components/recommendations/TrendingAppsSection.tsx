@@ -26,7 +26,7 @@ export const TrendingAppsSection = () => {
     queryFn: async () => {
       console.log("Fetching trending apps with promo codes...");
       
-      const { data: promoData, error: promoError } = await supabase
+      const { data, error } = await supabase
         .from('promo_codes')
         .select(`
           code,
@@ -46,18 +46,20 @@ export const TrendingAppsSection = () => {
         .eq('is_active', true)
         .gte('valid_until', new Date().toISOString());
 
-      if (promoError) {
-        console.error("Error fetching promo codes:", promoError);
-        throw promoError;
+      if (error) {
+        console.error("Error fetching promo codes:", error);
+        throw error;
       }
 
-      console.log("Fetched promo data:", promoData);
+      if (!data) {
+        console.log("No data returned from query");
+        return {};
+      }
 
-      // Ensure promoData is of the correct type
-      const typedPromoData = promoData as PromoCodeWithApp[];
+      console.log("Fetched promo data:", data);
 
       // Group apps by category
-      const groupedApps = typedPromoData.reduce((acc: Record<string, any[]>, promo) => {
+      const groupedApps = (data as PromoCodeWithApp[]).reduce((acc: Record<string, any[]>, promo) => {
         const app = promo.applications;
         if (!app || !app.CATÉGORIE) return acc;
 
