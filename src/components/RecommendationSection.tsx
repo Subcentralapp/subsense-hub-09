@@ -1,18 +1,35 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Sparkles, ArrowRight } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { useState } from "react";
 
 const RecommendationSection = () => {
+  const [selectedRec, setSelectedRec] = useState<null | {
+    title: string;
+    description: string;
+    saving: string;
+    details?: string;
+  }>(null);
+
   const recommendations = [
     {
       title: "Optimisation Streaming",
       description: "Vous avez Netflix et Disney+. Envisagez un abonnement groupé pour économiser 20%.",
       saving: "5,99 €/mois",
+      details: "En regroupant vos abonnements Netflix et Disney+ via une offre combinée, vous pouvez réaliser une économie significative. Plusieurs opérateurs proposent des packages incluant ces deux services avec une réduction allant jusqu'à 20%. Cela représente une économie annuelle de plus de 70€.",
     },
     {
       title: "Double Musique",
       description: "Vous avez Spotify et Apple Music. Nous recommandons de garder uniquement Spotify.",
       saving: "9,99 €/mois",
+      details: "Avoir deux services de streaming musical n'est pas optimal. Spotify offre un catalogue très similaire à Apple Music. En gardant uniquement Spotify, vous économisez le coût d'Apple Music sans perdre d'accès à la musique. De plus, Spotify propose des fonctionnalités uniques comme les playlists collaboratives et une meilleure découverte musicale.",
     },
   ];
 
@@ -39,7 +56,11 @@ const RecommendationSection = () => {
                     </p>
                   </div>
                 </div>
-                <Button variant="ghost" className="hover-scale">
+                <Button 
+                  variant="ghost" 
+                  className="hover-scale"
+                  onClick={() => setSelectedRec(rec)}
+                >
                   En savoir plus
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
@@ -48,6 +69,25 @@ const RecommendationSection = () => {
           ))}
         </div>
       </Card>
+
+      <Dialog open={!!selectedRec} onOpenChange={() => setSelectedRec(null)}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-primary" />
+              {selectedRec?.title}
+            </DialogTitle>
+            <DialogDescription className="pt-4 space-y-4">
+              <p className="text-sm text-gray-600">{selectedRec?.details}</p>
+              <div className="mt-4 p-3 bg-green-50 rounded-lg">
+                <p className="text-sm font-medium text-green-700">
+                  Économie potentielle: {selectedRec?.saving}
+                </p>
+              </div>
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
