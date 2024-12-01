@@ -1,19 +1,17 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, LogOut, Mail, Calendar, Upload, Pencil } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import { Separator } from "@/components/ui/separator";
-import { Input } from "@/components/ui/input";
 import {
   Tabs,
   TabsContent,
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import { ProfileHeader } from "@/components/profile/ProfileHeader";
+import { AccountInfo } from "@/components/profile/AccountInfo";
+import { SecurityInfo } from "@/components/profile/SecurityInfo";
 import { PasswordManagement } from "@/components/profile/PasswordManagement";
 import { AccountDeletion } from "@/components/profile/AccountDeletion";
 
@@ -29,8 +27,6 @@ export default function Profile() {
   const [profile, setProfile] = useState<Profile>({});
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
-  const [editing, setEditing] = useState(false);
-  const [username, setUsername] = useState("");
 
   useEffect(() => {
     const getUser = async () => {
@@ -69,7 +65,6 @@ export default function Profile() {
         
         if (profile) {
           setProfile(profile);
-          setUsername(profile.username || "");
         }
       } catch (error) {
         console.error("Error fetching user:", error);
@@ -155,7 +150,7 @@ export default function Profile() {
     }
   };
 
-  const updateProfile = async () => {
+  const updateProfile = async (username: string) => {
     try {
       const { error } = await supabase
         .from('profiles')
@@ -165,7 +160,6 @@ export default function Profile() {
       if (error) throw error;
 
       setProfile(prev => ({ ...prev, username }));
-      setEditing(false);
       
       toast({
         title: "Succès",
@@ -195,65 +189,14 @@ export default function Profile() {
     <div className="min-h-[calc(100vh-4rem)] bg-neutral-light p-4">
       <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
         <Card className="p-6">
-          <div className="flex items-center space-x-4">
-            <div className="relative group">
-              <Avatar className="h-20 w-20">
-                <AvatarImage src={profile.avatar_url} />
-                <AvatarFallback>
-                  <User className="h-10 w-10" />
-                </AvatarFallback>
-              </Avatar>
-              <label className="absolute bottom-0 right-0 p-1 bg-primary rounded-full cursor-pointer group-hover:scale-110 transition-transform">
-                <input
-                  type="file"
-                  accept="image/*"
-                  className="hidden"
-                  onChange={uploadAvatar}
-                  disabled={uploading}
-                />
-                <Upload className="h-4 w-4 text-white" />
-              </label>
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-2">
-                {editing ? (
-                  <div className="flex items-center gap-2">
-                    <Input
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      placeholder="Votre nom d'utilisateur"
-                      className="max-w-xs"
-                    />
-                    <Button onClick={updateProfile} size="sm">Sauvegarder</Button>
-                    <Button onClick={() => setEditing(false)} variant="outline" size="sm">Annuler</Button>
-                  </div>
-                ) : (
-                  <>
-                    <h1 className="text-2xl font-bold">{profile.username || user.email}</h1>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setEditing(true)}
-                      className="p-2"
-                    >
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                  </>
-                )}
-              </div>
-              <p className="text-muted-foreground">
-                Membre depuis le {new Date(user.created_at).toLocaleDateString()}
-              </p>
-            </div>
-            <Button
-              variant="outline"
-              className="flex items-center space-x-2"
-              onClick={handleSignOut}
-            >
-              <LogOut className="h-4 w-4" />
-              <span>Déconnexion</span>
-            </Button>
-          </div>
+          <ProfileHeader
+            profile={profile}
+            user={user}
+            onSignOut={handleSignOut}
+            onAvatarUpload={uploadAvatar}
+            onUpdateProfile={updateProfile}
+            uploading={uploading}
+          />
         </Card>
 
         <Tabs defaultValue="account" className="w-full">
@@ -264,58 +207,11 @@ export default function Profile() {
           </TabsList>
           
           <TabsContent value="account" className="space-y-4">
-            <Card className="p-6">
-              <h2 className="text-xl font-semibold mb-4 flex items-center">
-                <Mail className="h-5 w-5 mr-2" />
-                Informations du compte
-              </h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Email</label>
-                  <p className="mt-1">{user.email}</p>
-                </div>
-                <Separator />
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Date d'inscription</label>
-                  <p className="mt-1">{new Date(user.created_at).toLocaleDateString('fr-FR', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
-                  })}</p>
-                </div>
-                <Separator />
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">ID Utilisateur</label>
-                  <p className="mt-1 font-mono text-sm">{user.id}</p>
-                </div>
-              </div>
-            </Card>
+            <AccountInfo user={user} />
           </TabsContent>
           
           <TabsContent value="security" className="space-y-4">
-            <Card className="p-6">
-              <h2 className="text-xl font-semibold mb-4 flex items-center">
-                <Calendar className="h-5 w-5 mr-2" />
-                Sécurité
-              </h2>
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Dernière connexion</label>
-                  <p className="mt-1">{new Date(user.last_sign_in_at).toLocaleDateString('fr-FR', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                  })}</p>
-                </div>
-                <Separator />
-                <div>
-                  <label className="text-sm font-medium text-muted-foreground">Méthode d'authentification</label>
-                  <p className="mt-1 capitalize">{user.app_metadata?.provider || 'Email'}</p>
-                </div>
-              </div>
-            </Card>
+            <SecurityInfo user={user} />
             <PasswordManagement />
           </TabsContent>
 
