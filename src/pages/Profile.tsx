@@ -200,10 +200,9 @@ export default function Profile() {
         </Card>
 
         <Tabs defaultValue="account" className="w-full">
-          <TabsList className="grid w-full grid-cols-3">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="account">Compte</TabsTrigger>
             <TabsTrigger value="security">Sécurité</TabsTrigger>
-            <TabsTrigger value="danger">Zone de danger</TabsTrigger>
           </TabsList>
           
           <TabsContent value="account" className="space-y-4">
@@ -213,9 +212,6 @@ export default function Profile() {
           <TabsContent value="security" className="space-y-4">
             <SecurityInfo user={user} />
             <PasswordManagement />
-          </TabsContent>
-
-          <TabsContent value="danger" className="space-y-4">
             <AccountDeletion />
           </TabsContent>
         </Tabs>
