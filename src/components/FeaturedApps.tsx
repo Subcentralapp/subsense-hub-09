@@ -26,16 +26,22 @@ const FeaturedApps = () => {
   const { data: apps, isLoading } = useQuery({
     queryKey: ['featured-apps'],
     queryFn: async () => {
+      console.log("Fetching featured apps...");
       const { data, error } = await supabase
         .from('applications')
         .select('*')
-        .in('name', Object.keys(logoUrls));
+        .in('NOM', Object.keys(logoUrls)); // Changed 'name' to 'NOM' to match the database column
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching featured apps:", error);
+        throw error;
+      }
       
+      console.log("Featured apps data:", data);
       return data?.map(app => ({
         ...app,
-        logo_url: logoUrls[app.name as keyof typeof logoUrls] || app.logo_url
+        name: app.NOM, // Map NOM to name for consistency in the frontend
+        logo_url: logoUrls[app.NOM as keyof typeof logoUrls] || app["URL DU LOGO"]
       }));
     }
   });
@@ -141,14 +147,14 @@ const FeaturedApps = () => {
                 )}
                 <div>
                   <h3 className="font-semibold">{app.name}</h3>
-                  <p className="text-sm text-gray-500">{app.category}</p>
+                  <p className="text-sm text-gray-500">{app.CATÉGORIE}</p>
                 </div>
               </div>
             </div>
 
             <div className="flex items-baseline gap-1 mb-4">
               <span className="text-sm text-green-600">
-                {app.price ? `${app.price}€/mois` : 'Gratuit'}
+                {app.PRICE ? `${app.PRICE}€/mois` : 'Gratuit'}
               </span>
             </div>
 
