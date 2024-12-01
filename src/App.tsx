@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "./integrations/supabase/client";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
+import { PromoBanner } from "./components/PromoBanner";
 
 // Create a client
 const queryClient = new QueryClient();
@@ -56,6 +57,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <Router>
+        <PromoBanner />
         <Routes>
           <Route path="/" element={<Landing />} />
           <Route 
