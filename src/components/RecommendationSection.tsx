@@ -9,6 +9,15 @@ import { CategoryCard } from "./recommendations/CategoryCard";
 import { RecommendationDialog } from "./recommendations/RecommendationDialog";
 import { Recommendation, CategoryRecommendation } from "@/types/recommendation";
 import { useNavigate } from "react-router-dom";
+import { Application } from "@/types/application";
+
+interface Subscription {
+  id: number;
+  name: string;
+  price: number;
+  category: string;
+  next_billing: string;
+}
 
 const RecommendationSection = () => {
   const { toast } = useToast();
@@ -18,58 +27,93 @@ const RecommendationSection = () => {
   const [categoryRecommendations, setCategoryRecommendations] = useState<CategoryRecommendation[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [applications, setApplications] = useState<Application[]>([]);
+  const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
+  const [currentApp, setCurrentApp] = useState<Application | null>(null);
+  const [alternativeApp, setAlternativeApp] = useState<Application | null>(null);
 
   useEffect(() => {
-    const fetchRecommendations = async () => {
+    const fetchData = async () => {
       try {
         setLoading(true);
         setError(null);
-        const { data: { user } } = await supabase.auth.getUser();
         
+        // Fetch user's subscriptions
+        const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
           console.log("No user found, skipping recommendations");
           return;
         }
 
-        // Fetch user's subscriptions
-        const { data: subscriptions } = await supabase
+        // Fetch subscriptions
+        const { data: userSubs, error: subsError } = await supabase
           .from('subscriptions')
           .select('*')
           .eq('user_id', user.id);
 
-        // Generate optimization recommendations based on subscriptions
-        if (subscriptions && subscriptions.length > 0) {
-          const optimizations = subscriptions
-            .filter(sub => sub.price > 0)
-            .map(sub => ({
-              title: `Optimisation pour ${sub.name}`,
-              description: `Nous avons détecté une opportunité d'économie sur votre abonnement ${sub.name}.`,
-              saving: Math.round(sub.price * 0.2),
-              details: `Découvrez comment optimiser votre abonnement ${sub.name} et économiser jusqu'à ${Math.round(sub.price * 0.2)}€ par mois.`,
-              type: 'optimization',
-              websiteUrl: sub.website_url
-            }));
-          setRecommendations(optimizations);
-        }
+        if (subsError) throw subsError;
+        setSubscriptions(userSubs || []);
 
-        // Fetch and generate category-based recommendations
-        const { data: applications } = await supabase
+        // Fetch all applications
+        const { data: allApps, error: appsError } = await supabase
           .from('applications')
           .select('*');
 
-        if (applications) {
-          const categories = [...new Set(applications.map(app => app.CATÉGORIE))].filter(Boolean);
-          const categoryRecs = categories.slice(0, 6).map((category, index) => ({
-            category: category as string,
-            name: `${category} Essentiels`,
-            description: `Découvrez les meilleures applications dans la catégorie ${category}.`,
-            rating: 4 + Math.random(),
-            progress: 60 + Math.random() * 40,
-            color: [
-              'bg-red-100', 'bg-green-100', 'bg-orange-100',
-              'bg-blue-100', 'bg-purple-100', 'bg-pink-100'
-            ][index % 6]
-          }));
+        if (appsError) throw appsError;
+        setApplications(allApps || []);
+
+        // Generate optimization recommendations
+        const optimizations = userSubs?.map(sub => {
+          const currentApp = allApps?.find(app => 
+            app.NOM?.toLowerCase() === sub.name.toLowerCase()
+          );
+          
+          if (!currentApp?.CATÉGORIE) return null;
+
+          const alternatives = allApps?.filter(app => 
+            app.CATÉGORIE === currentApp.CATÉGORIE && 
+            Number(app.PRICE) < sub.price &&
+            app.NOM?.toLowerCase() !== sub.name.toLowerCase()
+          );
+
+          if (!alternatives?.length) return null;
+
+          const bestAlternative = alternatives.sort((a, b) => 
+            Number(a.PRICE) - Number(b.PRICE)
+          )[0];
+
+          return {
+            title: `Optimisation pour ${sub.name}`,
+            description: `Une alternative plus économique avec des fonctionnalités similaires`,
+            saving: sub.price - Number(bestAlternative.PRICE),
+            currentApp,
+            alternativeApp: bestAlternative,
+            type: 'optimization'
+          };
+        }).filter(Boolean);
+
+        setRecommendations(optimizations || []);
+
+        // Generate category recommendations
+        if (allApps) {
+          const categories = [...new Set(allApps.map(app => app.CATÉGORIE))].filter(Boolean);
+          const categoryRecs = categories.slice(0, 6).map((category, index) => {
+            const appsInCategory = allApps.filter(app => app.CATÉGORIE === category);
+            const avgRating = appsInCategory.reduce((sum, app) => sum + (app.NOTE || 0), 0) / appsInCategory.length;
+            
+            return {
+              category: category as string,
+              name: `${category} Essentiels`,
+              description: `Découvrez les meilleures applications dans la catégorie ${category}`,
+              rating: avgRating || 4.5,
+              progress: 60 + Math.random() * 40,
+              color: [
+                'bg-red-100', 'bg-green-100', 'bg-orange-100',
+                'bg-blue-100', 'bg-purple-100', 'bg-pink-100'
+              ][index % 6],
+              apps: appsInCategory
+            };
+          });
           setCategoryRecommendations(categoryRecs);
         }
 
@@ -86,8 +130,23 @@ const RecommendationSection = () => {
       }
     };
 
-    fetchRecommendations();
+    fetchData();
   }, []);
+
+  const handleSelectRecommendation = (rec: Recommendation) => {
+    const currentAppData = applications.find(app => 
+      app.NOM?.toLowerCase() === rec.currentApp.NOM?.toLowerCase()
+    );
+    const alternativeAppData = applications.find(app => 
+      app.NOM?.toLowerCase() === rec.alternativeApp.NOM?.toLowerCase()
+    );
+
+    if (currentAppData && alternativeAppData) {
+      setCurrentApp(currentAppData);
+      setAlternativeApp(alternativeAppData);
+      setSelectedRec(rec);
+    }
+  };
 
   const handleExploreCategory = async (category: string) => {
     try {
@@ -97,7 +156,6 @@ const RecommendationSection = () => {
         .eq('CATÉGORIE', category);
       
       if (apps && apps.length > 0) {
-        // Redirect to a category view or show apps in a dialog
         navigate(`/applications?category=${encodeURIComponent(category)}`);
       } else {
         toast({
@@ -150,7 +208,9 @@ const RecommendationSection = () => {
                     <OptimizationCard
                       key={index}
                       rec={rec}
-                      onSelect={setSelectedRec}
+                      onSelect={handleSelectRecommendation}
+                      currentPrice={Number(rec.currentApp.PRICE)}
+                      alternativePrice={Number(rec.alternativeApp.PRICE)}
                     />
                   ))}
                 </div>
@@ -175,7 +235,13 @@ const RecommendationSection = () => {
 
       <RecommendationDialog
         recommendation={selectedRec}
-        onClose={() => setSelectedRec(null)}
+        currentApp={currentApp || undefined}
+        alternativeApp={alternativeApp || undefined}
+        onClose={() => {
+          setSelectedRec(null);
+          setCurrentApp(null);
+          setAlternativeApp(null);
+        }}
       />
     </div>
   );

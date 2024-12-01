@@ -6,9 +6,13 @@ import { Recommendation } from "@/types/recommendation";
 interface OptimizationCardProps {
   rec: Recommendation;
   onSelect: (rec: Recommendation) => void;
+  currentPrice: number;
+  alternativePrice: number;
 }
 
-export const OptimizationCard = ({ rec, onSelect }: OptimizationCardProps) => {
+export const OptimizationCard = ({ rec, onSelect, currentPrice, alternativePrice }: OptimizationCardProps) => {
+  const savings = currentPrice - alternativePrice;
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -21,12 +25,14 @@ export const OptimizationCard = ({ rec, onSelect }: OptimizationCardProps) => {
             <Sparkles className="h-5 w-5 text-primary" />
           </div>
           <span className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-sm font-medium">
-            -{rec.saving}€/mois
+            -{savings.toFixed(2)}€/mois
           </span>
         </div>
         <div>
           <h4 className="font-medium text-gray-900">{rec.title}</h4>
-          <p className="text-sm text-gray-500 mt-1">{rec.description}</p>
+          <p className="text-sm text-gray-500 mt-1">
+            Passez de {currentPrice}€ à {alternativePrice}€ par mois
+          </p>
         </div>
         <Button 
           variant="ghost" 

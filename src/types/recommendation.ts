@@ -5,6 +5,8 @@ export interface Recommendation {
   details?: string;
   websiteUrl?: string;
   type?: string;
+  currentApp: any;
+  alternativeApp: any;
 }
 
 export interface CategoryRecommendation {
@@ -14,4 +16,5 @@ export interface CategoryRecommendation {
   rating: number;
   progress: number;
   color: string;
+  apps?: any[];
 }
