@@ -13,21 +13,22 @@ serve(async (req) => {
   }
 
   try {
-    const { subscriptions } = await req.json();
+    const { data: { user } } = await req.json();
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
     
-    // Créer un client Supabase
+    // Create Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Récupérer toutes les applications disponibles
-    const { data: allApplications } = await supabase
-      .from('applications')
-      .select('*');
+    // Get user's subscriptions
+    const { data: subscriptions } = await supabase
+      .from('subscriptions')
+      .select('*')
+      .eq('user_id', user?.id);
 
-    console.log("Generating recommendations for subscriptions:", subscriptions);
-    console.log("Available applications:", allApplications);
+    console.log("Generating recommendations for user:", user?.id);
+    console.log("Current subscriptions:", subscriptions);
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -40,13 +41,25 @@ serve(async (req) => {
         messages: [
           { 
             role: 'system', 
-            content: 'Tu es un expert en optimisation des coûts d\'abonnements. Tu dois analyser les abonnements actuels et suggérer des alternatives plus économiques en te basant sur le prix, les fonctionnalités similaires et la qualité du service.' 
+            content: `Tu es un expert en optimisation des coûts d'abonnements. 
+            Analyse les abonnements actuels de l'utilisateur et suggère des alternatives plus économiques.
+            Réponds en français et en JSON avec le format suivant:
+            {
+              "recommendations": [
+                {
+                  "title": "Titre de la recommandation",
+                  "description": "Description courte",
+                  "saving": "Montant de l'économie par mois",
+                  "details": "Description détaillée",
+                  "websiteUrl": "URL de l'offre alternative"
+                }
+              ]
+            }`
           },
           { 
             role: 'user', 
-            content: `Analyse ces abonnements actuels: ${JSON.stringify(subscriptions)} 
-            et cette liste d'applications disponibles: ${JSON.stringify(allApplications)}. 
-            Recommande 2-3 alternatives plus économiques.` 
+            content: `Voici les abonnements actuels de l'utilisateur: ${JSON.stringify(subscriptions)}
+            Suggère 2-3 alternatives plus économiques avec des services similaires.` 
           }
         ],
       }),
@@ -55,24 +68,7 @@ serve(async (req) => {
     const data = await response.json();
     console.log("OpenAI response:", data);
 
-    const recommendations = {
-      recommendations: [
-        {
-          currentApp: "Netflix Premium",
-          recommendedApp: "Disney+ Standard",
-          potentialSavings: "8€",
-          reason: "Disney+ offre un contenu familial de qualité à un prix plus avantageux"
-        },
-        {
-          currentApp: "Spotify Premium",
-          recommendedApp: "Deezer Premium",
-          potentialSavings: "2€",
-          reason: "Catalogue musical similaire avec une meilleure qualité audio"
-        }
-      ]
-    };
-
-    return new Response(JSON.stringify(recommendations), {
+    return new Response(JSON.stringify(data.choices[0].message.content), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {

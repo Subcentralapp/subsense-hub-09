@@ -8,9 +8,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
+import { useToast } from "./ui/use-toast";
 
 const RecommendationSection = () => {
+  const { toast } = useToast();
   const [selectedRec, setSelectedRec] = useState<null | {
     title: string;
     description: string;
@@ -18,23 +21,57 @@ const RecommendationSection = () => {
     details?: string;
     websiteUrl?: string;
   }>(null);
+  const [recommendations, setRecommendations] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const recommendations = [
-    {
-      title: "Optimisation Streaming",
-      description: "Vous avez Netflix et Disney+. Envisagez un abonnement groupé pour économiser 20%.",
-      saving: "5,99 €/mois",
-      details: "En regroupant vos abonnements Netflix et Disney+ via une offre combinée, vous pouvez réaliser une économie significative. Plusieurs opérateurs proposent des packages incluant ces deux services avec une réduction allant jusqu'à 20%. Cela représente une économie annuelle de plus de 70€.",
-      websiteUrl: "https://www.sfr.fr/offre-internet/box-plus",
-    },
-    {
-      title: "Double Musique",
-      description: "Vous avez Spotify et Apple Music. Nous recommandons de garder uniquement Spotify.",
-      saving: "9,99 €/mois",
-      details: "Avoir deux services de streaming musical n'est pas optimal. Spotify offre un catalogue très similaire à Apple Music. En gardant uniquement Spotify, vous économisez le coût d'Apple Music sans perdre d'accès à la musique. De plus, Spotify propose des fonctionnalités uniques comme les playlists collaboratives et une meilleure découverte musicale.",
-      websiteUrl: "https://www.spotify.com/fr/premium/",
-    },
-  ];
+  useEffect(() => {
+    const fetchRecommendations = async () => {
+      try {
+        setLoading(true);
+        const { data: { user } } = await supabase.auth.getUser();
+        
+        if (!user) {
+          console.log("No user found, skipping recommendations");
+          return;
+        }
+
+        const { data, error } = await supabase.functions.invoke('generate-recommendations', {
+          body: { user },
+        });
+
+        if (error) throw error;
+
+        console.log("Received recommendations:", data);
+        const parsedData = typeof data === 'string' ? JSON.parse(data) : data;
+        setRecommendations(parsedData.recommendations || []);
+      } catch (error) {
+        console.error("Error fetching recommendations:", error);
+        toast({
+          title: "Erreur",
+          description: "Impossible de charger les recommandations pour le moment.",
+          variant: "destructive",
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchRecommendations();
+  }, []);
+
+  if (loading) {
+    return (
+      <Card className="p-6">
+        <div className="flex items-center justify-center h-40">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        </div>
+      </Card>
+    );
+  }
+
+  if (!recommendations.length) {
+    return null;
+  }
 
   return (
     <div className="space-y-6 fade-in">
