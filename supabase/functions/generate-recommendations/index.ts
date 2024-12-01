@@ -50,7 +50,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4',  // Correction du nom du modèle
         messages: [
           { 
             role: 'system', 
@@ -88,7 +88,14 @@ serve(async (req) => {
     const data = await response.json();
     console.log("OpenAI response:", data);
 
-    return new Response(JSON.stringify(data.choices[0].message.content), {
+    if (!data.choices?.[0]?.message?.content) {
+      throw new Error("Format de réponse OpenAI invalide");
+    }
+
+    const recommendations = JSON.parse(data.choices[0].message.content);
+    console.log("Parsed recommendations:", recommendations);
+
+    return new Response(JSON.stringify(recommendations), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
