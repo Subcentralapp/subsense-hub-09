@@ -29,7 +29,10 @@ export const TrendingAppsSection = () => {
       const { data: promoData, error: promoError } = await supabase
         .from('promo_codes')
         .select(`
-          *,
+          code,
+          discount_amount,
+          discount_type,
+          description,
           applications (
             id,
             NOM,
@@ -50,8 +53,11 @@ export const TrendingAppsSection = () => {
 
       console.log("Fetched promo data:", promoData);
 
+      // Ensure promoData is of the correct type
+      const typedPromoData = promoData as PromoCodeWithApp[];
+
       // Group apps by category
-      const groupedApps = (promoData as PromoCodeWithApp[]).reduce((acc: Record<string, any[]>, promo) => {
+      const groupedApps = typedPromoData.reduce((acc: Record<string, any[]>, promo) => {
         const app = promo.applications;
         if (!app || !app.CATÉGORIE) return acc;
 
