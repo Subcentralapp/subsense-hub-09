@@ -10,7 +10,8 @@ interface ComparisonCardProps {
 }
 
 export const ComparisonCard = ({ app, isHighlighted, onSelect }: ComparisonCardProps) => {
-  const basePrice = app.price || 0;
+  // Convertir le prix de string à number et calculer le prix mensuel
+  const basePrice = app.price ? parseFloat(app.price.toString()) : 0;
   const monthlyPrice = (basePrice / 12).toFixed(2);
 
   return (
@@ -47,11 +48,13 @@ export const ComparisonCard = ({ app, isHighlighted, onSelect }: ComparisonCardP
         </div>
         <div className="text-center border-x border-gray-100">
           <p className="text-xs text-gray-500">Note</p>
-          <p className="text-lg font-bold text-primary">4.8/5</p>
+          <p className="text-lg font-bold text-primary">{app.rating}/5</p>
         </div>
         <div className="text-center">
           <p className="text-xs text-gray-500">Utilisateurs</p>
-          <p className="text-lg font-bold text-primary">1M+</p>
+          <p className="text-lg font-bold text-primary">
+            {app.users_count ? `${app.users_count}+` : 'N/A'}
+          </p>
         </div>
       </div>
 

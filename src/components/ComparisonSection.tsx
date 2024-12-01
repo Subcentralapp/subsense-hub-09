@@ -39,7 +39,7 @@ const ComparisonSection = () => {
       const mappedData = data.map(app => ({
         id: app.id,
         name: app.NOM,
-        price: parseFloat(app.PRICE || "0"),
+        price: app.PRICE ? parseFloat(app.PRICE) : 0,
         category: app.CATÉGORIE,
         description: app.DESCRIPTION,
         features: app.CARACTÉRISTIQUES as string[],
