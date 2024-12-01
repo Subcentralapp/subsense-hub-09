@@ -43,12 +43,29 @@ export default function Profile() {
         setUser(user);
         console.log("Current user:", user);
         
-        // Fetch profile data
-        const { data: profile } = await supabase
+        // First try to fetch the profile
+        let { data: profile, error } = await supabase
           .from('profiles')
           .select('username, avatar_url')
           .eq('id', user.id)
           .single();
+        
+        // If there's an error or no profile, create one
+        if (error || !profile) {
+          console.log("No profile found, creating one...");
+          const { data: newProfile, error: insertError } = await supabase
+            .from('profiles')
+            .insert([{ id: user.id }])
+            .select()
+            .single();
+            
+          if (insertError) {
+            console.error("Error creating profile:", insertError);
+            throw insertError;
+          }
+          
+          profile = newProfile;
+        }
         
         if (profile) {
           setProfile(profile);
