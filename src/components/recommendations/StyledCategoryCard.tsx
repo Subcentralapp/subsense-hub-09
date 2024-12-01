@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Gift, Star } from "lucide-react";
+import { Gift } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface StyledCategoryCardProps {
@@ -34,13 +34,7 @@ export const StyledCategoryCard = ({ app, onExplore }: StyledCategoryCardProps) 
         <div className="space-y-6">
           {/* Header */}
           <div className="space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="text-sm text-gray-300">{app.category}</span>
-              <div className="flex items-center gap-1">
-                <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-                <span className="text-sm">4.8</span>
-              </div>
-            </div>
+            <span className="text-sm text-gray-300">{app.category}</span>
             <h3 className="text-2xl font-bold">{app.name}</h3>
           </div>
 
@@ -63,7 +57,7 @@ export const StyledCategoryCard = ({ app, onExplore }: StyledCategoryCardProps) 
             onClick={() => onExplore(app.category)}
             className="w-full bg-primary hover:bg-primary/90"
           >
-            Explorer maintenant
+            J'en profite !
           </Button>
 
           {/* Money-back guarantee */}
