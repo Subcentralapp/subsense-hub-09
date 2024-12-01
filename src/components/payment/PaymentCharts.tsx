@@ -45,12 +45,12 @@ const PaymentCharts = () => {
     {
       name: format(subMonths(new Date(), 1), 'MMM', { locale: fr }),
       montant: previousMonthTotal,
-      fill: '#F97316'
+      fill: '#1a237e'
     },
     {
       name: format(new Date(), 'MMM', { locale: fr }),
       montant: currentMonthTotal,
-      fill: '#9b87f5'
+      fill: '#1a237e'
     }
   ];
 
@@ -88,8 +88,8 @@ const PaymentCharts = () => {
               <AreaChart data={monthlyData}>
                 <defs>
                   <linearGradient id="colorMontant" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#9b87f5" stopOpacity={0.2}/>
-                    <stop offset="95%" stopColor="#9b87f5" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#1a237e" stopOpacity={0.2}/>
+                    <stop offset="95%" stopColor="#1a237e" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
                 <XAxis 
@@ -108,7 +108,7 @@ const PaymentCharts = () => {
                 <Area 
                   type="monotone"
                   dataKey="montant"
-                  stroke="#9b87f5"
+                  stroke="#1a237e"
                   fillOpacity={1}
                   fill="url(#colorMontant)"
                 />
@@ -145,7 +145,7 @@ const PaymentCharts = () => {
                 <Tooltip content={<CustomTooltip />} />
                 <Bar 
                   dataKey="montant" 
-                  fill="#9b87f5"
+                  fill="#1a237e"
                   radius={[0, 4, 4, 0]}
                   barSize={20}
                 />
