@@ -11,8 +11,9 @@ interface StyledCategoryCardProps {
     description: string;
     price: number;
     hasPromo?: boolean;
+    website_url: string;
   };
-  onExplore: (category: string) => void;
+  onExplore: () => void;
 }
 
 export const StyledCategoryCard = ({ app, onExplore }: StyledCategoryCardProps) => {
@@ -54,7 +55,7 @@ export const StyledCategoryCard = ({ app, onExplore }: StyledCategoryCardProps) 
 
           {/* Action Button */}
           <Button 
-            onClick={() => onExplore(app.category)}
+            onClick={onExplore}
             className="w-full bg-primary hover:bg-primary/90"
           >
             J'en profite !
