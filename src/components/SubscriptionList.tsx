@@ -1,13 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
-import { CreditCard } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "./ui/use-toast";
 import { useState } from "react";
-import { SubscriptionCard } from "./subscription/SubscriptionCard";
 import { SubscriptionEditDialog } from "./subscription/SubscriptionEditDialog";
 import { useNavigate } from "react-router-dom";
 import { Application } from "@/types/application";
+import { SubscriptionHeader } from "./subscription/SubscriptionHeader";
+import { EmptySubscriptionState } from "./subscription/EmptySubscriptionState";
+import { SubscriptionGrid } from "./subscription/SubscriptionGrid";
 
 interface Subscription {
   id: number;
@@ -17,33 +18,6 @@ interface Subscription {
   next_billing: string;
   description?: string;
 }
-
-const findAlternatives = (subscription: Subscription, allApps: Application[]) => {
-  if (!subscription?.name || !allApps?.length) return null;
-  
-  const currentApp = allApps.find(app => 
-    app?.name?.toLowerCase() === subscription.name.toLowerCase()
-  );
-  
-  if (!currentApp?.category) return null;
-
-  const alternatives = allApps.filter(app => 
-    app?.category === currentApp.category && 
-    (app?.price || 0) < subscription.price &&
-    app?.name?.toLowerCase() !== subscription.name.toLowerCase()
-  );
-
-  if (alternatives.length === 0) return null;
-
-  const bestAlternative = alternatives.sort((a, b) => (a.price || 0) - (b.price || 0))[0];
-  const savingsAmount = subscription.price - (bestAlternative.price || 0);
-
-  return {
-    currentApp,
-    alternativeApp: bestAlternative,
-    savingsAmount: Number(savingsAmount.toFixed(2))
-  };
-};
 
 const SubscriptionList = () => {
   const { toast } = useToast();
@@ -138,29 +112,17 @@ const SubscriptionList = () => {
   return (
     <div className="space-y-8">
       <Card className="p-6 bg-gradient-to-br from-white/80 to-white/40 backdrop-blur-md border border-white/20 shadow-xl">
-        <h2 className="text-2xl font-bold mb-6 text-gray-800 flex items-center gap-2">
-          <CreditCard className="h-6 w-6 text-primary" />
-          Mes Abonnements Actifs
-        </h2>
+        <SubscriptionHeader />
         
         {subscriptions && subscriptions.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {subscriptions.map((subscription) => (
-              <SubscriptionCard
-                key={subscription.id}
-                subscription={subscription}
-                onEdit={setEditingSubscription}
-                onDelete={handleDelete}
-                alternative={applications ? findAlternatives(subscription, applications) : null}
-              />
-            ))}
-          </div>
+          <SubscriptionGrid 
+            subscriptions={subscriptions}
+            onEdit={setEditingSubscription}
+            onDelete={handleDelete}
+            applications={applications}
+          />
         ) : (
-          <div className="text-center py-12 bg-neutral-light rounded-xl border border-gray-100">
-            <p className="text-gray-500">
-              Aucun abonnement actif pour le moment
-            </p>
-          </div>
+          <EmptySubscriptionState />
         )}
       </Card>
 
