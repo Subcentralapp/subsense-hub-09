@@ -11,6 +11,7 @@ import ApplicationList from "@/components/ApplicationList";
 import { Navbar } from "@/components/Navbar";
 import BudgetManager from "@/components/payment/budget/BudgetManager";
 import FeaturedApps from "@/components/FeaturedApps";
+import RecommendationSection from "@/components/RecommendationSection";
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -26,6 +27,7 @@ const Index = () => {
             </div>
             <SubscriptionList />
             <BudgetManager />
+            <RecommendationSection />
             <ApplicationImport />
             <RandomAd />
           </div>
