@@ -41,27 +41,25 @@ export const TrendingAppCard = ({ app, promoCode }: TrendingAppCardProps) => {
         </Badge>
 
         <div className="space-y-6">
-          {/* Header */}
           <div className="space-y-2">
             <span className="text-sm text-gray-300">{app.category}</span>
             <h3 className="text-2xl font-bold">{app.name}</h3>
           </div>
 
-          {/* Price */}
           <div className="space-y-1">
             <div className="flex items-baseline gap-1">
               <span className="text-3xl font-bold">${app.price}</span>
-              <span className="text-gray-400">/month</span>
+              <span className="text-gray-400">/mois</span>
             </div>
-            <p className="text-sm text-gray-400">+3 EXTRA months</p>
+            <p className="text-sm text-indigo-400">
+              -{promoCode.discount_amount}% avec le code {promoCode.code}
+            </p>
           </div>
 
-          {/* Description */}
           <p className="text-sm text-gray-300 line-clamp-2">
             {app.description}
           </p>
 
-          {/* Action Button */}
           <Button 
             onClick={handleVisitSite}
             className="w-full bg-indigo-700 hover:bg-indigo-600 text-white"
@@ -69,7 +67,6 @@ export const TrendingAppCard = ({ app, promoCode }: TrendingAppCardProps) => {
             J'en profite !
           </Button>
 
-          {/* Money-back guarantee */}
           <p className="text-xs text-center text-gray-400">
             Garantie satisfait ou remboursé sous 30 jours
           </p>
