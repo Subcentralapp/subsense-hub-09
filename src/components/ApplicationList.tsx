@@ -53,8 +53,8 @@ const ApplicationList = () => {
   const { data: applications, isLoading } = useQuery({
     queryKey: ["applications"],
     queryFn: fetchApplications,
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    gcTime: 30 * 60 * 1000, // Keep in garbage collection for 30 minutes
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
   });
 
   const handleAddSubscription = async (app: Application) => {
@@ -62,7 +62,12 @@ const ApplicationList = () => {
     setSelectedApp(app);
   };
 
-  const handleConfirmSubscription = async (price: number, nextBilling: Date) => {
+  const handleConfirmSubscription = async (
+    price: number, 
+    nextBilling: Date, 
+    isTrial: boolean, 
+    trialEndDate: Date | null
+  ) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
@@ -81,6 +86,8 @@ const ApplicationList = () => {
         next_billing: nextBilling.toISOString(),
         description: selectedApp.description,
         user_id: user.id,
+        is_trial: isTrial,
+        trial_end_date: trialEndDate?.toISOString() || null,
       };
 
       console.log("Ajout de l'abonnement:", subscriptionData);
@@ -98,7 +105,7 @@ const ApplicationList = () => {
 
       toast({
         title: "Abonnement ajouté",
-        description: `L'abonnement à ${selectedApp.name} a été ajouté avec succès.`,
+        description: `L'abonnement à ${selectedApp.name} a été ajouté avec succès${isTrial ? ' avec une période d\'essai' : ''}.`,
       });
 
       setSelectedApp(null);

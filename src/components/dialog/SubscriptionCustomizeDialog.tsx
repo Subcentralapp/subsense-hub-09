@@ -1,109 +1,89 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useState, useEffect } from "react";
+import { Label } from "@/components/ui/label";
 import { Application } from "@/types/application";
-import { Calendar } from "@/components/ui/calendar";
-import { Calendar as CalendarIcon, DollarSign } from "lucide-react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
-import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { Switch } from "@/components/ui/switch";
+import { addDays } from "date-fns";
 
 interface SubscriptionCustomizeDialogProps {
   app: Application | null;
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: (price: number, nextBilling: Date) => void;
+  onConfirm: (price: number, nextBilling: Date, isTrial: boolean, trialEndDate: Date | null) => void;
 }
 
-const SubscriptionCustomizeDialog = ({ 
-  app, 
-  isOpen, 
-  onClose, 
-  onConfirm 
-}: SubscriptionCustomizeDialogProps) => {
-  // Initialiser avec la date du jour + 1 mois
-  const defaultDate = new Date();
-  defaultDate.setMonth(defaultDate.getMonth() + 1);
-  
-  const [price, setPrice] = useState<number>(0);
-  const [date, setDate] = useState<Date>(defaultDate);
-
-  useEffect(() => {
-    if (app?.price) {
-      setPrice(app.price);
-    }
-  }, [app?.price]);
+const SubscriptionCustomizeDialog = ({ app, isOpen, onClose, onConfirm }: SubscriptionCustomizeDialogProps) => {
+  const [price, setPrice] = useState(app?.price || 0);
+  const [nextBilling, setNextBilling] = useState(new Date());
+  const [isTrial, setIsTrial] = useState(false);
+  const [trialDays, setTrialDays] = useState(14); // Par défaut 14 jours d'essai
 
   const handleConfirm = () => {
-    console.log("Confirmation avec date:", date);
-    onConfirm(price, date);
+    const trialEndDate = isTrial ? addDays(new Date(), trialDays) : null;
+    onConfirm(price, nextBilling, isTrial, trialEndDate);
   };
-
-  const handleDateSelect = (newDate: Date | undefined) => {
-    if (newDate) {
-      console.log("Nouvelle date sélectionnée:", newDate);
-      setDate(newDate);
-    }
-  };
-
-  if (!app) return null;
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent>
+    <Dialog open={isOpen} onOpenChange={() => onClose()}>
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Personnaliser l'abonnement {app.name}</DialogTitle>
+          <DialogTitle>Personnaliser l'abonnement à {app?.name}</DialogTitle>
         </DialogHeader>
-        <div className="space-y-6 py-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Prix mensuel</label>
-            <div className="relative">
-              <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+        <div className="grid gap-4 py-4">
+          <div className="grid gap-2">
+            <Label htmlFor="price">Prix mensuel (€)</Label>
+            <Input
+              id="price"
+              type="number"
+              step="0.01"
+              value={price}
+              onChange={(e) => setPrice(parseFloat(e.target.value))}
+            />
+          </div>
+          
+          <div className="grid gap-2">
+            <Label htmlFor="next-billing">Prochain paiement</Label>
+            <Input
+              id="next-billing"
+              type="date"
+              value={nextBilling.toISOString().split('T')[0]}
+              onChange={(e) => setNextBilling(new Date(e.target.value))}
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <Label htmlFor="trial">Période d'essai</Label>
+            <Switch
+              id="trial"
+              checked={isTrial}
+              onCheckedChange={setIsTrial}
+            />
+          </div>
+
+          {isTrial && (
+            <div className="grid gap-2">
+              <Label htmlFor="trial-days">Durée de l'essai (jours)</Label>
               <Input
+                id="trial-days"
                 type="number"
-                value={price}
-                onChange={(e) => setPrice(Number(e.target.value))}
-                className="pl-10"
-                placeholder="Prix mensuel"
+                min="1"
+                max="90"
+                value={trialDays}
+                onChange={(e) => setTrialDays(parseInt(e.target.value))}
               />
             </div>
-          </div>
+          )}
+        </div>
 
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Date de prélèvement</label>
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-full justify-start text-left font-normal"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {format(date, "PPP", { locale: fr })}
-                </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-auto p-0">
-                <Calendar
-                  mode="single"
-                  selected={date}
-                  onSelect={handleDateSelect}
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
-
-          <div className="flex justify-end space-x-2">
-            <Button variant="outline" onClick={onClose}>
-              Annuler
-            </Button>
-            <Button onClick={handleConfirm}>
-              Confirmer
-            </Button>
-          </div>
+        <div className="flex justify-end gap-3">
+          <Button variant="outline" onClick={onClose}>
+            Annuler
+          </Button>
+          <Button onClick={handleConfirm}>
+            Confirmer
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

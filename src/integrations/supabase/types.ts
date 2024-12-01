@@ -301,9 +301,11 @@ export type Database = {
           created_at: string | null
           description: string | null
           id: number
+          is_trial: boolean | null
           name: string
           next_billing: string | null
           price: number
+          trial_end_date: string | null
           user_id: string | null
         }
         Insert: {
@@ -311,9 +313,11 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: number
+          is_trial?: boolean | null
           name: string
           next_billing?: string | null
           price: number
+          trial_end_date?: string | null
           user_id?: string | null
         }
         Update: {
@@ -321,9 +325,11 @@ export type Database = {
           created_at?: string | null
           description?: string | null
           id?: number
+          is_trial?: boolean | null
           name?: string
           next_billing?: string | null
           price?: number
+          trial_end_date?: string | null
           user_id?: string | null
         }
         Relationships: []
@@ -333,7 +339,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      check_trial_ending: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
