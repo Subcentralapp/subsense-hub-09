@@ -14,6 +14,7 @@ import { AccountInfo } from "@/components/profile/AccountInfo";
 import { SecurityInfo } from "@/components/profile/SecurityInfo";
 import { PasswordManagement } from "@/components/profile/PasswordManagement";
 import { AccountDeletion } from "@/components/profile/AccountDeletion";
+import { ProfilePageHeader } from "@/components/profile/ProfilePageHeader";
 
 interface Profile {
   username?: string;
@@ -186,8 +187,9 @@ export default function Profile() {
   if (!user) return null;
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-neutral-light p-4">
-      <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
+    <div className="min-h-screen bg-neutral-light">
+      <ProfilePageHeader />
+      <div className="max-w-4xl mx-auto px-4 space-y-6 animate-fade-in pb-8">
         <Card className="p-6">
           <ProfileHeader
             profile={profile}
