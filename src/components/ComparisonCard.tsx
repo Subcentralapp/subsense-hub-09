@@ -27,7 +27,9 @@ const formatUserCount = (count: number | null): string => {
 };
 
 export const ComparisonCard = ({ app, isHighlighted, onSelect }: ComparisonCardProps) => {
-  const basePrice = app.price ? parseFloat(app.price.toString()) : 0;
+  // Convertir le prix en nombre et utiliser directement la valeur sans division
+  const price = app.price ? parseFloat(app.price.toString()) : 0;
+  console.log("Prix original:", app.price, "Prix converti:", price); // Pour déboguer
 
   return (
     <motion.div
@@ -59,7 +61,7 @@ export const ComparisonCard = ({ app, isHighlighted, onSelect }: ComparisonCardP
       <div className="grid grid-cols-3 gap-4 p-4 border-b border-gray-100">
         <div className="text-center">
           <p className="text-xs text-gray-500">Prix</p>
-          <p className="text-lg font-bold text-primary">{basePrice}€</p>
+          <p className="text-lg font-bold text-primary">{price}€</p>
         </div>
         <div className="text-center border-x border-gray-100">
           <p className="text-xs text-gray-500">Note</p>
