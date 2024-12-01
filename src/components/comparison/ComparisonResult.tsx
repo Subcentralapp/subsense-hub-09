@@ -32,8 +32,8 @@ export const ComparisonResult = ({
 
   // Calculer le gagnant basé sur le rating et le nombre de fonctionnalités
   const winner = apps.reduce((prev, current) => {
-    const prevScore = (prev.rating || 0) + (prev.key_features?.length || 0) * 0.2;
-    const currentScore = (current.rating || 0) + (current.key_features?.length || 0) * 0.2;
+    const prevScore = (prev.rating || 0) + (prev.features?.length || 0) * 0.2;
+    const currentScore = (current.rating || 0) + (current.features?.length || 0) * 0.2;
     return currentScore > prevScore ? current : prev;
   }, apps[0]);
 
@@ -43,7 +43,7 @@ export const ComparisonResult = ({
       userExperienceScore: app.rating ? app.rating * 2 : 5, // Convertir le rating en score sur 10
       pros: app.pros || [],
       cons: app.cons || [],
-      bestUseCases: app.key_features || [],
+      bestUseCases: app.features || [],
       securityFeatures: {
         description: app.description || "Information non disponible"
       }
