@@ -13,7 +13,7 @@ serve(async (req) => {
   }
 
   try {
-    const { data: { user } } = await req.json();
+    const { user } = await req.json();
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
     
     // Create Supabase client
