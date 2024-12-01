@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 
 interface TrendingAppCardProps {
   app: {
+    id: number;
     name: string;
     category: string;
     description: string;
@@ -49,7 +50,7 @@ export const TrendingAppCard = ({ app, promoCode }: TrendingAppCardProps) => {
           <div className="space-y-1">
             <div className="flex items-baseline gap-1">
               <span className="text-3xl font-bold">${app.price}</span>
-              <span className="text-gray-400">/mois</span>
+              <span className="text-gray-400">/month</span>
             </div>
             <p className="text-sm text-indigo-400">
               {promoCode.description}
