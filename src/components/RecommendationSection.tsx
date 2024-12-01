@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Sparkles, ArrowRight, ExternalLink, Loader2 } from "lucide-react";
+import { Sparkles, ArrowRight, ExternalLink, Loader2, AlertCircle } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -11,13 +11,14 @@ import {
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "./ui/use-toast";
+import { Alert, AlertDescription } from "./ui/alert";
 
 const RecommendationSection = () => {
   const { toast } = useToast();
   const [selectedRec, setSelectedRec] = useState<null | {
     title: string;
     description: string;
-    saving: string;
+    saving: number;
     details?: string;
     websiteUrl?: string;
   }>(null);
@@ -37,6 +38,7 @@ const RecommendationSection = () => {
           return;
         }
 
+        console.log("Fetching recommendations for user:", user.id);
         const { data, error } = await supabase.functions.invoke('generate-recommendations', {
           body: { user },
         });
@@ -69,39 +71,32 @@ const RecommendationSection = () => {
 
   if (loading) {
     return (
-      <Card className="p-6">
+      <Card className="p-8">
         <div className="flex items-center justify-center h-40">
           <div className="flex flex-col items-center gap-4">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
-            <p className="text-sm text-gray-500">Chargement des recommandations...</p>
+            <p className="text-sm text-gray-500">Analyse de vos abonnements en cours...</p>
           </div>
         </div>
       </Card>
     );
   }
 
-  // Même s'il y a une erreur ou pas de recommandations, on affiche quand même le bloc
   return (
     <div className="space-y-6 fade-in">
-      <Card className="p-6 glass-card">
+      <Card className="p-8 glass-card">
         <h2 className="text-xl font-semibold mb-6 flex items-center gap-2">
           <Sparkles className="h-5 w-5 text-primary" />
           Recommandations Personnalisées
         </h2>
         
         {error ? (
-          <div className="p-6 text-center">
-            <p className="text-gray-500">{error}</p>
-            <Button 
-              variant="outline" 
-              onClick={() => window.location.reload()}
-              className="mt-4"
-            >
-              Réessayer
-            </Button>
-          </div>
+          <Alert variant="destructive" className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
         ) : recommendations.length === 0 ? (
-          <div className="p-6 text-center">
+          <div className="p-6 text-center bg-neutral-50 rounded-lg">
             <p className="text-gray-500">Aucune recommandation disponible pour le moment.</p>
           </div>
         ) : (
@@ -109,27 +104,34 @@ const RecommendationSection = () => {
             {recommendations.map((rec, index) => (
               <div
                 key={index}
-                className="p-6 bg-white rounded-lg border border-gray-100 hover:shadow-md transition-shadow"
+                className="p-6 bg-white rounded-lg border border-gray-100 hover:shadow-md transition-all duration-300 hover:border-primary/20"
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-start space-x-4">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex items-start space-x-4 flex-1">
                     <div className="p-3 bg-primary/10 rounded-full mt-1">
                       <Sparkles className="h-5 w-5 text-primary" />
                     </div>
-                    <div>
-                      <h3 className="font-medium mb-2">{rec.title}</h3>
-                      <p className="text-sm text-gray-500 mb-2">{rec.description}</p>
-                      <p className="text-sm font-medium text-green-600">
-                        Économie potentielle: {rec.saving}€
-                      </p>
+                    <div className="space-y-2 flex-1">
+                      <h3 className="font-medium text-lg">{rec.title}</h3>
+                      <p className="text-sm text-gray-600">{rec.description}</p>
+                      <div className="flex items-center gap-2">
+                        <span className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-sm font-medium">
+                          Économie: {rec.saving}€/mois
+                        </span>
+                        {rec.type && (
+                          <span className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm">
+                            {rec.type}
+                          </span>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <Button 
                     variant="ghost" 
-                    className="hover:bg-primary/10"
+                    className="hover:bg-primary/10 shrink-0"
                     onClick={() => setSelectedRec(rec)}
                   >
-                    En savoir plus
+                    Détails
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </div>
@@ -140,18 +142,35 @@ const RecommendationSection = () => {
       </Card>
 
       <Dialog open={!!selectedRec} onOpenChange={() => setSelectedRec(null)}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-[500px]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Sparkles className="h-5 w-5 text-primary" />
               {selectedRec?.title}
             </DialogTitle>
             <DialogDescription className="pt-4 space-y-4">
-              <p className="text-sm text-gray-600">{selectedRec?.details}</p>
-              <div className="mt-4 p-3 bg-green-50 rounded-lg">
-                <p className="text-sm font-medium text-green-700">
-                  Économie potentielle: {selectedRec?.saving}€
-                </p>
+              <div className="space-y-4">
+                <p className="text-sm text-gray-600">{selectedRec?.details}</p>
+                {selectedRec?.affected_subscriptions && (
+                  <div className="p-4 bg-neutral-50 rounded-lg">
+                    <p className="text-sm font-medium text-gray-700 mb-2">Abonnements concernés :</p>
+                    <ul className="list-disc list-inside text-sm text-gray-600">
+                      {selectedRec.affected_subscriptions.map((sub: string, i: number) => (
+                        <li key={i}>{sub}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                <div className="p-4 bg-green-50 rounded-lg">
+                  <p className="text-sm font-medium text-green-700">
+                    Économie potentielle: {selectedRec?.saving}€ par mois
+                  </p>
+                </div>
+                {selectedRec?.suggested_action && (
+                  <p className="text-sm font-medium text-primary">
+                    Action suggérée : {selectedRec.suggested_action}
+                  </p>
+                )}
               </div>
               {selectedRec?.websiteUrl && (
                 <Button 
