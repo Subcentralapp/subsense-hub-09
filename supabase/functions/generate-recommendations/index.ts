@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -14,7 +14,7 @@ serve(async (req) => {
   try {
     const { user } = await req.json();
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
-    
+
     // Create Supabase client
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
@@ -47,37 +47,29 @@ serve(async (req) => {
 
     console.log("Available applications:", allApps);
 
-    const prompt = `
-En tant qu'expert en optimisation des coûts d'abonnements SaaS, analysez les données suivantes :
+    const prompt = `En tant qu'expert en optimisation des coûts d'abonnements SaaS, analysez les données suivantes et générez des recommandations.
 
-Abonnements actuels de l'utilisateur :
+Abonnements actuels :
 ${JSON.stringify(subscriptions, null, 2)}
 
 Applications disponibles :
 ${JSON.stringify(allApps, null, 2)}
 
-Générez des recommandations personnalisées en :
-1. Identifiant les doublons potentiels
-2. Suggérant des alternatives moins chères mais équivalentes
-3. Calculant précisément les économies mensuelles
-4. Expliquant clairement l'intérêt de chaque suggestion
-
-Répondez UNIQUEMENT avec un objet JSON valide de cette forme exacte :
+Générez 3 recommandations personnalisées en suivant EXACTEMENT ce format JSON :
 {
   "recommendations": [
     {
       "title": "Titre court et descriptif",
-      "description": "Description courte de l'économie",
+      "description": "Description courte de la recommandation",
       "saving": 12.99,
-      "details": "Explication détaillée",
+      "details": "Explication détaillée de la recommandation",
       "type": "alternative",
-      "affected_subscriptions": ["Nom de l'app"],
-      "suggested_action": "Action suggérée"
+      "websiteUrl": "https://example.com"
     }
   ]
 }`;
 
-    console.log("Sending request to OpenAI with prompt:", prompt);
+    console.log("Sending request to OpenAI with prompt");
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -88,7 +80,10 @@ Répondez UNIQUEMENT avec un objet JSON valide de cette forme exacte :
       body: JSON.stringify({
         model: 'gpt-4o-mini',
         messages: [
-          { role: 'system', content: 'Vous êtes un assistant spécialisé dans l\'analyse des coûts SaaS qui répond uniquement en JSON valide.' },
+          { 
+            role: 'system', 
+            content: 'Vous êtes un assistant spécialisé qui répond uniquement en JSON valide selon le format demandé.' 
+          },
           { role: 'user', content: prompt }
         ],
         temperature: 0.3,
@@ -115,7 +110,6 @@ Répondez UNIQUEMENT avec un objet JSON valide de cette forme exacte :
       console.log("Parsed recommendations:", recommendations);
 
       if (!recommendations?.recommendations || !Array.isArray(recommendations.recommendations)) {
-        console.error("Invalid recommendations structure:", recommendations);
         throw new Error("Structure de recommandations invalide");
       }
 
@@ -124,7 +118,6 @@ Répondez UNIQUEMENT avec un objet JSON valide de cette forme exacte :
       });
     } catch (parseError) {
       console.error("Error parsing OpenAI response:", parseError);
-      console.log("Failed content:", data.choices[0].message.content);
       throw new Error("Impossible de parser la réponse d'OpenAI");
     }
   } catch (error) {

@@ -13,16 +13,19 @@ import { supabase } from "@/lib/supabase";
 import { useToast } from "./ui/use-toast";
 import { Alert, AlertDescription } from "./ui/alert";
 
+interface Recommendation {
+  title: string;
+  description: string;
+  saving: number;
+  details?: string;
+  websiteUrl?: string;
+  type?: string;
+}
+
 const RecommendationSection = () => {
   const { toast } = useToast();
-  const [selectedRec, setSelectedRec] = useState<null | {
-    title: string;
-    description: string;
-    saving: number;
-    details?: string;
-    websiteUrl?: string;
-  }>(null);
-  const [recommendations, setRecommendations] = useState<any[]>([]);
+  const [selectedRec, setSelectedRec] = useState<Recommendation | null>(null);
+  const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -151,26 +154,11 @@ const RecommendationSection = () => {
             <DialogDescription className="pt-4 space-y-4">
               <div className="space-y-4">
                 <p className="text-sm text-gray-600">{selectedRec?.details}</p>
-                {selectedRec?.affected_subscriptions && (
-                  <div className="p-4 bg-neutral-50 rounded-lg">
-                    <p className="text-sm font-medium text-gray-700 mb-2">Abonnements concernés :</p>
-                    <ul className="list-disc list-inside text-sm text-gray-600">
-                      {selectedRec.affected_subscriptions.map((sub: string, i: number) => (
-                        <li key={i}>{sub}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
                 <div className="p-4 bg-green-50 rounded-lg">
                   <p className="text-sm font-medium text-green-700">
                     Économie potentielle: {selectedRec?.saving}€ par mois
                   </p>
                 </div>
-                {selectedRec?.suggested_action && (
-                  <p className="text-sm font-medium text-primary">
-                    Action suggérée : {selectedRec.suggested_action}
-                  </p>
-                )}
               </div>
               {selectedRec?.websiteUrl && (
                 <Button 
