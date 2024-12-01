@@ -14,7 +14,10 @@ export const TrendingAppsSection = () => {
     );
   }
 
+  console.log("Trending Apps Data:", trendingApps);
+
   const categories = Object.keys(trendingApps || {});
+  console.log("Categories:", categories);
 
   if (!categories.length) {
     return null;
@@ -44,19 +47,22 @@ export const TrendingAppsSection = () => {
           <ScrollBar orientation="horizontal" />
         </ScrollArea>
 
-        {categories.map((category) => (
-          <TabsContent key={category} value={category} className="mt-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {trendingApps[category].map((item: any) => (
-                <TrendingAppCard
-                  key={item.app.id}
-                  app={item.app}
-                  promoCode={item.promoCode}
-                />
-              ))}
-            </div>
-          </TabsContent>
-        ))}
+        {categories.map((category) => {
+          console.log(`Rendering category ${category}:`, trendingApps[category]);
+          return (
+            <TabsContent key={category} value={category} className="mt-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {trendingApps[category].map((item: any) => (
+                  <TrendingAppCard
+                    key={item.app.id}
+                    app={item.app}
+                    promoCode={item.promoCode}
+                  />
+                ))}
+              </div>
+            </TabsContent>
+          );
+        })}
       </Tabs>
     </div>
   );

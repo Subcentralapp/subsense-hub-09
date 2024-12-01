@@ -114,6 +114,7 @@ export const usePromoApps = () => {
     queryKey: ['trending-apps'],
     queryFn: async () => {
       console.log("Fetching apps data...");
+      console.log("Apps data:", PREDEFINED_APPS);
       return PREDEFINED_APPS;
     },
   });
