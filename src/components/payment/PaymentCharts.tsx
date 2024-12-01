@@ -24,8 +24,8 @@ const PaymentCharts = () => {
   const previousMonthTotal = currentMonthTotal * 1.2;
   const savings = previousMonthTotal - currentMonthTotal;
 
-  // Grouper les dépenses par catégorie
-  const categoryData = subscriptions?.reduce((acc: any, sub) => {
+  // Grouper les dépenses par catégorie avec typage explicite
+  const categoryData = subscriptions?.reduce((acc: Record<string, number>, sub) => {
     const category = sub.category || 'Autre';
     if (!acc[category]) {
       acc[category] = 0;
@@ -36,7 +36,7 @@ const PaymentCharts = () => {
 
   const categoryChartData = Object.entries(categoryData || {}).map(([name, amount]) => ({
     name,
-    montant: amount,
+    montant: Number(amount), // Conversion explicite en nombre
   }));
 
   return (
