@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Layers, Plus, Check, Shuffle } from "lucide-react";
+import { Layers, Plus, Shuffle } from "lucide-react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import { Application } from "@/types/application";
+import { CategoryCard } from "./stack/CategoryCard";
+import { ApplicationCard } from "./stack/ApplicationCard";
 
 const categories = [
   {
@@ -70,7 +72,7 @@ export const TechnicalStackSuggestion = () => {
   };
 
   const getAppDetails = (appName: string) => {
-    return applications?.find(app => app.NOM === appName);
+    return applications?.find(app => app.name === appName);
   };
 
   return (
@@ -83,23 +85,14 @@ export const TechnicalStackSuggestion = () => {
       {/* Sélection de catégorie */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {categories.map((category) => (
-          <motion.div
+          <CategoryCard
             key={category.name}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            <Card
-              className={`p-4 cursor-pointer ${category.color} border-2 transition-all ${
-                selectedCategory === category.name 
-                  ? 'border-primary shadow-lg' 
-                  : 'border-transparent hover:border-primary/20'
-              }`}
-              onClick={() => handleCategorySelect(category.name)}
-            >
-              <h3 className="font-semibold text-gray-900">{category.name}</h3>
-              <p className="text-sm text-gray-600">{category.description}</p>
-            </Card>
-          </motion.div>
+            name={category.name}
+            description={category.description}
+            color={category.color}
+            isSelected={selectedCategory === category.name}
+            onSelect={() => handleCategorySelect(category.name)}
+          />
         ))}
       </div>
 
@@ -128,52 +121,15 @@ export const TechnicalStackSuggestion = () => {
                 .find(cat => cat.name === selectedCategory)
                 ?.suggestions.map((appName) => {
                   const app = getAppDetails(appName);
-                  const isSelected = selectedApps.includes(appName);
+                  if (!app) return null;
 
                   return (
-                    <motion.div
+                    <ApplicationCard
                       key={appName}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <Card 
-                        className={`p-4 cursor-pointer transition-all ${
-                          isSelected 
-                            ? 'border-primary bg-primary/5' 
-                            : 'hover:border-primary/20'
-                        }`}
-                        onClick={() => handleAppToggle(appName)}
-                      >
-                        <div className="flex items-start justify-between">
-                          <div className="flex items-center gap-3">
-                            {app?.logo_url ? (
-                              <img 
-                                src={app.logo_url} 
-                                alt={appName}
-                                className="w-8 h-8 rounded object-contain"
-                              />
-                            ) : (
-                              <div className="w-8 h-8 rounded bg-primary/10 flex items-center justify-center">
-                                <span className="text-sm font-semibold text-primary">
-                                  {appName[0]}
-                                </span>
-                              </div>
-                            )}
-                            <div>
-                              <h4 className="font-medium text-gray-900">{appName}</h4>
-                              <p className="text-sm text-gray-500">
-                                {app?.PRICE ? `${app.PRICE}€/mois` : 'Prix non disponible'}
-                              </p>
-                            </div>
-                          </div>
-                          {isSelected ? (
-                            <Check className="h-5 w-5 text-primary" />
-                          ) : (
-                            <Plus className="h-5 w-5 text-gray-400" />
-                          )}
-                        </div>
-                      </Card>
-                    </motion.div>
+                      app={app}
+                      isSelected={selectedApps.includes(appName)}
+                      onToggle={() => handleAppToggle(appName)}
+                    />
                   );
                 })}
             </div>
