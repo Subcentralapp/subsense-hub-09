@@ -36,22 +36,24 @@ const ComparisonSection = () => {
         return [];
       }
 
-      console.log("Applications fetched:", data);
-      return data.map(app => ({
+      const mappedData = data.map(app => ({
         id: app.id,
         name: app.NOM,
-        price: parseFloat(app.PRICE),
+        price: parseFloat(app.PRICE || "0"),
         category: app.CATÉGORIE,
         description: app.DESCRIPTION,
-        features: app.CARACTÉRISTIQUES,
-        pros: app.AVANTAGES ? [app.AVANTAGES] : [],
-        cons: app.INCONVÉNIENTS ? [app.INCONVÉNIENTS] : [],
+        features: app.CARACTÉRISTIQUES as string[],
+        pros: app.AVANTAGES,
+        cons: app.INCONVÉNIENTS,
         website_url: app["URL DU SITE WEB"],
         logo_url: app["URL DU LOGO"],
         rating: app.NOTE,
         review: app.REVUE,
-        users_count: app["NOMBRE D'UTILISATEURS"]?.toString()
+        users_count: app["NOMBRE D'UTILISATEURS"]
       }));
+
+      console.log("Applications mappées:", mappedData);
+      return mappedData;
     },
   });
 

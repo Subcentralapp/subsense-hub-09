@@ -1,15 +1,15 @@
 export type Application = {
   id: number;
-  name: string;
+  name: string | null;
   price: number;
-  category: string;
-  description?: string;
-  features?: string[];
-  pros?: string[];
-  cons?: string[];
-  website_url?: string;
-  logo_url?: string;
-  rating?: number;
-  review?: string;
-  users_count?: string;
+  category: string | null;
+  description: string | null;
+  features: string[] | null;
+  pros: string | null;
+  cons: string | null;
+  website_url: string | null;
+  logo_url: string | null;
+  rating: number | null;
+  review: string | null;
+  users_count: number | null;
 };

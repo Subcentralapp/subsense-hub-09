@@ -13,15 +13,31 @@ const fetchApplications = async () => {
     const { data, error } = await supabase
       .from("applications")
       .select("*")
-      .order("name");
+      .order("NOM");
 
     if (error) {
       console.error("Erreur lors de la récupération:", error);
       throw error;
     }
 
-    console.log("Applications récupérées:", data?.length);
-    return data as Application[];
+    const mappedData = data.map(app => ({
+      id: app.id,
+      name: app.NOM,
+      price: parseFloat(app.PRICE || "0"),
+      category: app.CATÉGORIE,
+      description: app.DESCRIPTION,
+      features: app.CARACTÉRISTIQUES as string[],
+      pros: app.AVANTAGES,
+      cons: app.INCONVÉNIENTS,
+      website_url: app["URL DU SITE WEB"],
+      logo_url: app["URL DU LOGO"],
+      rating: app.NOTE,
+      review: app.REVUE,
+      users_count: app["NOMBRE D'UTILISATEURS"]
+    }));
+
+    console.log("Applications récupérées et mappées:", mappedData);
+    return mappedData;
   } catch (error) {
     console.error("Erreur lors de la récupération:", error);
     throw error;
