@@ -54,7 +54,7 @@ const ApplicationList = () => {
     queryKey: ["applications"],
     queryFn: fetchApplications,
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
-    cacheTime: 30 * 60 * 1000, // Keep in cache for 30 minutes
+    gcTime: 30 * 60 * 1000, // Keep in garbage collection for 30 minutes
   });
 
   const handleAddSubscription = async (app: Application) => {
