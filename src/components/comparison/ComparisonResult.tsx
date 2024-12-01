@@ -39,10 +39,10 @@ export const ComparisonResult = ({
 
   // Préparer les données d'analyse pour chaque application
   const analysisData = apps.reduce((acc, app) => {
-    acc[app.name] = {
-      userExperienceScore: app.rating ? app.rating * 2 : 5, // Convertir le rating en score sur 10
-      pros: app.pros || [],
-      cons: app.cons || [],
+    acc[app.name || ''] = {
+      userExperienceScore: app.rating ? app.rating * 2 : 5,
+      pros: app.pros || '',
+      cons: app.cons || '',
       bestUseCases: app.features || [],
       securityFeatures: {
         description: app.description || "Information non disponible"
@@ -74,7 +74,7 @@ export const ComparisonResult = ({
             <ComparisonCard
               app={app}
               isHighlighted={app.name === winner?.name}
-              onSelect={() => window.open(app.website_url, '_blank')}
+              onSelect={() => window.open(app.website_url || '', '_blank')}
             />
           </motion.div>
         ))}

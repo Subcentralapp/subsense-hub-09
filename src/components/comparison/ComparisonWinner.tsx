@@ -8,6 +8,16 @@ interface ComparisonWinnerProps {
 }
 
 export const ComparisonWinner = ({ winner, analysis }: ComparisonWinnerProps) => {
+  // Convertir la chaîne pros en tableau en la divisant par des points
+  const prosArray = analysis[winner.name || '']?.pros
+    ? analysis[winner.name || ''].pros.split('.')
+        .map((item: string) => item.trim())
+        .filter((item: string) => item.length > 0)
+    : [];
+
+  // Prendre les 3 premiers avantages s'ils existent
+  const topPros = prosArray.slice(0, 3);
+
   return (
     <Card className="p-6 mt-8 bg-gradient-to-r from-primary/10 to-primary/5">
       <div className="flex items-center gap-4">
@@ -24,7 +34,7 @@ export const ComparisonWinner = ({ winner, analysis }: ComparisonWinnerProps) =>
           <div className="flex items-center gap-2 mt-1">
             <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
             <span className="text-sm font-medium">
-              {analysis[winner.name].userExperienceScore}/10
+              {analysis[winner.name || ''].userExperienceScore}/10
             </span>
             <span className="text-sm text-gray-500">
               Score utilisateur
@@ -37,7 +47,7 @@ export const ComparisonWinner = ({ winner, analysis }: ComparisonWinnerProps) =>
         <div className="space-y-2">
           <h4 className="font-medium text-gray-700">Points Forts</h4>
           <ul className="space-y-1">
-            {analysis[winner.name].pros.slice(0, 3).map((pro: string, idx: number) => (
+            {topPros.map((pro: string, idx: number) => (
               <li key={idx} className="text-sm text-gray-600">• {pro}</li>
             ))}
           </ul>
@@ -46,7 +56,7 @@ export const ComparisonWinner = ({ winner, analysis }: ComparisonWinnerProps) =>
         <div className="space-y-2">
           <h4 className="font-medium text-gray-700">Meilleur Pour</h4>
           <ul className="space-y-1">
-            {analysis[winner.name].bestUseCases.slice(0, 3).map((useCase: string, idx: number) => (
+            {(winner.features || []).slice(0, 3).map((useCase: string, idx: number) => (
               <li key={idx} className="text-sm text-gray-600">• {useCase}</li>
             ))}
           </ul>
@@ -55,7 +65,7 @@ export const ComparisonWinner = ({ winner, analysis }: ComparisonWinnerProps) =>
         <div className="space-y-2">
           <h4 className="font-medium text-gray-700">Caractéristiques Uniques</h4>
           <p className="text-sm text-gray-600">
-            {analysis[winner.name].securityFeatures.description}
+            {analysis[winner.name || ''].securityFeatures.description}
           </p>
         </div>
       </div>
