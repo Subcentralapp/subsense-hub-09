@@ -40,7 +40,7 @@ const PREDEFINED_APPS = {
       app: {
         id: 3,
         name: "Binance",
-        description: "Plateforme d'échange de cryptomonnaies leader avec des outils avancés",
+        description: "La plus grande plateforme d'échange de cryptomonnaies au monde",
         price: 0,
         website_url: "https://www.binance.com",
         category: "Crypto et finance"
