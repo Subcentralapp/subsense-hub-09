@@ -54,26 +54,7 @@ serve(async (req) => {
         messages: [
           { 
             role: 'system', 
-            content: `Tu es un expert en optimisation des coûts d'abonnements SaaS.
-            Analyse les abonnements actuels de l'utilisateur et suggère des optimisations en:
-            1. Identifiant les abonnements redondants ou similaires qui pourraient être consolidés
-            2. Trouvant des alternatives moins chères avec des fonctionnalités similaires
-            3. Calculant les économies potentielles mensuelles pour chaque suggestion
-            
-            Réponds uniquement en JSON avec le format suivant:
-            {
-              "recommendations": [
-                {
-                  "title": "Titre de la recommandation",
-                  "description": "Description courte et persuasive",
-                  "saving": "Montant de l'économie mensuelle en euros",
-                  "details": "Description détaillée expliquant pourquoi cette optimisation est pertinente",
-                  "type": "consolidation" ou "alternative",
-                  "affected_subscriptions": ["nom des abonnements concernés"],
-                  "suggested_action": "Action recommandée (ex: 'Remplacer X par Y', 'Consolider X et Y')"
-                }
-              ]
-            }`
+            content: "Tu es un expert en optimisation des coûts d'abonnements SaaS. Analyse les abonnements actuels de l'utilisateur et suggère des optimisations en: 1. Identifiant les abonnements redondants ou similaires qui pourraient être consolidés 2. Trouvant des alternatives moins chères avec des fonctionnalités similaires 3. Calculant les économies potentielles mensuelles pour chaque suggestion. Format de réponse attendu: {\"recommendations\": [{\"title\": \"string\", \"description\": \"string\", \"saving\": \"number\", \"details\": \"string\", \"type\": \"string\", \"affected_subscriptions\": [\"string\"], \"suggested_action\": \"string\"}]}"
           },
           { 
             role: 'user', 
@@ -98,12 +79,24 @@ serve(async (req) => {
       throw new Error("Format de réponse OpenAI invalide");
     }
 
-    const recommendations = JSON.parse(data.choices[0].message.content);
-    console.log("Parsed recommendations:", recommendations);
+    // Ensure we're getting valid JSON from OpenAI
+    try {
+      const recommendations = JSON.parse(data.choices[0].message.content);
+      console.log("Parsed recommendations:", recommendations);
 
-    return new Response(JSON.stringify(recommendations), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+      // Validate the structure
+      if (!recommendations?.recommendations || !Array.isArray(recommendations.recommendations)) {
+        throw new Error("Structure de recommandations invalide");
+      }
+
+      return new Response(JSON.stringify(recommendations), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    } catch (parseError) {
+      console.error("Error parsing OpenAI response:", parseError);
+      console.log("Raw content:", data.choices[0].message.content);
+      throw new Error("Impossible de parser la réponse d'OpenAI");
+    }
   } catch (error) {
     console.error('Error in generate-recommendations function:', error);
     return new Response(JSON.stringify({ error: error.message }), {
