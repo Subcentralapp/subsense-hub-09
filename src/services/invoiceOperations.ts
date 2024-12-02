@@ -14,7 +14,7 @@ export const updateInvoiceDetails = async (
   const { data: existing, error: checkError } = await supabase
     .from('invoicedetails')
     .select('*')
-    .eq('invoice_id', invoiceId)
+    .eq('invoice_id', parseInt(invoiceId))
     .single();
 
   if (checkError && checkError.code !== 'PGRST116') {
@@ -25,13 +25,13 @@ export const updateInvoiceDetails = async (
   if (!existing) {
     const { error: insertError } = await supabase
       .from('invoicedetails')
-      .insert([{
-        invoice_id: invoiceId,
+      .insert({
+        invoice_id: parseInt(invoiceId),
         amount: data.amount,
         invoice_date: data.invoice_date,
         status: data.status,
         merchant_name: data.merchant_name
-      }]);
+      });
 
     if (insertError) {
       console.error('Error inserting invoice details:', insertError);
@@ -40,13 +40,13 @@ export const updateInvoiceDetails = async (
   } else {
     const { error: updateError } = await supabase
       .from('invoicedetails')
-      .insert([{
-        invoice_id: invoiceId,
+      .insert({
+        invoice_id: parseInt(invoiceId),
         amount: data.amount,
         invoice_date: data.invoice_date,
         status: data.status,
         merchant_name: data.merchant_name,
-      }]);
+      });
 
     if (updateError) {
       console.error('Error updating invoice details:', updateError);

@@ -1,28 +1,15 @@
 import { create } from 'zustand';
 import { uploadInvoiceFile, deleteInvoiceFile } from './storage/invoiceStorage';
 import { supabase } from "@/integrations/supabase/client";
-
-interface Invoice {
-  id: number;
-  name: string;
-  date: Date;
-  url: string;
-  details?: {
-    amount: number | null;
-    category: string | null;
-    invoice_date: string | null;
-    merchant_name: string | null;
-    status: string | null;
-  };
-}
+import { Invoice, InvoiceDetails } from '@/types/invoice';
 
 interface InvoiceStore {
   invoices: Invoice[];
   isLoading: boolean;
   addInvoice: (file: File) => Promise<void>;
-  removeInvoice: (id: number) => Promise<void>;
+  removeInvoice: (id: string) => Promise<void>;
   fetchInvoices: () => Promise<void>;
-  updateInvoiceDetails: (invoiceId: number, details: Partial<Invoice['details']>) => Promise<void>;
+  updateInvoiceDetails: (invoiceId: string, details: Partial<InvoiceDetails>) => Promise<void>;
 }
 
 export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
@@ -50,7 +37,7 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
             .single();
           
           return {
-            id: inv.id,
+            id: inv.id.toString(),
             name: inv.names || '',
             date: new Date(inv.created_at || Date.now()),
             url: inv.url || '',
@@ -79,18 +66,15 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
     }
   },
 
-  updateInvoiceDetails: async (invoiceId: number, details: Partial<Invoice['details']>) => {
+  updateInvoiceDetails: async (invoiceId: string, details: Partial<InvoiceDetails>) => {
     try {
       set({ isLoading: true });
       
       const { error } = await supabase
         .from('invoicedetails')
         .insert({
-          invoice_id: invoiceId,
-          amount: details.amount || null,
-          invoice_date: details.invoice_date || null,
-          merchant_name: details.merchant_name || null,
-          status: details.status || 'pending',
+          invoice_id: parseInt(invoiceId),
+          ...details,
           created_at: new Date().toISOString()
         });
 
@@ -105,7 +89,7 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
     }
   },
 
-  removeInvoice: async (id: number) => {
+  removeInvoice: async (id: string) => {
     try {
       set({ isLoading: true });
       
@@ -115,7 +99,7 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
         await supabase
           .from('invoicedetails')
           .delete()
-          .eq('invoice_id', id);
+          .eq('invoice_id', parseInt(id));
 
         const fileName = invoiceToDelete.url.split('/').pop();
         if (fileName) {
@@ -125,7 +109,7 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
         await supabase
           .from('invoices')
           .delete()
-          .eq('id', id);
+          .eq('id', parseInt(id));
 
         set((state) => ({
           invoices: state.invoices.filter((inv) => inv.id !== id)

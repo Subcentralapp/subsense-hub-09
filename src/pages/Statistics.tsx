@@ -5,7 +5,7 @@ const Statistics = () => {
     <div className="container mx-auto p-6">
       <h1 className="text-2xl font-bold mb-6">Statistiques</h1>
       <Card className="p-6">
-        <p>Vos statistiques</p>
+        <p>Statistiques</p>
       </Card>
     </div>
   );
