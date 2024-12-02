@@ -1,12 +1,10 @@
 import { motion } from "framer-motion";
 import { Crown, Star, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
 import { useNavigate } from "react-router-dom";
 
 export const SupportSection = () => {
   const navigate = useNavigate();
-  const campaignProgress = 70; // Example progress
 
   const benefits = [
     {
@@ -36,7 +34,7 @@ export const SupportSection = () => {
             transition={{ duration: 0.5 }}
             className="text-4xl font-bold text-gray-900 mb-6"
           >
-            Soutenir, c'est participer au futur de la gestion d'abonnements !
+            Aidez-nous à construire l'application de gestion d'abonnements ultime !
           </motion.h2>
         </div>
 
@@ -62,19 +60,52 @@ export const SupportSection = () => {
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
-          className="bg-gradient-to-br from-primary/5 to-secondary/5 rounded-2xl p-8 max-w-2xl mx-auto text-center"
+          className="bg-gradient-to-br from-primary/5 to-secondary/5 rounded-2xl p-8 max-w-3xl mx-auto text-center"
         >
-          <h3 className="text-2xl font-bold mb-6">Progression de la campagne</h3>
-          <Progress value={campaignProgress} className="h-4 mb-4" />
-          <p className="text-lg font-semibold text-primary mb-8">
-            {campaignProgress}% de l'objectif atteint !
-          </p>
+          <div className="prose prose-lg mx-auto">
+            <p className="text-gray-700 mb-6">
+              SubaCentral a été conçue pour répondre à un problème que nous connaissons tous : la gestion parfois chaotique de nos abonnements. Aujourd'hui, nous avons lancé un outil gratuit, simple et illimité, mais nous rêvons d'aller beaucoup plus loin.
+            </p>
+            
+            <p className="text-gray-700 mb-6">
+              Pour transformer cette vision en réalité, nous avons besoin de votre soutien.
+              Vos contributions serviront directement à :
+            </p>
+
+            <ul className="text-left space-y-4 mb-6">
+              <li className="flex items-start gap-2">
+                <span className="text-xl">💻</span>
+                <span>Développer des fonctionnalités avancées comme l'ajout automatique d'abonnements grâce à l'IA et l'OCR pour les factures.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-xl">☁️</span>
+                <span>Assurer l'hébergement et la sécurité des données, en utilisant les meilleurs serveurs pour une application rapide et fiable.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="text-xl">🚀</span>
+                <span>Améliorer l'expérience utilisateur, avec des intégrations avancées (Slack, Google Sheets) et des outils de notifications intelligentes.</span>
+              </li>
+            </ul>
+
+            <p className="text-gray-700 mb-6">
+              En soutenant notre projet, vous ne financez pas seulement une application : vous investissez dans une solution qui simplifie le quotidien de milliers d'utilisateurs.
+            </p>
+
+            <p className="text-gray-700 mb-8">
+              En plus, tous nos early supporters recevront un accès Premium à vie, débloquant toutes les futures fonctionnalités sans frais supplémentaires.
+            </p>
+
+            <p className="font-semibold text-gray-900 mb-8">
+              Ensemble, atteignons cet objectif et faisons de SubaCentral un outil incontournable !
+            </p>
+          </div>
+
           <Button
             size="lg"
             onClick={() => navigate("/auth")}
             className="text-lg px-8 py-6"
           >
-            Participer maintenant
+            Rejoignez l'aventure : Soutenez notre campagne dès aujourd'hui !
           </Button>
         </motion.div>
       </div>
