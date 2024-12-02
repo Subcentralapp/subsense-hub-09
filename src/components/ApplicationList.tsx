@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import ApplicationDialog from "./dialog/ApplicationDialog";
 import { Application } from "@/types/application";
 import { useNavigate } from "react-router-dom";

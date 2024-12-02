@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { DollarSign, TrendingUp, Calendar, Award } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 
 const DashboardStats = () => {
   const { data: subscriptions } = useQuery({

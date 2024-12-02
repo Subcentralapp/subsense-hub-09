@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { BackgroundLines } from "./header/BackgroundLines";

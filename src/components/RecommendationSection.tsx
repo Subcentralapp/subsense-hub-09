@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "./ui/use-toast";
 import { Alert, AlertDescription } from "./ui/alert";
 import { OptimizationCard } from "./recommendations/OptimizationCard";

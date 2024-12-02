@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { PricingCard } from "./PricingCard";
 import { Sparkles } from "lucide-react";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 
 export const TrendingAppsSection = () => {
   const { data: apps, isLoading } = useQuery({

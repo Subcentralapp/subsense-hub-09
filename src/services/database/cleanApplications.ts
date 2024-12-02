@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 
 export const cleanApplications = async () => {
   console.log("Nettoyage des applications...");

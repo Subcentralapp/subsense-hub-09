@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { uploadInvoiceFile, deleteInvoiceFile } from './storage/invoiceStorage';
-import { supabase } from '@/lib/supabase';
+import { supabase } from "@/integrations/supabase/client";
 
 interface Invoice {
   id: string;
@@ -136,5 +136,4 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
     } finally {
       set({ isLoading: false });
     }
-  }
 }));

@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { Card } from "@/components/ui/card";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "./ui/use-toast";
 import { useState } from "react";
 import { SubscriptionEditDialog } from "./subscription/SubscriptionEditDialog";

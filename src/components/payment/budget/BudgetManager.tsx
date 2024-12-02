@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/lib/supabase";
+import { supabase } from "@/integrations/supabase/client";
 import { startOfMonth, endOfMonth, format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { BudgetForm } from "./BudgetForm";
