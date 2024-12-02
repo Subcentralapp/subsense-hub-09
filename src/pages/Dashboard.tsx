@@ -25,7 +25,6 @@ const Dashboard = () => {
         return;
       }
 
-      // Vérifier si l'utilisateur a complété l'onboarding
       const { data: preferences } = await supabase
         .from('user_preferences')
         .select('*')
@@ -46,10 +45,10 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen bg-neutral-light">
       <Navbar />
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="space-y-8">
-          <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <h1 className="text-3xl font-bold text-gray-900">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
+        <div className="space-y-4 sm:space-y-8">
+          <header className="flex flex-col gap-4">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center sm:text-left">
               Tableau de bord
             </h1>
             <DashboardNavigation 
@@ -58,9 +57,8 @@ const Dashboard = () => {
             />
           </header>
 
-          <main className="space-y-6">
+          <main className="space-y-4 sm:space-y-6">
             {activeTab === "dashboard" && <DashboardContent />}
-            {/* Les autres onglets seront gérés par les composants correspondants */}
           </main>
         </div>
       </div>

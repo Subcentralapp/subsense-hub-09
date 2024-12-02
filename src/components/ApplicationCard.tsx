@@ -50,7 +50,7 @@ export const ApplicationCard = ({ app, onAdd }: ApplicationCardProps) => {
   const logoUrl = app.logo_url || (logoError ? null : getClearbitLogoUrl(app.name || '', app.website_url));
 
   return (
-    <div className="flex flex-col p-4 bg-white rounded-lg border border-gray-100 hover:border-primary/20 transition-all hover:shadow-md">
+    <div className="flex flex-col p-4 bg-white rounded-lg border border-gray-100 hover:border-primary/20 transition-all hover:shadow-md w-full">
       <div className="flex items-center gap-3 mb-3">
         {logoUrl && !logoError ? (
           <img 
@@ -65,14 +65,14 @@ export const ApplicationCard = ({ app, onAdd }: ApplicationCardProps) => {
         ) : (
           getAppIcon(app.category || null, app.name || '')
         )}
-        <div>
-          <h4 className="font-medium text-gray-900">{app.name}</h4>
-          <p className="text-sm text-gray-500">{app.category || 'Non catégorisé'}</p>
+        <div className="flex-1 min-w-0">
+          <h4 className="font-medium text-gray-900 truncate">{app.name}</h4>
+          <p className="text-sm text-gray-500 truncate">{app.category || 'Non catégorisé'}</p>
         </div>
       </div>
 
       {app.description && (
-        <p className="text-xs text-gray-400 mb-3">{app.description}</p>
+        <p className="text-xs text-gray-400 mb-3 line-clamp-2">{app.description}</p>
       )}
 
       <div className="mt-auto">
