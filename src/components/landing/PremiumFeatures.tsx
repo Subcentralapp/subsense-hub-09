@@ -9,7 +9,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { CampaignProgress } from "./premium/CampaignProgress";
 import { PricingComparison } from "./premium/PricingComparison";
 import { FeatureGrid } from "./premium/FeatureGrid";
 import { Guarantees } from "./premium/Guarantees";
@@ -30,7 +29,7 @@ export const PremiumFeatures = () => {
           </motion.h2>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <Card className="lg:col-span-2 bg-white/80 backdrop-blur-sm border-2 border-primary/20">
             <CardHeader>
               <CardTitle className="text-2xl">Offre Early Supporter Exclusive</CardTitle>
@@ -60,16 +59,6 @@ export const PremiumFeatures = () => {
             <CampaignGoals />
           </div>
         </div>
-
-        {/* Campaign Progress moved to bottom */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mt-16 max-w-2xl mx-auto"
-        >
-          <CampaignProgress />
-        </motion.div>
       </div>
     </section>
   );
