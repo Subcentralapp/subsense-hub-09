@@ -8,7 +8,7 @@ export const Navbar = () => {
 
   return (
     <div className="border-b">
-      <div className="flex h-20 items-center px-4"> {/* Hauteur augmentée de h-16 à h-20 */}
+      <div className="flex h-20 items-center px-4">
         <Button
           variant="ghost"
           className="flex items-center space-x-2 px-0 hover:bg-transparent"
@@ -17,7 +17,7 @@ export const Navbar = () => {
           <img 
             src="/lovable-uploads/58effc4e-25d2-49e8-b240-21708486d417.png"
             alt="SubCentral Logo"
-            className="h-12 w-auto object-contain" {/* Hauteur augmentée de h-8 à h-12 */}
+            className="h-12 w-auto object-contain"
           />
         </Button>
         <div className="ml-auto flex items-center space-x-4">
