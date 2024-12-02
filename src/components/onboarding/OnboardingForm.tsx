@@ -1,13 +1,14 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { OnboardingFormData } from "@/types/onboarding";
 import { Steps } from "./Steps";
+import { StepContent } from "./StepContent";
+import { StepNavigation } from "./StepNavigation";
+import { StepHeader } from "./StepHeader";
 
 // Import all section components
 import { FavoriteSubscriptionsSection } from "./sections/FavoriteSubscriptionsSection";
@@ -129,12 +130,7 @@ export const OnboardingForm = () => {
 
       const { error } = await supabase
         .from('user_preferences')
-        .insert([
-          {
-            id: user.id,
-            ...formData,
-          },
-        ]);
+        .insert([{ id: user.id, ...formData }]);
 
       if (error) throw error;
 
@@ -154,8 +150,7 @@ export const OnboardingForm = () => {
     }
   };
 
-  const CurrentStepComponent = steps[currentStep].component;
-  const currentStepKey = steps[currentStep].key;
+  const currentStepConfig = steps[currentStep];
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-light to-white flex items-center justify-center p-4">
@@ -163,84 +158,39 @@ export const OnboardingForm = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-4xl"
+        className="w-full max-w-2xl"
       >
-        <Card className="p-8 space-y-8 shadow-lg border-primary/10 relative overflow-hidden">
-          <div className="space-y-2 text-center">
-            <motion.h1 
-              className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-            >
-              Personnalisez votre expérience
-            </motion.h1>
-            <motion.p 
-              className="text-gray-500"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-            >
-              {steps[currentStep].description}
-            </motion.p>
-          </div>
+        <Card className="p-6 shadow-lg border-primary/10 relative overflow-hidden">
+          <StepHeader 
+            title={currentStepConfig.title}
+            description={currentStepConfig.description}
+          />
 
           <Steps currentStep={currentStep} totalSteps={steps.length} />
 
           <AnimatePresence mode="wait" custom={direction}>
-            <motion.div
-              key={currentStep}
-              custom={direction}
-              initial={{ opacity: 0, x: direction * 100 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: direction * -100 }}
-              transition={{
-                type: "spring",
-                stiffness: 300,
-                damping: 30,
-              }}
-              className="relative min-h-[400px]"
-            >
-              <CurrentStepComponent
-                value={formData[currentStepKey as keyof OnboardingFormData]}
-                onChange={(value: any) => 
-                  setFormData(prev => ({ 
-                    ...prev, 
-                    [currentStepKey]: value 
-                  }))
-                }
-              />
-            </motion.div>
+            <StepContent
+              currentStep={currentStep}
+              direction={direction}
+              StepComponent={currentStepConfig.component}
+              formData={formData}
+              stepKey={currentStepConfig.key}
+              onChange={(value: any) => 
+                setFormData(prev => ({ 
+                  ...prev, 
+                  [currentStepConfig.key]: value 
+                }))
+              }
+            />
           </AnimatePresence>
 
-          <div className="flex justify-between pt-4">
-            <Button
-              onClick={handlePrevious}
-              variant="outline"
-              disabled={currentStep === 0}
-              className="flex items-center gap-2"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Précédent
-            </Button>
-
-            {currentStep === steps.length - 1 ? (
-              <Button 
-                onClick={handleSubmit}
-                className="bg-primary hover:bg-primary/90 text-white font-semibold px-8 py-2 rounded-lg transition-all duration-200 hover:shadow-lg flex items-center gap-2"
-              >
-                Terminer
-              </Button>
-            ) : (
-              <Button 
-                onClick={handleNext}
-                className="bg-primary hover:bg-primary/90 text-white font-semibold px-8 py-2 rounded-lg transition-all duration-200 hover:shadow-lg flex items-center gap-2"
-              >
-                Suivant
-                <ChevronRight className="w-4 h-4" />
-              </Button>
-            )}
-          </div>
+          <StepNavigation
+            currentStep={currentStep}
+            totalSteps={steps.length}
+            onPrevious={handlePrevious}
+            onNext={handleNext}
+            onSubmit={handleSubmit}
+          />
         </Card>
       </motion.div>
     </div>

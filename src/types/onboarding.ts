@@ -18,6 +18,6 @@ export interface OnboardingFormData {
 export type OnboardingStep = {
   title: string;
   description: string;
-  component: string;
-  key: string;
+  component: React.ComponentType<any>;
+  key: keyof OnboardingFormData;
 };
