@@ -10,3 +10,13 @@ export interface Subscription {
   is_trial?: boolean;
   trial_end_date?: string | null;
 }
+
+export interface SubscriptionFormData {
+  name: string;
+  price: number;
+  category?: string;
+  description?: string;
+  next_billing?: string;
+  is_trial?: boolean;
+  trial_end_date?: string;
+}
