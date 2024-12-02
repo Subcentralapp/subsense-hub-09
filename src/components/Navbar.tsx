@@ -11,10 +11,14 @@ export const Navbar = () => {
       <div className="flex h-16 items-center px-4">
         <Button
           variant="ghost"
-          className="text-xl font-bold"
+          className="flex items-center space-x-2 px-0 hover:bg-transparent"
           onClick={() => navigate("/")}
         >
-          SubManager
+          <img 
+            src="/lovable-uploads/58effc4e-25d2-49e8-b240-21708486d417.png"
+            alt="SubCentral Logo"
+            className="h-8 w-auto object-contain"
+          />
         </Button>
         <div className="ml-auto flex items-center space-x-4">
           <NotificationBell />
