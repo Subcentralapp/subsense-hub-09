@@ -24,19 +24,43 @@ export const SupportSection = () => {
     }
   ];
 
+  const features = [
+    {
+      emoji: "💻",
+      title: "IA & OCR",
+      description: "Ajout automatique d'abonnements via IA et scan de factures"
+    },
+    {
+      emoji: "☁️",
+      title: "Infrastructure Premium",
+      description: "Serveurs haute performance et sécurité maximale"
+    },
+    {
+      emoji: "🚀",
+      title: "Intégrations Avancées",
+      description: "Connexion avec Slack, Google Sheets et bien plus"
+    }
+  ];
+
   return (
-    <section className="py-24 bg-white" id="support-section">
+    <section className="py-24 bg-gradient-to-br from-white to-primary/5" id="support-section">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-4xl font-bold text-gray-900 mb-6"
-          >
-            Aidez-nous à construire l'application de gestion d'abonnements ultime !
-          </motion.h2>
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="text-center mb-16"
+        >
+          <span className="inline-block px-4 py-1 bg-primary/10 rounded-full text-primary font-medium mb-4">
+            Early Supporter
+          </span>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            Construisons ensemble l'avenir de la gestion d'abonnements
+          </h2>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            SubaCentral transforme la gestion chaotique des abonnements en une expérience simple et intuitive
+          </p>
+        </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
           {benefits.map((benefit, index) => (
@@ -45,7 +69,7 @@ export const SupportSection = () => {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
-              className="bg-neutral-50 rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow"
+              className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-shadow"
             >
               <div className="bg-primary/10 rounded-xl p-4 w-16 h-16 flex items-center justify-center mb-6">
                 {benefit.icon}
@@ -56,58 +80,75 @@ export const SupportSection = () => {
           ))}
         </div>
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          className="bg-gradient-to-br from-primary/5 to-secondary/5 rounded-2xl p-8 max-w-3xl mx-auto text-center"
-        >
-          <div className="prose prose-lg mx-auto">
-            <p className="text-gray-700 mb-6">
-              SubaCentral a été conçue pour répondre à un problème que nous connaissons tous : la gestion parfois chaotique de nos abonnements. Aujourd'hui, nous avons lancé un outil gratuit, simple et illimité, mais nous rêvons d'aller beaucoup plus loin.
-            </p>
-            
-            <p className="text-gray-700 mb-6">
-              Pour transformer cette vision en réalité, nous avons besoin de votre soutien.
-              Vos contributions serviront directement à :
-            </p>
-
-            <ul className="text-left space-y-4 mb-6">
-              <li className="flex items-start gap-2">
-                <span className="text-xl">💻</span>
-                <span>Développer des fonctionnalités avancées comme l'ajout automatique d'abonnements grâce à l'IA et l'OCR pour les factures.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-xl">☁️</span>
-                <span>Assurer l'hébergement et la sécurité des données, en utilisant les meilleurs serveurs pour une application rapide et fiable.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="text-xl">🚀</span>
-                <span>Améliorer l'expérience utilisateur, avec des intégrations avancées (Slack, Google Sheets) et des outils de notifications intelligentes.</span>
-              </li>
-            </ul>
-
-            <p className="text-gray-700 mb-6">
-              En soutenant notre projet, vous ne financez pas seulement une application : vous investissez dans une solution qui simplifie le quotidien de milliers d'utilisateurs.
-            </p>
-
-            <p className="text-gray-700 mb-8">
-              En plus, tous nos early supporters recevront un accès Premium à vie, débloquant toutes les futures fonctionnalités sans frais supplémentaires.
-            </p>
-
-            <p className="font-semibold text-gray-900 mb-8">
-              Ensemble, atteignons cet objectif et faisons de SubaCentral un outil incontournable !
-            </p>
-          </div>
-
-          <Button
-            size="lg"
-            onClick={() => navigate("/auth")}
-            className="text-lg px-8 py-6"
+        <div className="relative">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="bg-white rounded-3xl shadow-xl overflow-hidden"
           >
-            Rejoignez l'aventure : Soutenez notre campagne dès aujourd'hui !
-          </Button>
-        </motion.div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-8">
+              <div className="space-y-6">
+                <h3 className="text-2xl font-bold text-gray-900">
+                  Votre soutien compte
+                </h3>
+                <p className="text-gray-600">
+                  Nous avons créé un outil gratuit et illimité, mais avec votre aide, 
+                  nous pouvons aller encore plus loin.
+                </p>
+                
+                <div className="space-y-4">
+                  {features.map((feature, index) => (
+                    <motion.div
+                      key={feature.title}
+                      initial={{ opacity: 0, x: -20 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      transition={{ duration: 0.5, delay: index * 0.1 }}
+                      className="flex items-start gap-4 p-4 bg-gray-50 rounded-xl"
+                    >
+                      <span className="text-2xl">{feature.emoji}</span>
+                      <div>
+                        <h4 className="font-semibold text-gray-900">{feature.title}</h4>
+                        <p className="text-sm text-gray-600">{feature.description}</p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+
+                <div className="pt-6">
+                  <Button
+                    size="lg"
+                    onClick={() => navigate("/auth")}
+                    className="w-full text-lg py-6 bg-primary hover:bg-primary/90"
+                  >
+                    Rejoignez l'aventure dès maintenant
+                  </Button>
+                  <p className="text-sm text-gray-500 mt-4 text-center">
+                    Accès Premium à vie pour tous les early supporters
+                  </p>
+                </div>
+              </div>
+
+              <div className="relative hidden lg:block">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/20 to-secondary/20 rounded-xl" />
+                <div className="relative p-8">
+                  <blockquote className="text-lg text-gray-700 mb-6">
+                    "En soutenant SubaCentral, vous investissez dans une solution qui simplifie 
+                    le quotidien de milliers d'utilisateurs. Ensemble, créons l'outil de gestion 
+                    d'abonnements dont nous avons toujours rêvé."
+                  </blockquote>
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-primary/20 rounded-full" />
+                    <div>
+                      <div className="font-semibold">L'équipe SubaCentral</div>
+                      <div className="text-sm text-gray-600">Passionnés par la simplicité</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </div>
     </section>
   );
