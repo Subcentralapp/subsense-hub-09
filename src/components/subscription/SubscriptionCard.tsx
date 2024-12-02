@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Pencil, Trash2, Clock, Music, Play, Book, Heart, Globe, Zap, Gamepad, Video, BookOpen, Smile, Headphones, Shield } from "lucide-react";
+import { Pencil, Trash2, Clock } from "lucide-react";
 import { SubscriptionProgress } from "./SubscriptionProgress";
 import { Application } from "@/types/application";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -9,7 +9,6 @@ import { useState } from "react";
 import { format, differenceInDays } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Badge } from "../ui/badge";
-import { cn } from "@/lib/utils";
 
 interface Subscription {
   id: number;
@@ -33,40 +32,8 @@ interface SubscriptionCardProps {
   } | null;
 }
 
-const getCategoryConfig = (category: string | null) => {
-  const categoryLower = category?.toLowerCase() || '';
-  
-  switch (categoryLower) {
-    case "streaming vidéo":
-    case "plateformes de streaming":
-      return { icon: Video, color: "bg-purple-100 text-purple-800 border-purple-200" };
-    case "streaming musical":
-    case "musique":
-      return { icon: Headphones, color: "bg-green-100 text-green-800 border-green-200" };
-    case "gaming":
-    case "jeux":
-      return { icon: Gamepad, color: "bg-red-100 text-red-800 border-red-200" };
-    case "productivité":
-    case "applications de création":
-      return { icon: Zap, color: "bg-blue-100 text-blue-800 border-blue-200" };
-    case "éducation":
-      return { icon: BookOpen, color: "bg-yellow-100 text-yellow-800 border-yellow-200" };
-    case "bien-être":
-      return { icon: Smile, color: "bg-pink-100 text-pink-800 border-pink-200" };
-    case "vpn":
-    case "vpn & sécurité":
-      return { icon: Shield, color: "bg-indigo-100 text-indigo-800 border-indigo-200" };
-    case "marketing et gestion des médias sociaux":
-      return { icon: Heart, color: "bg-rose-100 text-rose-800 border-rose-200" };
-    default:
-      return { icon: Globe, color: "bg-gray-100 text-gray-800 border-gray-200" };
-  }
-};
-
 export const SubscriptionCard = ({ subscription, onEdit, onDelete, alternative }: SubscriptionCardProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const categoryConfig = getCategoryConfig(subscription.category);
-  const CategoryIcon = categoryConfig.icon;
 
   const getTrialBadge = () => {
     if (!subscription.is_trial || !subscription.trial_end_date) return null;
@@ -91,15 +58,9 @@ export const SubscriptionCard = ({ subscription, onEdit, onDelete, alternative }
       <div className="space-y-4">
         <div>
           <div className="flex items-start justify-between">
-            <div className="space-y-2">
+            <div>
               <h3 className="text-lg font-semibold text-gray-800">{subscription.name}</h3>
-              <Badge 
-                variant="outline" 
-                className={cn("flex items-center gap-1.5 px-2 py-0.5", categoryConfig.color)}
-              >
-                <CategoryIcon className="h-3.5 w-3.5" />
-                <span className="text-xs font-medium">{subscription.category || 'Non catégorisé'}</span>
-              </Badge>
+              <p className="text-sm text-gray-500">{subscription.category}</p>
             </div>
             {getTrialBadge()}
           </div>
