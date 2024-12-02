@@ -24,7 +24,7 @@ export const BudgetProgress = ({ currentBudget, totalExpenses, spentPercentage }
       </div>
       <Progress 
         value={Math.min(spentPercentage, 100)} 
-        className={`h-2 ${getProgressColor(spentPercentage)}`}
+        className={`h-3 ${getProgressColor(spentPercentage)}`}
       />
       <div className="flex justify-between items-center">
         <p className="text-sm text-gray-500">
