@@ -13,7 +13,7 @@ export const DetailedFeatures = () => {
             transition={{ duration: 0.5 }}
             className="text-4xl font-bold text-gray-900 mb-6"
           >
-            Fonctionnalités Détaillées
+            Des Fonctionnalités Pensées Pour Vous
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -21,8 +21,7 @@ export const DetailedFeatures = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-xl text-gray-600 max-w-3xl mx-auto"
           >
-            Découvrez comment SubaCentral révolutionne la gestion de vos abonnements
-            avec des outils puissants et intuitifs
+            Découvrez toutes nos fonctionnalités gratuites et premium pour une gestion optimale de vos abonnements
           </motion.p>
         </div>
 

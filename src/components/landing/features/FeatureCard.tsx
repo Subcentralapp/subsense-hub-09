@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
-import { LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { Badge } from "@/components/ui/badge";
+import { Crown } from "lucide-react";
 
 interface FeatureCardProps {
   title: string;
@@ -11,6 +12,7 @@ interface FeatureCardProps {
   benefits: string[];
   index: number;
   isReversed?: boolean;
+  isPremium?: boolean;
 }
 
 export const FeatureCard = ({
@@ -21,8 +23,18 @@ export const FeatureCard = ({
   benefits,
   index,
   isReversed = false,
+  isPremium = false,
 }: FeatureCardProps) => {
   const navigate = useNavigate();
+
+  const handleAction = () => {
+    if (isPremium) {
+      const supportSection = document.getElementById('support-section');
+      supportSection?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      navigate("/auth");
+    }
+  };
 
   return (
     <motion.div
@@ -34,8 +46,16 @@ export const FeatureCard = ({
       } items-center gap-12`}
     >
       <div className="lg:w-1/2 space-y-6">
-        <div className="inline-block p-3 bg-primary/10 rounded-2xl mb-4">
-          {icon}
+        <div className="flex items-center gap-4">
+          <div className="inline-block p-3 bg-primary/10 rounded-2xl">
+            {icon}
+          </div>
+          {isPremium && (
+            <Badge variant="secondary" className="gap-1">
+              <Crown className="w-3 h-3" />
+              Premium
+            </Badge>
+          )}
         </div>
         <h3 className="text-3xl font-bold text-gray-900">
           {title}
@@ -59,10 +79,11 @@ export const FeatureCard = ({
         </ul>
         <Button
           size="lg"
-          onClick={() => navigate("/auth")}
+          onClick={handleAction}
           className="mt-6"
+          variant={isPremium ? "secondary" : "default"}
         >
-          Essayer Gratuitement
+          {isPremium ? "Débloquer avec le Crowdfunding" : "Essayer Gratuitement"}
         </Button>
       </div>
       <div className="lg:w-1/2">
