@@ -10,13 +10,13 @@ export const useOnboardingSubmit = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (formData: OnboardingFormData) => {
-    console.log("Starting form submission...");
+    console.log("🚀 Début de la soumission du formulaire");
     setIsSubmitting(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        console.error("No user found");
+        console.error("❌ Aucun utilisateur connecté");
         toast({
           title: "Erreur",
           description: "Vous devez être connecté pour continuer",
@@ -26,8 +26,8 @@ export const useOnboardingSubmit = () => {
         return;
       }
 
-      console.log("Current user:", user.id);
-      console.log("Submitting onboarding data:", formData);
+      console.log("👤 Utilisateur connecté:", user.id);
+      console.log("📝 Données à enregistrer:", formData);
 
       // Vérifier si une entrée existe déjà
       const { data: existingPrefs, error: fetchError } = await supabase
@@ -37,13 +37,13 @@ export const useOnboardingSubmit = () => {
         .single();
 
       if (fetchError && fetchError.code !== 'PGRST116') {
-        console.error("Error checking existing preferences:", fetchError);
+        console.error("❌ Erreur lors de la vérification des préférences:", fetchError);
         throw fetchError;
       }
 
       let result;
       if (existingPrefs) {
-        console.log("Updating existing preferences for user:", user.id);
+        console.log("🔄 Mise à jour des préférences pour l'utilisateur:", user.id);
         result = await supabase
           .from('user_preferences')
           .update({
@@ -63,7 +63,7 @@ export const useOnboardingSubmit = () => {
           })
           .eq('id', user.id);
       } else {
-        console.log("Inserting new preferences for user:", user.id);
+        console.log("➕ Insertion de nouvelles préférences pour l'utilisateur:", user.id);
         result = await supabase
           .from('user_preferences')
           .insert([{
@@ -85,11 +85,11 @@ export const useOnboardingSubmit = () => {
       }
 
       if (result.error) {
-        console.error("Error saving preferences:", result.error);
+        console.error("❌ Erreur lors de l'enregistrement:", result.error);
         throw result.error;
       }
 
-      console.log("Onboarding data submitted successfully");
+      console.log("✅ Données enregistrées avec succès");
       toast({
         title: "Profil complété !",
         description: "Nous avons personnalisé votre tableau de bord selon vos réponses.",
@@ -97,7 +97,7 @@ export const useOnboardingSubmit = () => {
 
       navigate("/dashboard");
     } catch (error) {
-      console.error("Error in handleSubmit:", error);
+      console.error("❌ Erreur dans handleSubmit:", error);
       toast({
         title: "Erreur",
         description: "Une erreur est survenue lors de l'enregistrement de vos préférences",
