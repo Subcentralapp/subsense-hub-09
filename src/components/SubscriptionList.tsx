@@ -1,125 +1,72 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useToast } from "@/components/ui/use-toast";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import ApplicationDialog from "./dialog/ApplicationDialog";
-import { Application, DatabaseApplication, mapDatabaseApplication } from "@/types/application";
-import { useNavigate } from "react-router-dom";
-import SubscriptionCustomizeDialog from "./dialog/SubscriptionCustomizeDialog";
-import { useState } from "react";
+import { Card } from "@/components/ui/card";
+import { SubscriptionCard } from "./subscription/SubscriptionCard";
+import { SubscriptionHeader } from "./subscription/SubscriptionHeader";
+import { EmptySubscriptionState } from "./subscription/EmptySubscriptionState";
+import ApplicationList from "./ApplicationList";
 
-const fetchApplications = async () => {
-  console.log("Récupération des applications depuis Supabase...");
-  try {
-    const { data, error } = await supabase
-      .from("applications")
-      .select("*")
-      .order("NOM");
-
-    if (error) {
-      console.error("Erreur lors de la récupération:", error);
-      throw error;
-    }
-
-    const mappedData = (data as DatabaseApplication[]).map(mapDatabaseApplication);
-
-    console.log(`${mappedData.length} applications récupérées et mappées`);
-    return mappedData;
-  } catch (error) {
-    console.error("Erreur lors de la récupération:", error);
-    throw error;
-  }
-};
-
-const ApplicationList = () => {
-  const { toast } = useToast();
-  const navigate = useNavigate();
-  const queryClient = useQueryClient();
-  const [selectedApp, setSelectedApp] = useState<Application | null>(null);
-
-  const { data: applications, isLoading } = useQuery({
-    queryKey: ["applications"],
-    queryFn: fetchApplications,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
-  });
-
-  const handleAddSubscription = async (app: Application) => {
-    console.log("Ouverture du dialogue de personnalisation pour:", app.name);
-    setSelectedApp(app);
-  };
-
-  const handleConfirmSubscription = async (
-    price: number, 
-    nextBilling: Date, 
-    isTrial: boolean, 
-    trialEndDate: Date | null
-  ) => {
-    try {
+const SubscriptionList = () => {
+  const { data: subscriptions, isLoading } = useQuery({
+    queryKey: ["subscriptions"],
+    queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        console.log("Utilisateur non connecté, redirection vers l'authentification");
-        navigate("/auth");
-        return;
+        console.log("No user found, returning empty array");
+        return [];
       }
 
-      if (!selectedApp) return;
-
-      const subscriptionData = {
-        name: selectedApp.name,
-        price: price,
-        category: selectedApp.category,
-        next_billing: nextBilling.toISOString(),
-        description: selectedApp.description,
-        user_id: user.id,
-        is_trial: isTrial,
-        trial_end_date: trialEndDate?.toISOString() || null,
-      };
-
-      console.log("Ajout de l'abonnement:", subscriptionData);
-
-      const { error } = await supabase
-        .from("subscriptions")
-        .insert(subscriptionData);
+      const { data, error } = await supabase
+        .from('subscriptions')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
 
       if (error) {
-        console.error("Erreur lors de l'insertion:", error);
+        console.error("Error fetching subscriptions:", error);
         throw error;
       }
 
-      await queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
-
-      toast({
-        title: "Abonnement ajouté",
-        description: `L'abonnement à ${selectedApp.name} a été ajouté avec succès${isTrial ? ' avec une période d\'essai' : ''}.`,
-      });
-
-      setSelectedApp(null);
-    } catch (error) {
-      console.error("Error adding subscription:", error);
-      toast({
-        title: "Erreur",
-        description: "Une erreur est survenue lors de l'ajout de l'abonnement.",
-        variant: "destructive",
-      });
+      return data;
     }
-  };
+  });
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <SubscriptionHeader />
+          <ApplicationList />
+        </div>
+        <Card className="p-6">
+          <p>Chargement des abonnements...</p>
+        </Card>
+      </div>
+    );
+  }
 
   return (
-    <>
-      <ApplicationDialog 
-        applications={applications || []} 
-        isLoading={isLoading} 
-        onAddSubscription={handleAddSubscription} 
-      />
-      <SubscriptionCustomizeDialog
-        app={selectedApp}
-        isOpen={!!selectedApp}
-        onClose={() => setSelectedApp(null)}
-        onConfirm={handleConfirmSubscription}
-      />
-    </>
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <SubscriptionHeader />
+        <ApplicationList />
+      </div>
+      
+      {!subscriptions || subscriptions.length === 0 ? (
+        <EmptySubscriptionState />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {subscriptions.map((subscription) => (
+            <SubscriptionCard 
+              key={subscription.id} 
+              subscription={subscription}
+            />
+          ))}
+        </div>
+      )}
+    </div>
   );
 };
 
-export default ApplicationList;
+export default SubscriptionList;
