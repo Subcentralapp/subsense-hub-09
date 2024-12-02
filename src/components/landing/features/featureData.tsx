@@ -1,4 +1,4 @@
-import { BarChart3, Bell, Calendar, CreditCard, FileText, PieChart, Settings, Sparkles, Wallet } from "lucide-react";
+import { BarChart3, FileText, Sparkles, Wallet } from "lucide-react";
 import { ReactNode } from "react";
 
 interface Feature {

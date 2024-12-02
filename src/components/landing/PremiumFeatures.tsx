@@ -39,7 +39,7 @@ export const PremiumFeatures = () => {
             transition={{ duration: 0.5 }}
             className="text-4xl font-bold text-gray-900 mb-6"
           >
-            Avec votre soutien, nous allons plus loin !
+            Fonctionnalités Premium
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -47,9 +47,8 @@ export const PremiumFeatures = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-xl text-gray-600 max-w-3xl mx-auto"
           >
-            En participant à notre campagne de crowdfunding, vous aiderez à financer 
-            le développement de fonctionnalités révolutionnaires qui seront débloquées 
-            pour tous nos contributeurs.
+            Découvrez nos fonctionnalités avancées pour une gestion optimale
+            de vos abonnements et de vos finances.
           </motion.p>
         </div>
 
@@ -79,13 +78,10 @@ export const PremiumFeatures = () => {
         >
           <Button
             size="lg"
-            onClick={() => {
-              const premiumSection = document.getElementById('premium-features');
-              premiumSection?.scrollIntoView({ behavior: 'smooth' });
-            }}
+            onClick={() => navigate("/auth")}
             className="text-lg px-8 py-6"
           >
-            Soutenez le projet et débloquez toutes ces fonctionnalités !
+            Essayer les fonctionnalités Premium
           </Button>
         </motion.div>
       </div>

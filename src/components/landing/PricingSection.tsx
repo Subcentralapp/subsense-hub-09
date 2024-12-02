@@ -18,7 +18,7 @@ const plans = [
   },
   {
     name: "Pro",
-    price: "9.99€",
+    price: "4.99€",
     period: "par mois",
     description: "Pour les professionnels",
     popular: true,
