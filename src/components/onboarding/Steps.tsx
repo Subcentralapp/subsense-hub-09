@@ -5,13 +5,9 @@ interface StepsProps {
 
 export const Steps = ({ currentStep, totalSteps }: StepsProps) => {
   const steps = [
-    "Vos abonnements préférés",
-    "Dépenses mensuelles",
-    "Budget cible",
-    "Priorités",
-    "Habitudes de gestion",
-    "Recommandations",
-    "Notifications",
+    "Vos abonnements",
+    "Budget mensuel",
+    "Personnalisation",
   ];
 
   return (
