@@ -127,7 +127,7 @@ export default function Auth() {
             variables: {
               sign_in: {
                 email_label: 'Adresse email',
-                password_label: 'Mot de passe',
+                password_label: 'Mot de passe (minimum 6 caractères)',
                 button_label: 'Se connecter',
                 loading_button_label: 'Connexion en cours...',
                 link_text: 'Vous avez déjà un compte ? Connectez-vous',
@@ -137,12 +137,12 @@ export default function Auth() {
               },
               sign_up: {
                 email_label: 'Adresse email',
-                password_label: 'Mot de passe',
+                password_label: 'Mot de passe (minimum 6 caractères)',
                 button_label: "Créer mon compte",
                 loading_button_label: 'Inscription en cours...',
                 link_text: "Pas encore de compte ? Inscrivez-vous",
                 email_input_placeholder: 'Votre adresse email',
-                password_input_placeholder: 'Choisissez un mot de passe',
+                password_input_placeholder: 'Choisissez un mot de passe (min. 6 caractères)',
                 social_provider_text: 'Continuer avec {{provider}}',
               },
               forgotten_password: {

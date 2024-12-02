@@ -40,7 +40,9 @@ export const mapDatabaseApplication = (app: DatabaseApplication): Application =>
   description: app.DESCRIPTION,
   features: Array.isArray(app.CARACTÉRISTIQUES) 
     ? app.CARACTÉRISTIQUES.map(String)
-    : [],
+    : typeof app.CARACTÉRISTIQUES === 'string' 
+      ? [app.CARACTÉRISTIQUES]
+      : [],
   pros: app.AVANTAGES,
   cons: app.INCONVÉNIENTS,
   website_url: app["URL DU SITE WEB"],
