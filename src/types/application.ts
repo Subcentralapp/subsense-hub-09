@@ -1,6 +1,6 @@
 export type Json = string | number | boolean | null | { [key: string]: Json } | Json[];
 
-export type Application = {
+export interface Application {
   id: number;
   name: string;
   price: number;
@@ -14,15 +14,15 @@ export type Application = {
   rating: number | null;
   review: string | null;
   users_count: number | null;
-};
+}
 
-export type DatabaseApplication = {
+export interface DatabaseApplication {
   id: number;
   NOM: string | null;
   PRICE: string | null;
   CATÉGORIE: string | null;
   DESCRIPTION: string | null;
-  CARACTÉRISTIQUES: Json[] | null;
+  CARACTÉRISTIQUES: Json | null;
   AVANTAGES: string | null;
   INCONVÉNIENTS: string | null;
   "URL DU SITE WEB": string | null;
@@ -30,7 +30,7 @@ export type DatabaseApplication = {
   NOTE: number | null;
   REVUE: string | null;
   "NOMBRE D'UTILISATEURS": number | null;
-};
+}
 
 export const mapDatabaseApplication = (app: DatabaseApplication): Application => ({
   id: app.id,
@@ -38,7 +38,9 @@ export const mapDatabaseApplication = (app: DatabaseApplication): Application =>
   price: parseFloat(app.PRICE || '0'),
   category: app.CATÉGORIE,
   description: app.DESCRIPTION,
-  features: Array.isArray(app.CARACTÉRISTIQUES) ? app.CARACTÉRISTIQUES.map(String) : [],
+  features: Array.isArray(app.CARACTÉRISTIQUES) 
+    ? app.CARACTÉRISTIQUES.map(String)
+    : [],
   pros: app.AVANTAGES,
   cons: app.INCONVÉNIENTS,
   website_url: app["URL DU SITE WEB"],

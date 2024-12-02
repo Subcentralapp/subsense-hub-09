@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Application } from "@/types/application";
+import { Application, DatabaseApplication, mapDatabaseApplication } from "@/types/application";
 
 export const useRecommendations = (refreshKey: number) => {
   const { data: subscriptions } = useQuery({
@@ -31,19 +31,21 @@ export const useRecommendations = (refreshKey: number) => {
 
       if (error) throw error;
       
+      const mappedApps = (allApps as DatabaseApplication[]).map(mapDatabaseApplication);
+      
       const existingAppNames = new Set(subscriptions.map(sub => 
         sub.name.toLowerCase()
       ));
       
-      const availableApps = (allApps || []).filter(app => 
+      const availableApps = mappedApps.filter(app => 
         !existingAppNames.has(app.name.toLowerCase())
       );
 
       const userCategories = new Set(subscriptions.map(sub => sub.category));
       
       const prioritizedApps = availableApps.sort((a, b) => {
-        const aInUserCategory = userCategories.has(a.category || '');
-        const bInUserCategory = userCategories.has(b.category || '');
+        const aInUserCategory = userCategories.has(a.category);
+        const bInUserCategory = userCategories.has(b.category);
         if (aInUserCategory && !bInUserCategory) return -1;
         if (!aInUserCategory && bInUserCategory) return 1;
         return 0;
