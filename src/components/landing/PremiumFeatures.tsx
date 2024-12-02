@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
-import { Bot, FileText, Users, Zap, Shield, ArrowRight } from "lucide-react";
+import { Bot, FileText, Users, Zap, Shield, ArrowRight, BadgeCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
@@ -86,6 +87,18 @@ export const PremiumFeatures = () => {
                   </motion.div>
                 ))}
               </div>
+
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="flex items-center justify-center gap-2 pt-4"
+              >
+                <Badge variant="secondary" className="py-2 px-4 text-sm flex items-center gap-2">
+                  <BadgeCheck className="w-4 h-4" />
+                  <span>Badge Early Supporter à vie</span>
+                </Badge>
+              </motion.div>
             </CardContent>
           </Card>
 
