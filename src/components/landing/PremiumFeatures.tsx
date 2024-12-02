@@ -29,7 +29,7 @@ export const PremiumFeatures = () => {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <Card className="lg:col-span-2 bg-white/80 backdrop-blur-sm border-2 border-primary/20">
+          <Card className="lg:col-span-2 bg-white/80 backdrop-blur-sm border-2 border-primary/20 h-full">
             <CardHeader>
               <CardTitle className="text-2xl">Offre Early Supporter Exclusive</CardTitle>
               <CardDescription>
@@ -53,24 +53,28 @@ export const PremiumFeatures = () => {
             </CardContent>
           </Card>
 
-          <div className="space-y-6">
-            <Guarantees />
+          <div className="space-y-6 flex flex-col">
+            <Guarantees className="flex-grow" />
             <Card className="bg-white/80 backdrop-blur-sm border-2 border-primary/20">
               <CardHeader>
-                <CardTitle className="text-lg">Satisfaction garantie</CardTitle>
+                <CardTitle className="text-lg">Pourquoi choisir SubaCentral ?</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex items-center gap-2">
-                  <BadgeCheck className="w-5 h-5 text-primary" />
-                  <p className="text-sm">Remboursement sous 30 jours</p>
+                  <span className="text-lg">✅</span>
+                  <p className="text-sm">100% gratuit et illimité dès maintenant</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <BadgeCheck className="w-5 h-5 text-primary" />
-                  <p className="text-sm">Support prioritaire</p>
+                  <span className="text-lg">🛠️</span>
+                  <p className="text-sm">Développée pour simplifier votre quotidien</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <BadgeCheck className="w-5 h-5 text-primary" />
-                  <p className="text-sm">Accès aux futures fonctionnalités en avant-première</p>
+                  <span className="text-lg">🔒</span>
+                  <p className="text-sm">Sécurité garantie pour vos données</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-lg">🚀</span>
+                  <p className="text-sm">Soutenu par une communauté engagée</p>
                 </div>
               </CardContent>
             </Card>
