@@ -64,7 +64,7 @@ export type Database = {
           id: number
           period_end: string
           period_start: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           amount: number
@@ -72,7 +72,7 @@ export type Database = {
           id?: number
           period_end: string
           period_start: string
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           amount?: number
@@ -80,7 +80,7 @@ export type Database = {
           id?: number
           period_end?: string
           period_start?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -176,6 +176,30 @@ export type Database = {
         }
         Relationships: []
       }
+      login_attempts: {
+        Row: {
+          attempt_time: string | null
+          email: string
+          id: number
+          ip_address: string
+          successful: boolean | null
+        }
+        Insert: {
+          attempt_time?: string | null
+          email: string
+          id?: number
+          ip_address: string
+          successful?: boolean | null
+        }
+        Update: {
+          attempt_time?: string | null
+          email?: string
+          id?: number
+          ip_address?: string
+          successful?: boolean | null
+        }
+        Relationships: []
+      }
       Métadonné: {
         Row: {
           date: Json | null
@@ -203,7 +227,7 @@ export type Database = {
           read: boolean | null
           title: string
           type: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           created_at?: string
@@ -213,7 +237,7 @@ export type Database = {
           read?: boolean | null
           title: string
           type: string
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           created_at?: string
@@ -223,27 +247,39 @@ export type Database = {
           read?: boolean | null
           title?: string
           type?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
       profiles: {
         Row: {
+          account_locked: boolean | null
           avatar_url: string | null
           created_at: string
+          failed_login_attempts: number | null
           id: string
+          last_login: string | null
+          last_password_change: string | null
           username: string | null
         }
         Insert: {
+          account_locked?: boolean | null
           avatar_url?: string | null
           created_at?: string
+          failed_login_attempts?: number | null
           id: string
+          last_login?: string | null
+          last_password_change?: string | null
           username?: string | null
         }
         Update: {
+          account_locked?: boolean | null
           avatar_url?: string | null
           created_at?: string
+          failed_login_attempts?: number | null
           id?: string
+          last_login?: string | null
+          last_password_change?: string | null
           username?: string | null
         }
         Relationships: []
@@ -306,7 +342,7 @@ export type Database = {
           next_billing: string | null
           price: number
           trial_end_date: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           category?: string | null
@@ -318,7 +354,7 @@ export type Database = {
           next_billing?: string | null
           price: number
           trial_end_date?: string | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           category?: string | null
@@ -330,7 +366,7 @@ export type Database = {
           next_billing?: string | null
           price?: number
           trial_end_date?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -340,6 +376,10 @@ export type Database = {
     }
     Functions: {
       check_trial_ending: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      clean_old_login_attempts: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }

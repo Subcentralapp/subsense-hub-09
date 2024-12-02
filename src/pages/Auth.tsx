@@ -106,6 +106,7 @@ export default function Auth() {
                 link_text: 'Vous avez déjà un compte ? Connectez-vous',
                 email_input_placeholder: 'Votre adresse email',
                 password_input_placeholder: 'Votre mot de passe',
+                social_provider_text: 'Continuer avec {{provider}}',
               },
               sign_up: {
                 email_label: 'Adresse email',
@@ -115,6 +116,7 @@ export default function Auth() {
                 link_text: "Pas encore de compte ? Inscrivez-vous",
                 email_input_placeholder: 'Votre adresse email',
                 password_input_placeholder: 'Choisissez un mot de passe',
+                social_provider_text: 'Continuer avec {{provider}}',
               },
               forgotten_password: {
                 link_text: 'Mot de passe oublié ?',
