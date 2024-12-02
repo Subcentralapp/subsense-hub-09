@@ -1,4 +1,5 @@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { useNavigate } from "react-router-dom";
 
 interface SkipDialogProps {
   open: boolean;
@@ -7,6 +8,17 @@ interface SkipDialogProps {
 }
 
 export const SkipDialog = ({ open, onOpenChange, onConfirm }: SkipDialogProps) => {
+  const navigate = useNavigate();
+
+  const handleSkip = () => {
+    // First close the dialog
+    onOpenChange(false);
+    // Then call onConfirm which will show the toast
+    onConfirm();
+    // Finally navigate
+    navigate("/dashboard");
+  };
+
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
@@ -25,7 +37,7 @@ export const SkipDialog = ({ open, onOpenChange, onConfirm }: SkipDialogProps) =
           <AlertDialogCancel onClick={() => onOpenChange(false)}>
             Reprendre le questionnaire
           </AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm}>
+          <AlertDialogAction onClick={handleSkip}>
             Passer et accéder à l'application
           </AlertDialogAction>
         </AlertDialogFooter>
