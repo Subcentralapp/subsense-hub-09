@@ -3,16 +3,16 @@ import { uploadInvoiceFile, deleteInvoiceFile } from './storage/invoiceStorage';
 import { supabase } from "@/integrations/supabase/client";
 
 interface Invoice {
-  id: string;
+  id: number;
   name: string;
   date: Date;
   url: string;
   details?: {
-    amount: number;
-    category: string;
-    invoice_date: string;
-    merchant_name: string;
-    status: string;
+    amount: number | null;
+    category: string | null;
+    invoice_date: string | null;
+    merchant_name: string | null;
+    status: string | null;
   };
 }
 
@@ -20,9 +20,9 @@ interface InvoiceStore {
   invoices: Invoice[];
   isLoading: boolean;
   addInvoice: (file: File) => Promise<void>;
-  removeInvoice: (id: string) => Promise<void>;
+  removeInvoice: (id: number) => Promise<void>;
   fetchInvoices: () => Promise<void>;
-  updateInvoiceDetails: (invoiceId: string, details: Partial<Invoice['details']>) => Promise<void>;
+  updateInvoiceDetails: (invoiceId: number, details: Partial<Invoice['details']>) => Promise<void>;
 }
 
 export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
@@ -40,7 +40,7 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
       if (error) throw error;
 
       const invoicesWithDetails = await Promise.all(
-        invoices.map(async (inv) => {
+        (invoices || []).map(async (inv) => {
           const { data: details } = await supabase
             .from('invoicedetails')
             .select('*')
@@ -51,9 +51,9 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
           
           return {
             id: inv.id,
-            name: inv.names || inv.Names,
-            date: new Date(inv.created_at),
-            url: inv.url,
+            name: inv.names || '',
+            date: new Date(inv.created_at || Date.now()),
+            url: inv.url || '',
             details: details || undefined
           };
         })
@@ -79,7 +79,7 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
     }
   },
 
-  updateInvoiceDetails: async (invoiceId: string, details: Partial<Invoice['details']>) => {
+  updateInvoiceDetails: async (invoiceId: number, details: Partial<Invoice['details']>) => {
     try {
       set({ isLoading: true });
       
@@ -87,10 +87,10 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
         .from('invoicedetails')
         .insert({
           invoice_id: invoiceId,
-          amount: details.amount,
-          invoice_date: details.invoice_date,
-          merchant_name: details.merchant_name,
-          status: details.status,
+          amount: details.amount || null,
+          invoice_date: details.invoice_date || null,
+          merchant_name: details.merchant_name || null,
+          status: details.status || 'pending',
           created_at: new Date().toISOString()
         });
 
@@ -105,7 +105,7 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
     }
   },
 
-  removeInvoice: async (id: string) => {
+  removeInvoice: async (id: number) => {
     try {
       set({ isLoading: true });
       
