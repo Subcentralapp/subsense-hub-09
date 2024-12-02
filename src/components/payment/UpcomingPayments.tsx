@@ -20,11 +20,14 @@ const UpcomingPayments = () => {
         throw new Error("User not logged in");
       }
 
+      const currentDate = new Date().toISOString();
+      console.log("Current date for filter:", currentDate);
+
       const { data, error: fetchError } = await supabase
         .from('subscriptions')
         .select('*')
         .eq('user_id', user.id)
-        .gt('next_billing', new Date().toISOString())
+        .gt('next_billing', currentDate)
         .order('next_billing', { ascending: true });
 
       if (fetchError) {
