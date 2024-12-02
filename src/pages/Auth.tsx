@@ -96,6 +96,7 @@ export default function Auth() {
             },
           }}
           providers={["google"]}
+          redirectTo={`${window.location.origin}/auth/callback`}
           localization={{
             variables: {
               sign_in: {
