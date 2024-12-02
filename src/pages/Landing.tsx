@@ -1,5 +1,6 @@
 import { Header } from "@/components/Header";
 import { HeroSection } from "@/components/landing/HeroSection";
+import { MVPSection } from "@/components/landing/MVPSection";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
 import { DetailedFeatures } from "@/components/landing/DetailedFeatures";
 import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
@@ -26,13 +27,12 @@ const Landing = () => {
       <Header />
       <main className="relative">
         <HeroSection />
-        <div className="relative z-10">
-          <FeaturesSection />
-          <DetailedFeatures />
-          <TestimonialsSection />
-          <PricingSection />
-          <CTASection />
-        </div>
+        <MVPSection />
+        <DetailedFeatures />
+        <FeaturesSection />
+        <TestimonialsSection />
+        <PricingSection />
+        <CTASection />
       </main>
     </div>
   );

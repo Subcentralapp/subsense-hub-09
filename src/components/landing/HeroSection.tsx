@@ -1,17 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CheckCircle2, Zap } from "lucide-react";
+import { ArrowRight, Rocket, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 
 export const HeroSection = () => {
   const navigate = useNavigate();
-
-  const features = [
-    "Gestion intelligente des abonnements",
-    "Analyse détaillée des dépenses",
-    "Notifications personnalisées",
-    "Partenariats exclusifs"
-  ];
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-primary/5 via-background to-secondary/5">
@@ -28,31 +21,12 @@ export const HeroSection = () => {
               className="space-y-4"
             >
               <h1 className="text-5xl sm:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
-                Reprenez le contrôle de vos finances
+                Centralisez, suivez et maîtrisez vos abonnements, gratuitement et en illimité !
               </h1>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto lg:mx-0">
-                SubaCentral vous aide à gérer intelligemment vos abonnements et optimiser vos dépenses mensuelles.
+                Participez à la révolution de la gestion d'abonnements. Profitez de l'application aujourd'hui, 
+                soutenez-nous et débloquez des fonctionnalités premium à vie en rejoignant notre campagne de crowdfunding !
               </p>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="space-y-4"
-            >
-              {features.map((feature, index) => (
-                <motion.div
-                  key={feature}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3, delay: index * 0.1 }}
-                  className="flex items-center gap-2 text-muted-foreground"
-                >
-                  <CheckCircle2 className="text-primary h-5 w-5" />
-                  <span>{feature}</span>
-                </motion.div>
-              ))}
             </motion.div>
 
             <motion.div
@@ -66,20 +40,41 @@ export const HeroSection = () => {
                 onClick={() => navigate("/auth")}
                 className="text-lg px-8 py-6 bg-primary hover:bg-primary/90 group"
               >
-                Commencer Gratuitement
+                J'utilise gratuitement
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
               <Button 
                 size="lg"
                 variant="outline"
                 onClick={() => {
-                  const featuresSection = document.getElementById('features');
-                  featuresSection?.scrollIntoView({ behavior: 'smooth' });
+                  const premiumSection = document.getElementById('premium-features');
+                  premiumSection?.scrollIntoView({ behavior: 'smooth' });
                 }}
-                className="text-lg px-8 py-6"
+                className="text-lg px-8 py-6 border-primary/20 hover:bg-primary/10 group"
               >
-                Découvrir les Fonctionnalités
+                <Rocket className="mr-2 h-5 w-5 group-hover:animate-bounce" />
+                Soutenir le projet
               </Button>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+              className="flex items-center justify-center lg:justify-start gap-8 text-sm text-muted-foreground"
+            >
+              <div className="flex items-center gap-2">
+                <Zap className="h-4 w-4 text-primary" />
+                <span>100% Gratuit</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Zap className="h-4 w-4 text-primary" />
+                <span>Sans limite</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Zap className="h-4 w-4 text-primary" />
+                <span>Support inclus</span>
+              </div>
             </motion.div>
           </div>
 
