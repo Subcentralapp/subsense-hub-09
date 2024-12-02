@@ -1,36 +1,33 @@
 import { motion } from "framer-motion";
 import { Bot, FileText, Users, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useNavigate } from "react-router-dom";
+
+const features = [
+  {
+    icon: <Bot className="w-10 h-10 text-primary" />,
+    title: "Automatisation complète",
+    description: "Ajoutez et gérez vos abonnements automatiquement grâce à l'IA"
+  },
+  {
+    icon: <FileText className="w-10 h-10 text-primary" />,
+    title: "OCR pour vos factures",
+    description: "Scannez et enregistrez vos factures en un clic avec notre technologie de reconnaissance"
+  },
+  {
+    icon: <Users className="w-10 h-10 text-primary" />,
+    title: "Gestion multi-comptes",
+    description: "Gérez les abonnements pour toute votre famille ou votre entreprise"
+  },
+  {
+    icon: <Zap className="w-10 h-10 text-primary" />,
+    title: "Intégrations avancées",
+    description: "Synchronisation avec vos outils préférés (Slack, Google Sheets, etc.)"
+  }
+];
 
 export const PremiumFeatures = () => {
-  const navigate = useNavigate();
-
-  const features = [
-    {
-      icon: <Bot className="w-10 h-10 text-primary" />,
-      title: "Automatisation complète",
-      description: "Ajoutez et gérez vos abonnements automatiquement"
-    },
-    {
-      icon: <FileText className="w-10 h-10 text-primary" />,
-      title: "OCR pour vos factures",
-      description: "Scannez et enregistrez vos factures en un clic"
-    },
-    {
-      icon: <Users className="w-10 h-10 text-primary" />,
-      title: "Gestion des membres",
-      description: "Créez des profils partagés pour les familles ou les entreprises"
-    },
-    {
-      icon: <Zap className="w-10 h-10 text-primary" />,
-      title: "Rappels et synchronisation",
-      description: "Intégration avec Slack, Google Sheets, QuickBooks, etc."
-    }
-  ];
-
   return (
-    <section className="py-24 bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+    <section className="py-24 bg-gradient-to-br from-primary/5 via-background to-secondary/5" id="premium-features">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <motion.h2
@@ -39,7 +36,7 @@ export const PremiumFeatures = () => {
             transition={{ duration: 0.5 }}
             className="text-4xl font-bold text-gray-900 mb-6"
           >
-            Fonctionnalités Premium
+            Avec votre soutien, nous allons plus loin !
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -47,8 +44,8 @@ export const PremiumFeatures = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-xl text-gray-600 max-w-3xl mx-auto"
           >
-            Découvrez nos fonctionnalités avancées pour une gestion optimale
-            de vos abonnements et de vos finances.
+            En participant à notre campagne de crowdfunding, vous aurez accès à ces fonctionnalités
+            premium pendant un an pour seulement 19.99€, au lieu de 9.99€ par mois lors du lancement officiel.
           </motion.p>
         </div>
 
@@ -78,10 +75,13 @@ export const PremiumFeatures = () => {
         >
           <Button
             size="lg"
-            onClick={() => navigate("/auth")}
+            onClick={() => {
+              const supportSection = document.getElementById('support-section');
+              supportSection?.scrollIntoView({ behavior: 'smooth' });
+            }}
             className="text-lg px-8 py-6"
           >
-            Essayer les fonctionnalités Premium
+            Soutenez le projet et débloquez toutes ces fonctionnalités !
           </Button>
         </motion.div>
       </div>

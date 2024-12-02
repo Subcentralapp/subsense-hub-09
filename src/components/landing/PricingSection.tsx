@@ -8,42 +8,30 @@ const plans = [
     name: "Gratuit",
     price: "0€",
     period: "pour toujours",
-    description: "Parfait pour débuter",
+    description: "Toutes les fonctionnalités de base",
     features: [
-      "Jusqu'à 5 abonnements",
+      "Gestion illimitée d'abonnements",
       "Notifications de base",
       "Analyse simple des dépenses",
-      "Support par email"
+      "Support par email",
+      "Export des données",
+      "Accès à vie"
     ]
   },
   {
-    name: "Pro",
-    price: "4.99€",
-    period: "par mois",
-    description: "Pour les professionnels",
+    name: "Early Supporter",
+    price: "19.99€",
+    period: "pour 1 an",
+    description: "Soutenez le projet et obtenez l'accès premium",
     popular: true,
     features: [
-      "Abonnements illimités",
-      "Notifications avancées",
-      "Analyse détaillée et rapports",
-      "Recommandations personnalisées",
+      "Toutes les fonctionnalités gratuites",
+      "Accès aux fonctionnalités premium pendant 1 an",
+      "Prix spécial early supporter",
+      "Badge supporter exclusif",
+      "Accès prioritaire aux nouvelles fonctionnalités",
       "Support prioritaire",
-      "Export des données",
-      "Intégration avec les outils pro"
-    ]
-  },
-  {
-    name: "Entreprise",
-    price: "Sur mesure",
-    period: "contactez-nous",
-    description: "Pour les grandes équipes",
-    features: [
-      "Tout ce qui est inclus dans Pro",
-      "Gestion multi-utilisateurs",
-      "API dédiée",
-      "Support dédié 24/7",
-      "Formation personnalisée",
-      "SLA garanti"
+      "Participation aux décisions futures"
     ]
   }
 ];
@@ -61,15 +49,15 @@ export const PricingSection = () => {
           className="text-center mb-16"
         >
           <h2 className="text-4xl font-bold text-gray-900 mb-6">
-            Des prix adaptés à vos besoins
+            Une offre simple et transparente
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Choisissez le plan qui correspond le mieux à vos besoins
-            et commencez à optimiser vos dépenses dès aujourd'hui
+            Profitez de l'application gratuitement et soutenez notre vision
+            en devenant early supporter !
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
           {plans.map((plan, index) => (
             <motion.div
               key={plan.name}
@@ -85,7 +73,7 @@ export const PricingSection = () => {
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2">
                   <span className="bg-secondary text-white text-sm font-medium px-4 py-1 rounded-full">
-                    Le plus populaire
+                    Offre limitée
                   </span>
                 </div>
               )}
@@ -116,9 +104,16 @@ export const PricingSection = () => {
                     ? "bg-white text-primary hover:bg-white/90"
                     : "bg-primary text-white hover:bg-primary/90"
                 }`}
-                onClick={() => navigate("/auth")}
+                onClick={() => {
+                  if (plan.popular) {
+                    const supportSection = document.getElementById('support-section');
+                    supportSection?.scrollIntoView({ behavior: 'smooth' });
+                  } else {
+                    navigate("/auth");
+                  }
+                }}
               >
-                Commencer
+                {plan.popular ? "Devenir supporter" : "Commencer gratuitement"}
               </Button>
             </motion.div>
           ))}
