@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Navbar } from "@/components/Navbar";
 import { DashboardContent } from "@/components/dashboard/DashboardContent";
+import { PaymentsContent } from "@/components/dashboard/PaymentsContent";
+import { CompareContent } from "@/components/dashboard/CompareContent";
+import { AppsContent } from "@/components/dashboard/AppsContent";
 import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
@@ -42,6 +45,21 @@ const Dashboard = () => {
     checkAuth();
   }, [navigate, toast]);
 
+  const renderContent = () => {
+    switch (activeTab) {
+      case "dashboard":
+        return <DashboardContent />;
+      case "payments":
+        return <PaymentsContent />;
+      case "compare":
+        return <CompareContent />;
+      case "apps":
+        return <AppsContent />;
+      default:
+        return <DashboardContent />;
+    }
+  };
+
   return (
     <div className="min-h-screen bg-neutral-light">
       <Navbar />
@@ -58,7 +76,7 @@ const Dashboard = () => {
           </header>
 
           <main className="space-y-4 sm:space-y-6">
-            {activeTab === "dashboard" && <DashboardContent />}
+            {renderContent()}
           </main>
         </div>
       </div>
