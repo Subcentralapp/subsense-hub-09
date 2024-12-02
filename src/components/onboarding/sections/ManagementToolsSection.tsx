@@ -9,14 +9,20 @@ interface Props {
   value: {
     has_used_management_app: boolean;
     desired_features: string[];
-  };
+  } | undefined;
   onChange: (value: {
     has_used_management_app: boolean;
     desired_features: string[];
   }) => void;
 }
 
-export const ManagementToolsSection = ({ value, onChange }: Props) => {
+export const ManagementToolsSection = ({ 
+  value = {
+    has_used_management_app: false,
+    desired_features: []
+  }, 
+  onChange 
+}: Props) => {
   const [otherFeature, setOtherFeature] = useState("");
 
   const features = [
