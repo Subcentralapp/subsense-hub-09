@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Heart, Star, RocketLaunch } from "lucide-react";
+import { Heart, Star, Rocket } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 export const CampaignGoals = () => {
@@ -15,7 +15,7 @@ export const CampaignGoals = () => {
       description: "Accédez aux fonctionnalités avancées en nous soutenant"
     },
     {
-      icon: <RocketLaunch className="w-6 h-6 text-primary" />,
+      icon: <Rocket className="w-6 h-6 text-primary" />,
       title: "Innovation continue",
       description: "Aidez-nous à développer de nouvelles fonctionnalités"
     }
