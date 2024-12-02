@@ -8,16 +8,16 @@ export const Navbar = () => {
 
   return (
     <div className="border-b">
-      <div className="flex h-20 items-center px-4">
+      <div className="flex h-24 items-center px-4">
         <Button
           variant="ghost"
           className="flex items-center space-x-2 px-0 hover:bg-transparent"
           onClick={() => navigate("/")}
         >
           <img 
-            src="/lovable-uploads/58effc4e-25d2-49e8-b240-21708486d417.png"
+            src="/lovable-uploads/8e3958b8-cb49-4a9f-8d56-4c994cc8c3f0.png"
             alt="SubCentral Logo"
-            className="h-12 w-auto object-contain"
+            className="h-16 w-auto object-contain"
           />
         </Button>
         <div className="ml-auto flex items-center space-x-4">
