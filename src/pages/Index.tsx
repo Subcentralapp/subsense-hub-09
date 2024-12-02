@@ -1,50 +1,37 @@
-import { useState } from "react";
-import { Navbar } from "@/components/Navbar";
-import { DashboardContent } from "@/components/dashboard/DashboardContent";
-import { PaymentsContent } from "@/components/dashboard/PaymentsContent";
-import { CompareContent } from "@/components/dashboard/CompareContent";
-import { AppsContent } from "@/components/dashboard/AppsContent";
-import { DashboardNavigation } from "@/components/dashboard/DashboardNavigation";
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 const Index = () => {
-  const [activeTab, setActiveTab] = useState("dashboard");
+  const navigate = useNavigate();
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case "dashboard":
-        return <DashboardContent />;
-      case "payments":
-        return <PaymentsContent />;
-      case "compare":
-        return <CompareContent />;
-      case "apps":
-        return <AppsContent />;
-      default:
-        return null;
-    }
-  };
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        navigate("/auth");
+        return;
+      }
 
-  return (
-    <>
-      <Navbar />
-      <div className="min-h-screen bg-neutral-light p-6">
-        <div className="max-w-7xl mx-auto space-y-8">
-          <header className="flex justify-between items-center">
-            <h1 className="text-3xl font-semibold text-gray-900">Mes Abonnements</h1>
-          </header>
+      // Vérifier si l'utilisateur a complété l'onboarding
+      const { data: preferences } = await supabase
+        .from('user_preferences')
+        .select('*')
+        .eq('id', user.id)
+        .single();
 
-          <DashboardNavigation 
-            activeTab={activeTab} 
-            onTabChange={setActiveTab} 
-          />
+      if (!preferences) {
+        navigate("/onboarding");
+      } else {
+        navigate("/dashboard");
+      }
+    };
 
-          <main className="fade-in">
-            {renderContent()}
-          </main>
-        </div>
-      </div>
-    </>
-  );
+    checkAuth();
+  }, [navigate]);
+
+  return null; // Cette page est juste un redirecteur
 };
 
 export default Index;

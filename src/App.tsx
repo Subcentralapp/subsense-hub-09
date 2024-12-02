@@ -11,10 +11,15 @@ import Invoices from "@/pages/Invoices";
 import Budget from "@/pages/Budget";
 import Statistics from "@/pages/Statistics";
 import { ThemeProvider } from "@/components/theme-provider";
+import Index from "@/pages/Index";
 
 const router = createBrowserRouter([
   {
     path: "/",
+    element: <Index />,
+  },
+  {
+    path: "/landing",
     element: <Landing />,
   },
   {
