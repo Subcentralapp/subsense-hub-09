@@ -9,7 +9,6 @@ export const TrendingAppsSection = () => {
     queryFn: async () => {
       console.log("Fetching trending apps...");
       
-      // Modification de la requête pour utiliser OR et des conditions plus précises
       const { data: applications, error } = await supabase
         .from("applications")
         .select("*")
@@ -23,24 +22,37 @@ export const TrendingAppsSection = () => {
 
       console.log("Fetched applications raw data:", applications);
 
-      // Vérification des données avant mapping
       if (!applications || applications.length === 0) {
         console.error("No applications found");
         return [];
       }
 
-      // Mapping avec vérification des données
       const mappedApps = applications.map(app => {
         console.log("Mapping application:", app.NOM);
+        
+        // Helper function to convert CARACTÉRISTIQUES to string array
+        const convertToStringArray = (features: any): string[] => {
+          if (Array.isArray(features)) {
+            return features.map(String);
+          }
+          if (typeof features === 'string') {
+            return [features];
+          }
+          if (typeof features === 'object' && features !== null) {
+            return Object.values(features).map(String);
+          }
+          return [];
+        };
+
         return {
           app: {
             id: app.id,
             name: app.NOM || "Unknown",
             description: app.DESCRIPTION || "No description available",
             price: parseFloat(app.PRICE || "0"),
-            website_url: app["URL DU SITE WEB"],
+            website_url: app["URL DU SITE WEB"] || "",
             category: app.CATÉGORIE || "Other",
-            features: app.CARACTÉRISTIQUES || []
+            features: convertToStringArray(app.CARACTÉRISTIQUES)
           },
           promoCode: {
             code: `${app.NOM?.toUpperCase?.() || 'APP'}2024`,
