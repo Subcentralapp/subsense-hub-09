@@ -4,6 +4,7 @@ import SubscriptionList from "@/components/SubscriptionList";
 import BudgetManager from "@/components/payment/budget/BudgetManager";
 import RecommendationSection from "@/components/RecommendationSection";
 import { TechnicalStackSuggestion } from "@/components/TechnicalStackSuggestion";
+import DetailedStats from "@/components/statistics/DetailedStats";
 import AdCarousel from "@/components/AdCarousel";
 import RandomAd from "@/components/RandomAd";
 
@@ -16,6 +17,7 @@ export const DashboardContent = () => {
       </div>
       <SubscriptionList />
       <BudgetManager />
+      <DetailedStats />
       <RecommendationSection />
       <TechnicalStackSuggestion />
       <AdCarousel />
