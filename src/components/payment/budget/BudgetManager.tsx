@@ -5,6 +5,7 @@ import { startOfMonth, endOfMonth, format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { BudgetForm } from "./BudgetForm";
 import { BudgetProgress } from "./BudgetProgress";
+import { Wallet } from "lucide-react";
 
 const BudgetManager = () => {
   // Fetch current budget
@@ -74,12 +75,23 @@ const BudgetManager = () => {
   }
 
   return (
-    <Card className="p-6 space-y-4">
-      <div>
-        <h2 className="text-xl font-semibold mb-1">Budget Mensuel</h2>
-        <p className="text-sm text-gray-500">
-          {format(new Date(), 'MMMM yyyy', { locale: fr })}
-        </p>
+    <Card className="p-6 space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="flex items-center gap-2">
+            <Wallet className="w-5 h-5 text-primary" />
+            <h2 className="text-xl font-semibold">Budget Mensuel</h2>
+          </div>
+          <p className="text-sm text-gray-500 mt-1">
+            {format(new Date(), 'MMMM yyyy', { locale: fr })}
+          </p>
+        </div>
+        <div className="text-right">
+          <p className="text-sm text-gray-500">Budget total</p>
+          <p className="text-xl font-semibold text-primary">
+            {currentBudget.toFixed(2)} €
+          </p>
+        </div>
       </div>
 
       <BudgetProgress 
