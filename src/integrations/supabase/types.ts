@@ -370,6 +370,45 @@ export type Database = {
         }
         Relationships: []
       }
+      user_preferences: {
+        Row: {
+          created_at: string
+          current_monthly_spend: string | null
+          favorite_subscriptions: string[] | null
+          id: string
+          management_habits: string | null
+          notification_preferences: string[] | null
+          subscription_priorities: string[] | null
+          target_monthly_budget: string | null
+          updated_at: string
+          wants_recommendations: boolean | null
+        }
+        Insert: {
+          created_at?: string
+          current_monthly_spend?: string | null
+          favorite_subscriptions?: string[] | null
+          id: string
+          management_habits?: string | null
+          notification_preferences?: string[] | null
+          subscription_priorities?: string[] | null
+          target_monthly_budget?: string | null
+          updated_at?: string
+          wants_recommendations?: boolean | null
+        }
+        Update: {
+          created_at?: string
+          current_monthly_spend?: string | null
+          favorite_subscriptions?: string[] | null
+          id?: string
+          management_habits?: string | null
+          notification_preferences?: string[] | null
+          subscription_priorities?: string[] | null
+          target_monthly_budget?: string | null
+          updated_at?: string
+          wants_recommendations?: boolean | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

@@ -20,7 +20,19 @@ export default function Auth() {
         return;
       }
       if (session) {
-        navigate("/dashboard");
+        // Check if user has completed onboarding
+        supabase
+          .from('user_preferences')
+          .select('*')
+          .eq('id', session.user.id)
+          .single()
+          .then(({ data }) => {
+            if (data) {
+              navigate("/dashboard");
+            } else {
+              navigate("/onboarding");
+            }
+          });
       }
     });
 
@@ -33,7 +45,21 @@ export default function Auth() {
           title: "Connexion réussie",
           description: "Bienvenue !",
         });
-        navigate("/dashboard");
+        // Check if user has completed onboarding
+        if (session) {
+          supabase
+            .from('user_preferences')
+            .select('*')
+            .eq('id', session.user.id)
+            .single()
+            .then(({ data }) => {
+              if (data) {
+                navigate("/dashboard");
+              } else {
+                navigate("/onboarding");
+              }
+            });
+        }
       }
 
       if (event === 'SIGNED_OUT') {
