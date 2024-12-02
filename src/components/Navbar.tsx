@@ -15,7 +15,7 @@ export const Navbar = () => {
           onClick={() => navigate("/")}
         >
           <img 
-            src="/lovable-uploads/8505363f-630d-410d-8415-ed9a7b663eb0.png"
+            src="/lovable-uploads/0b3b4ad4-cd12-41de-9169-ce328cdf89ff.png"
             alt="SubCentral Logo"
             className="h-20 w-auto object-contain"
           />
