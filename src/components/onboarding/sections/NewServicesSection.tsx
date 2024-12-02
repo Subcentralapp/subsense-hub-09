@@ -9,14 +9,20 @@ interface Props {
   value: {
     interested_services: string[];
     revenue_percentage: string;
-  };
+  } | undefined;
   onChange: (value: {
     interested_services: string[];
     revenue_percentage: string;
   }) => void;
 }
 
-export const NewServicesSection = ({ value, onChange }: Props) => {
+export const NewServicesSection = ({ 
+  value = {
+    interested_services: [],
+    revenue_percentage: ""
+  }, 
+  onChange 
+}: Props) => {
   const [otherService, setOtherService] = useState("");
 
   const services = [
