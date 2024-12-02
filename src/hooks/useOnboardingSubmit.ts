@@ -15,6 +15,7 @@ export const useOnboardingSubmit = () => {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
+        console.error("No user found");
         toast({
           title: "Erreur",
           description: "Vous devez être connecté pour continuer",
@@ -24,28 +25,70 @@ export const useOnboardingSubmit = () => {
         return;
       }
 
+      console.log("Current user:", user.id);
       console.log("Submitting onboarding data:", formData);
-      const { error } = await supabase
-        .from('user_preferences')
-        .insert([{ 
-          id: user.id,
-          favorite_subscriptions: formData.favorite_subscriptions,
-          current_monthly_spend: formData.current_monthly_spend,
-          target_monthly_budget: formData.target_monthly_budget,
-          subscription_priorities: formData.subscription_priorities,
-          management_habits: formData.management_habits,
-          wants_recommendations: formData.wants_recommendations,
-          subscription_barriers: formData.subscription_barriers,
-          age_range: formData.age_range,
-          region: formData.region,
-          has_used_management_app: formData.has_used_management_app,
-          desired_features: formData.desired_features,
-          interested_services: formData.interested_services,
-          revenue_percentage: formData.revenue_percentage,
-          usage_frequency: formData.usage_frequency
-        }]);
 
-      if (error) throw error;
+      // Vérifier si une entrée existe déjà
+      const { data: existingPrefs, error: fetchError } = await supabase
+        .from('user_preferences')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (fetchError && fetchError.code !== 'PGRST116') {
+        console.error("Error checking existing preferences:", fetchError);
+        throw fetchError;
+      }
+
+      let result;
+      if (existingPrefs) {
+        // Update
+        console.log("Updating existing preferences");
+        result = await supabase
+          .from('user_preferences')
+          .update({
+            favorite_subscriptions: formData.favorite_subscriptions,
+            current_monthly_spend: formData.current_monthly_spend,
+            target_monthly_budget: formData.target_monthly_budget,
+            subscription_priorities: formData.subscription_priorities,
+            management_habits: formData.management_habits,
+            wants_recommendations: formData.wants_recommendations,
+            subscription_barriers: formData.subscription_barriers,
+            age_range: formData.age_range,
+            region: formData.region,
+            has_used_management_app: formData.has_used_management_app,
+            desired_features: formData.desired_features,
+            interested_services: formData.interested_services,
+            revenue_percentage: formData.revenue_percentage
+          })
+          .eq('id', user.id);
+      } else {
+        // Insert
+        console.log("Inserting new preferences");
+        result = await supabase
+          .from('user_preferences')
+          .insert([{
+            id: user.id,
+            favorite_subscriptions: formData.favorite_subscriptions,
+            current_monthly_spend: formData.current_monthly_spend,
+            target_monthly_budget: formData.target_monthly_budget,
+            subscription_priorities: formData.subscription_priorities,
+            management_habits: formData.management_habits,
+            wants_recommendations: formData.wants_recommendations,
+            subscription_barriers: formData.subscription_barriers,
+            age_range: formData.age_range,
+            region: formData.region,
+            has_used_management_app: formData.has_used_management_app,
+            desired_features: formData.desired_features,
+            interested_services: formData.interested_services,
+            revenue_percentage: formData.revenue_percentage
+          }]);
+      }
+
+      if (result.error) {
+        console.error("Error saving preferences:", result.error);
+        throw result.error;
+      }
 
       console.log("Onboarding data submitted successfully");
       toast({
@@ -55,7 +98,7 @@ export const useOnboardingSubmit = () => {
 
       navigate("/dashboard");
     } catch (error) {
-      console.error("Error saving preferences:", error);
+      console.error("Error in handleSubmit:", error);
       toast({
         title: "Erreur",
         description: "Une erreur est survenue lors de l'enregistrement de vos préférences",
