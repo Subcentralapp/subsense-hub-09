@@ -14,15 +14,16 @@ const UpcomingPayments = () => {
   const { data: subscriptions, isLoading, error } = useQuery({
     queryKey: ['upcoming-payments'],
     queryFn: async () => {
+      console.log("Fetching upcoming payments...");
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
         throw new Error("User not logged in");
       }
+
       const { data, error: fetchError } = await supabase
         .from('subscriptions')
         .select('*')
         .eq('user_id', user.id)
-        .eq('status', 'active')
         .gt('next_billing', new Date().toISOString())
         .order('next_billing', { ascending: true });
 
@@ -36,6 +37,7 @@ const UpcomingPayments = () => {
         return [];
       }
 
+      console.log("Fetched upcoming payments:", data);
       return data || [];
     },
   });
@@ -58,7 +60,7 @@ const UpcomingPayments = () => {
     );
   }
 
-  if (subscriptions.length === 0) {
+  if (!subscriptions || subscriptions.length === 0) {
     return (
       <Card className="p-6">
         <p>Aucun paiement à venir.</p>
