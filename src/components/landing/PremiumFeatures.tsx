@@ -55,6 +55,25 @@ export const PremiumFeatures = () => {
 
           <div className="space-y-6">
             <Guarantees />
+            <Card className="bg-white/80 backdrop-blur-sm border-2 border-primary/20">
+              <CardHeader>
+                <CardTitle className="text-lg">Satisfaction garantie</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <BadgeCheck className="w-5 h-5 text-primary" />
+                  <p className="text-sm">Remboursement sous 30 jours</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <BadgeCheck className="w-5 h-5 text-primary" />
+                  <p className="text-sm">Support prioritaire</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <BadgeCheck className="w-5 h-5 text-primary" />
+                  <p className="text-sm">Accès aux futures fonctionnalités en avant-première</p>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </div>
