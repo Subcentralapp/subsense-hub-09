@@ -105,6 +105,7 @@ export const OnboardingForm = () => {
       setDirection(1);
       setCurrentStep((prev) => prev + 1);
     } else {
+      console.log("Submitting form data:", formData);
       await handleSubmit(formData);
       confetti({
         particleCount: 100,

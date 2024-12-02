@@ -12,7 +12,7 @@ export interface OnboardingFormData {
   desired_features: string[];
   interested_services: string[];
   revenue_percentage: string;
-  usage_frequency: Record<string, string>;
+  usage_frequency?: Record<string, string>;
 }
 
 export type OnboardingStep = {

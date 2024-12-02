@@ -10,6 +10,7 @@ export const useOnboardingSubmit = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (formData: OnboardingFormData) => {
+    console.log("Starting form submission...");
     setIsSubmitting(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -42,8 +43,7 @@ export const useOnboardingSubmit = () => {
 
       let result;
       if (existingPrefs) {
-        // Update
-        console.log("Updating existing preferences");
+        console.log("Updating existing preferences for user:", user.id);
         result = await supabase
           .from('user_preferences')
           .update({
@@ -63,8 +63,7 @@ export const useOnboardingSubmit = () => {
           })
           .eq('id', user.id);
       } else {
-        // Insert
-        console.log("Inserting new preferences");
+        console.log("Inserting new preferences for user:", user.id);
         result = await supabase
           .from('user_preferences')
           .insert([{
