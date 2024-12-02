@@ -14,7 +14,6 @@ import { FavoriteSubscriptionsSection } from "./sections/FavoriteSubscriptionsSe
 import { SpendingSection } from "./sections/SpendingSection";
 import { PrioritiesSection } from "./sections/PrioritiesSection";
 import { ManagementHabitsSection } from "./sections/ManagementHabitsSection";
-import { RecommendationsSection } from "./sections/RecommendationsSection";
 import { BarriersSection } from "./sections/BarriersSection";
 import { DemographicsSection } from "./sections/DemographicsSection";
 import { ManagementToolsSection } from "./sections/ManagementToolsSection";
@@ -49,46 +48,55 @@ export const OnboardingForm = () => {
       title: "Vos abonnements",
       description: "Sélectionnez vos services préférés",
       component: FavoriteSubscriptionsSection,
+      key: "favorite_subscriptions"
     },
     {
       title: "Budget actuel",
       description: "Estimez vos dépenses mensuelles",
       component: SpendingSection,
+      key: "current_monthly_spend"
     },
     {
       title: "Budget cible",
       description: "Définissez votre objectif budgétaire",
       component: SpendingSection,
+      key: "target_monthly_budget"
     },
     {
       title: "Priorités",
       description: "Vos critères de choix",
       component: PrioritiesSection,
+      key: "subscription_priorities"
     },
     {
       title: "Freins",
       description: "Ce qui vous retient",
       component: BarriersSection,
+      key: "subscription_barriers"
     },
     {
       title: "À propos de vous",
       description: "Quelques informations démographiques",
       component: DemographicsSection,
+      key: "demographics"
     },
     {
       title: "Outils",
       description: "Vos besoins en gestion",
       component: ManagementToolsSection,
+      key: "management_tools"
     },
     {
       title: "Nouveaux services",
       description: "Vos intérêts futurs",
       component: NewServicesSection,
+      key: "new_services"
     },
     {
       title: "Utilisation",
       description: "Fréquence d'utilisation",
       component: UsageSection,
+      key: "usage_frequency"
     },
   ];
 
@@ -147,6 +155,7 @@ export const OnboardingForm = () => {
   };
 
   const CurrentStepComponent = steps[currentStep].component;
+  const currentStepKey = steps[currentStep].key;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-light to-white flex items-center justify-center p-4">
@@ -193,11 +202,11 @@ export const OnboardingForm = () => {
               className="relative min-h-[400px]"
             >
               <CurrentStepComponent
-                value={formData[steps[currentStep].key as keyof OnboardingFormData]}
+                value={formData[currentStepKey as keyof OnboardingFormData]}
                 onChange={(value: any) => 
                   setFormData(prev => ({ 
                     ...prev, 
-                    [steps[currentStep].key]: value 
+                    [currentStepKey]: value 
                   }))
                 }
               />

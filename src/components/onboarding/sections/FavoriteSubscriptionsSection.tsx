@@ -58,9 +58,16 @@ export const FavoriteSubscriptionsSection = ({ value, onChange }: Props) => {
       setSearchResults(data.map(app => ({
         id: app.id,
         name: app.NOM || '',
+        price: app.PRICE || 0,
         category: app.CATÉGORIE || '',
         description: app.DESCRIPTION || '',
         logo_url: app["URL DU LOGO"],
+        features: [],
+        pros: null,
+        cons: null,
+        rating: null,
+        review: null,
+        users_count: null,
       })));
     } catch (error) {
       console.error('Error searching applications:', error);

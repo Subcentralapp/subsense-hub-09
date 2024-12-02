@@ -19,4 +19,5 @@ export type OnboardingStep = {
   title: string;
   description: string;
   component: string;
+  key: string;
 };
