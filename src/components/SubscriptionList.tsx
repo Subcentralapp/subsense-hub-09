@@ -7,10 +7,11 @@ import { EmptySubscriptionState } from "./subscription/EmptySubscriptionState";
 import ApplicationList from "./ApplicationList";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
+import { SubscriptionEditDialog } from "./subscription/SubscriptionEditDialog";
 
 const SubscriptionList = () => {
   const { toast } = useToast();
-  const [editingSubscription, setEditingSubscription] = useState<number | null>(null);
+  const [editingSubscription, setEditingSubscription] = useState<any>(null);
 
   const { data: subscriptions, isLoading, refetch } = useQuery({
     queryKey: ["subscriptions"],
@@ -38,9 +39,8 @@ const SubscriptionList = () => {
   });
 
   const handleEdit = (subscription: any) => {
-    setEditingSubscription(subscription.id);
-    // Implement edit logic here
     console.log("Editing subscription:", subscription);
+    setEditingSubscription(subscription);
   };
 
   const handleDelete = async (id: number) => {
@@ -103,6 +103,15 @@ const SubscriptionList = () => {
           ))}
         </div>
       )}
+
+      <SubscriptionEditDialog
+        subscription={editingSubscription}
+        onClose={() => setEditingSubscription(null)}
+        onSuccess={() => {
+          setEditingSubscription(null);
+          refetch();
+        }}
+      />
     </div>
   );
 };
