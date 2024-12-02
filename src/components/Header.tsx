@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
-import { LogIn, Zap } from "lucide-react";
+import { LogIn, Heart } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
@@ -60,16 +60,29 @@ export const Header = () => {
       </div>
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        <div className="flex justify-between h-16 items-center">
+        <div className="flex justify-between items-center h-16">
           <motion.div 
-            className="flex-shrink-0 cursor-pointer flex items-center space-x-2" 
+            className="flex-shrink-0 cursor-pointer" 
             onClick={() => navigate("/")}
             whileHover={{ scale: 1.05 }}
           >
-            <Zap className="w-6 h-6 text-primary animate-pulse" />
-            <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              SubaCentral
-            </h1>
+            <img
+              src="/lovable-uploads/dd2572e4-8d74-4efc-bbd0-a2d9e911be06.png"
+              alt="Logo"
+              className="h-10 w-10 rounded-full"
+            />
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="flex items-center space-x-2 text-primary"
+          >
+            <Heart className="w-5 h-5 text-primary animate-pulse" />
+            <span className="font-medium">
+              Soutenez SubaCentral et devenez supporter pour accéder à des fonctionnalités exclusives !
+            </span>
           </motion.div>
 
           <div className="flex items-center space-x-4">
