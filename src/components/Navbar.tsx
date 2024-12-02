@@ -20,7 +20,14 @@ export const Navbar = () => {
             className="h-20 w-auto object-contain"
           />
         </Button>
-        <div className="ml-auto flex items-center space-x-4">
+        
+        <div className="flex-1 flex justify-center">
+          <p className="text-lg font-semibold text-primary animate-wave">
+            L'application N°1 pour faire des économies
+          </p>
+        </div>
+
+        <div className="flex items-center space-x-4">
           <NotificationBell />
           <UserNav />
         </div>
