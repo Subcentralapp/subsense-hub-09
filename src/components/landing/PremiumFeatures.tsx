@@ -39,7 +39,6 @@ export const PremiumFeatures = () => {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
-              <CampaignProgress />
               <PricingComparison />
               <FeatureGrid />
               <motion.div
@@ -61,6 +60,16 @@ export const PremiumFeatures = () => {
             <CampaignGoals />
           </div>
         </div>
+
+        {/* Campaign Progress moved to bottom */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mt-16 max-w-2xl mx-auto"
+        >
+          <CampaignProgress />
+        </motion.div>
       </div>
     </section>
   );
