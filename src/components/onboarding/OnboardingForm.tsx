@@ -10,7 +10,9 @@ import { StepNavigation } from "./StepNavigation";
 import { StepHeader } from "./StepHeader";
 import { Button } from "@/components/ui/button";
 import { SkipDialog } from "./SkipDialog";
+import { WelcomeDialog } from "./WelcomeDialog";
 import { useOnboardingSubmit } from "@/hooks/useOnboardingSubmit";
+import confetti from "canvas-confetti";
 
 // Import all section components
 import { FavoriteSubscriptionsSection } from "./sections/FavoriteSubscriptionsSection";
@@ -21,12 +23,12 @@ import { BarriersSection } from "./sections/BarriersSection";
 import { DemographicsSection } from "./sections/DemographicsSection";
 import { ManagementToolsSection } from "./sections/ManagementToolsSection";
 import { NewServicesSection } from "./sections/NewServicesSection";
-import { UsageSection } from "./sections/UsageSection";
 
 export const OnboardingForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState(0);
   const [showSkipDialog, setShowSkipDialog] = useState(false);
+  const [showWelcomeDialog, setShowWelcomeDialog] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
   const { handleSubmit, isSubmitting } = useOnboardingSubmit();
@@ -45,7 +47,6 @@ export const OnboardingForm = () => {
     desired_features: [],
     interested_services: [],
     revenue_percentage: "",
-    usage_frequency: {},
   });
 
   const steps = [
@@ -96,21 +97,21 @@ export const OnboardingForm = () => {
       description: "Vos intérêts futurs",
       component: NewServicesSection,
       key: "new_services"
-    },
-    {
-      title: "Utilisation",
-      description: "Fréquence d'utilisation",
-      component: UsageSection,
-      key: "usage_frequency"
-    },
+    }
   ];
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep < steps.length - 1) {
       setDirection(1);
       setCurrentStep((prev) => prev + 1);
     } else {
-      handleSubmit(formData);
+      await handleSubmit(formData);
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+      setShowWelcomeDialog(true);
     }
   };
 
@@ -196,6 +197,11 @@ export const OnboardingForm = () => {
         open={showSkipDialog}
         onOpenChange={setShowSkipDialog}
         onConfirm={handleConfirmSkip}
+      />
+
+      <WelcomeDialog 
+        open={showWelcomeDialog}
+        onOpenChange={setShowWelcomeDialog}
       />
     </div>
   );

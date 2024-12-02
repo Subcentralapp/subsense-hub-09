@@ -14,8 +14,7 @@ export const Steps = ({ currentStep, totalSteps }: StepsProps) => {
     "Freins",
     "Profil",
     "Outils",
-    "Nouveaux services",
-    "Utilisation",
+    "Nouveaux services"
   ];
 
   return (
