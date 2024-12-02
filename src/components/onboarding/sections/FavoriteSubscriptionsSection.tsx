@@ -8,6 +8,7 @@ import { Search } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SearchResults } from "./SearchResults";
 import { SelectedSubscriptions } from "./SelectedSubscriptions";
+import { Application } from "@/types/application";
 
 interface Props {
   value: string[];
@@ -59,11 +60,9 @@ export const FavoriteSubscriptionsSection = ({ value, onChange }: Props) => {
       setSearchResults(data.map(app => ({
         id: app.id,
         name: app.NOM || '',
-        price: app.PRICE || 0,
         category: app.CATÉGORIE || '',
         description: app.DESCRIPTION || '',
         logo_url: app["URL DU LOGO"],
-        website_url: app["URL DU SITE WEB"] || '',
       })));
     } catch (error) {
       console.error('Error searching applications:', error);

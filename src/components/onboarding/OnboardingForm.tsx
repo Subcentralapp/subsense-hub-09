@@ -9,6 +9,8 @@ import { Steps } from "./Steps";
 import { StepContent } from "./StepContent";
 import { StepNavigation } from "./StepNavigation";
 import { StepHeader } from "./StepHeader";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 
 // Import all section components
 import { FavoriteSubscriptionsSection } from "./sections/FavoriteSubscriptionsSection";
@@ -24,6 +26,7 @@ import { UsageSection } from "./sections/UsageSection";
 export const OnboardingForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState(0);
+  const [showSkipDialog, setShowSkipDialog] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -150,6 +153,18 @@ export const OnboardingForm = () => {
     }
   };
 
+  const handleSkip = () => {
+    setShowSkipDialog(true);
+  };
+
+  const handleConfirmSkip = () => {
+    navigate("/dashboard");
+    toast({
+      title: "Bienvenue !",
+      description: "Vous pouvez toujours compléter votre profil plus tard dans les paramètres.",
+    });
+  };
+
   const currentStepConfig = steps[currentStep];
 
   return (
@@ -161,6 +176,16 @@ export const OnboardingForm = () => {
         className="w-full max-w-2xl"
       >
         <Card className="p-6 shadow-lg border-primary/10 relative overflow-hidden">
+          <div className="absolute top-4 right-4">
+            <Button 
+              variant="ghost" 
+              onClick={handleSkip}
+              className="text-gray-500 hover:text-gray-700"
+            >
+              Passer
+            </Button>
+          </div>
+
           <StepHeader 
             title={currentStepConfig.title}
             description={currentStepConfig.description}
@@ -193,6 +218,30 @@ export const OnboardingForm = () => {
           />
         </Card>
       </motion.div>
+
+      <AlertDialog open={showSkipDialog} onOpenChange={setShowSkipDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Êtes-vous sûr de vouloir passer cette étape ?</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-2">
+              <p>
+                Ce questionnaire nous aide à personnaliser votre expérience et à améliorer notre application.
+              </p>
+              <p>
+                Vous pourrez toujours y revenir plus tard dans les paramètres de votre compte.
+              </p>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="space-x-2">
+            <AlertDialogCancel onClick={() => setShowSkipDialog(false)}>
+              Reprendre le questionnaire
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmSkip}>
+              Passer et accéder à l'application
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
