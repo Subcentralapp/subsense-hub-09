@@ -7,6 +7,7 @@ import { FeaturesSection } from "@/components/landing/FeaturesSection";
 import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
 import { PricingSection } from "@/components/landing/PricingSection";
 import { CTASection } from "@/components/landing/CTASection";
+import { DetailedFeatures } from "@/components/landing/DetailedFeatures";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
@@ -31,6 +32,7 @@ const Landing = () => {
         <MVPSection />
         <PremiumFeatures />
         <SupportSection />
+        <DetailedFeatures />
         <FeaturesSection />
         <TestimonialsSection />
         <PricingSection />
