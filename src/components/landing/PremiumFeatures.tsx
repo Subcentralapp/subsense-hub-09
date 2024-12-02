@@ -12,7 +12,6 @@ import {
 import { PricingComparison } from "./premium/PricingComparison";
 import { FeatureGrid } from "./premium/FeatureGrid";
 import { Guarantees } from "./premium/Guarantees";
-import { CampaignGoals } from "./premium/CampaignGoals";
 
 export const PremiumFeatures = () => {
   return (
@@ -56,7 +55,6 @@ export const PremiumFeatures = () => {
 
           <div className="space-y-6">
             <Guarantees />
-            <CampaignGoals />
           </div>
         </div>
       </div>
