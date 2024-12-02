@@ -8,6 +8,7 @@ import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
 import { PricingSection } from "@/components/landing/PricingSection";
 import { CTASection } from "@/components/landing/CTASection";
 import { DetailedFeatures } from "@/components/landing/DetailedFeatures";
+import { CampaignGoals } from "@/components/landing/premium/CampaignGoals";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
@@ -31,6 +32,7 @@ const Landing = () => {
         <HeroSection />
         <MVPSection />
         <PremiumFeatures />
+        <CampaignGoals />
         <SupportSection />
         <DetailedFeatures />
         <FeaturesSection />
