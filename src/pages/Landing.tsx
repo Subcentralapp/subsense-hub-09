@@ -1,8 +1,9 @@
 import { Header } from "@/components/Header";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { MVPSection } from "@/components/landing/MVPSection";
+import { PremiumFeatures } from "@/components/landing/PremiumFeatures";
+import { SupportSection } from "@/components/landing/SupportSection";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
-import { DetailedFeatures } from "@/components/landing/DetailedFeatures";
 import { TestimonialsSection } from "@/components/landing/TestimonialsSection";
 import { PricingSection } from "@/components/landing/PricingSection";
 import { CTASection } from "@/components/landing/CTASection";
@@ -28,7 +29,8 @@ const Landing = () => {
       <main className="relative">
         <HeroSection />
         <MVPSection />
-        <DetailedFeatures />
+        <PremiumFeatures />
+        <SupportSection />
         <FeaturesSection />
         <TestimonialsSection />
         <PricingSection />
