@@ -13,7 +13,7 @@ export const Logo = () => {
       <img
         src="/lovable-uploads/dd2572e4-8d74-4efc-bbd0-a2d9e911be06.png"
         alt="Logo"
-        className="h-10 w-10 rounded-full"
+        className="h-16 w-auto object-contain"
       />
     </motion.div>
   );
