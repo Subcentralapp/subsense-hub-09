@@ -144,13 +144,20 @@ export const OnboardingForm = () => {
         className="w-full max-w-2xl"
       >
         <Card className="p-6 shadow-lg border-primary/10 relative overflow-hidden">
-          <div className="absolute top-4 right-4">
+          <div className="flex justify-between items-center mb-6">
+            <Button 
+              variant="ghost" 
+              onClick={handleSkip}
+              className="text-black font-bold hover:text-gray-700"
+            >
+              Passer
+            </Button>
             <Button 
               variant="ghost" 
               onClick={handleSkip}
               className="text-gray-500 hover:text-gray-700"
             >
-              Passer
+              Passer la question
             </Button>
           </div>
 
