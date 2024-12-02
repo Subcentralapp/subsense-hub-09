@@ -6,8 +6,14 @@ import { supabase } from "@/lib/supabase";
 import jsPDF from "jspdf";
 import * as XLSX from "xlsx";
 
+interface Subscription {
+  price: number;
+  category?: string;
+  is_trial?: boolean;
+}
+
 const DetailedStats = () => {
-  const { data: subscriptions } = useQuery({
+  const { data: subscriptions } = useQuery<Subscription[]>({
     queryKey: ['subscriptions'],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -86,7 +92,7 @@ const DetailedStats = () => {
     // Données par catégorie
     const categoryStats = Object.entries(stats.categoryBreakdown || {}).map(([category, amount]) => [
       category,
-      `${amount.toFixed(2)}€`,
+      `${Number(amount).toFixed(2)}€`,
     ]);
 
     // Création des feuilles
@@ -109,7 +115,7 @@ const DetailedStats = () => {
         <div className="flex gap-2">
           <Button
             variant="outline"
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 hover:bg-gray-100"
             onClick={exportToPDF}
           >
             <FileDown className="h-4 w-4" />
@@ -117,7 +123,7 @@ const DetailedStats = () => {
           </Button>
           <Button
             variant="outline"
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 hover:bg-gray-100"
             onClick={exportToExcel}
           >
             <FileDown className="h-4 w-4" />
@@ -149,7 +155,7 @@ const DetailedStats = () => {
           <div className="space-y-2">
             {Object.entries(stats.categoryBreakdown || {}).map(([category, amount]) => (
               <p key={category} className="text-sm text-gray-600">
-                {category}: <span className="font-semibold text-primary">{amount.toFixed(2)}€</span>
+                {category}: <span className="font-semibold text-primary">{Number(amount).toFixed(2)}€</span>
               </p>
             ))}
           </div>
