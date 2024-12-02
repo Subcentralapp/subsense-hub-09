@@ -4,11 +4,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { motion } from "framer-motion";
 
 interface Props {
-  value: { age_range: string; region: string };
+  value: { age_range?: string; region?: string } | undefined;
   onChange: (value: { age_range: string; region: string }) => void;
 }
 
-export const DemographicsSection = ({ value, onChange }: Props) => {
+export const DemographicsSection = ({ value = { age_range: '', region: '' }, onChange }: Props) => {
   const ageRanges = [
     { value: "under-18", label: "Moins de 18 ans" },
     { value: "18-24", label: "18 à 24 ans" },
@@ -35,7 +35,7 @@ export const DemographicsSection = ({ value, onChange }: Props) => {
       >
         <h3 className="text-xl font-semibold text-gray-900">Quel âge avez-vous ?</h3>
         <RadioGroup
-          value={value.age_range}
+          value={value.age_range || ''}
           onValueChange={(newValue) => onChange({ ...value, age_range: newValue })}
           className="space-y-3"
         >
@@ -71,7 +71,7 @@ export const DemographicsSection = ({ value, onChange }: Props) => {
       >
         <h3 className="text-xl font-semibold text-gray-900">Dans quelle région vivez-vous ?</h3>
         <Select
-          value={value.region}
+          value={value.region || ''}
           onValueChange={(newValue) => onChange({ ...value, region: newValue })}
         >
           <SelectTrigger className="w-full">
