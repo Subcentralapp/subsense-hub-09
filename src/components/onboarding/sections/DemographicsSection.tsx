@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 
 interface Props {
   value: { age_range?: string; region?: string } | undefined;
-  onChange: (value: { age_range: string; region: string }) => void;
+  onChange: (value: { age_range?: string; region?: string }) => void;
 }
 
 export const DemographicsSection = ({ value = { age_range: '', region: '' }, onChange }: Props) => {
