@@ -136,4 +136,5 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
     } finally {
       set({ isLoading: false });
     }
+  }
 }));
