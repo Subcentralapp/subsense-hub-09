@@ -372,39 +372,63 @@ export type Database = {
       }
       user_preferences: {
         Row: {
+          age_range: string | null
           created_at: string
           current_monthly_spend: string | null
+          desired_features: string[] | null
           favorite_subscriptions: string[] | null
+          has_used_management_app: boolean | null
           id: string
+          interested_services: string[] | null
           management_habits: string | null
           notification_preferences: string[] | null
+          region: string | null
+          revenue_percentage: string | null
+          subscription_barriers: string[] | null
           subscription_priorities: string[] | null
           target_monthly_budget: string | null
           updated_at: string
+          usage_frequency: Json | null
           wants_recommendations: boolean | null
         }
         Insert: {
+          age_range?: string | null
           created_at?: string
           current_monthly_spend?: string | null
+          desired_features?: string[] | null
           favorite_subscriptions?: string[] | null
+          has_used_management_app?: boolean | null
           id: string
+          interested_services?: string[] | null
           management_habits?: string | null
           notification_preferences?: string[] | null
+          region?: string | null
+          revenue_percentage?: string | null
+          subscription_barriers?: string[] | null
           subscription_priorities?: string[] | null
           target_monthly_budget?: string | null
           updated_at?: string
+          usage_frequency?: Json | null
           wants_recommendations?: boolean | null
         }
         Update: {
+          age_range?: string | null
           created_at?: string
           current_monthly_spend?: string | null
+          desired_features?: string[] | null
           favorite_subscriptions?: string[] | null
+          has_used_management_app?: boolean | null
           id?: string
+          interested_services?: string[] | null
           management_habits?: string | null
           notification_preferences?: string[] | null
+          region?: string | null
+          revenue_percentage?: string | null
+          subscription_barriers?: string[] | null
           subscription_priorities?: string[] | null
           target_monthly_budget?: string | null
           updated_at?: string
+          usage_frequency?: Json | null
           wants_recommendations?: boolean | null
         }
         Relationships: []

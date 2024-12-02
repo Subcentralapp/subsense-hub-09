@@ -1,49 +1,45 @@
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 interface StepNavigationProps {
   currentStep: number;
   totalSteps: number;
   onPrevious: () => void;
   onNext: () => void;
-  onSubmit: () => void;
+  isSubmitting?: boolean;
 }
 
-export const StepNavigation = ({
-  currentStep,
-  totalSteps,
-  onPrevious,
+export const StepNavigation = ({ 
+  currentStep, 
+  totalSteps, 
+  onPrevious, 
   onNext,
-  onSubmit,
+  isSubmitting 
 }: StepNavigationProps) => {
+  const isLastStep = currentStep === totalSteps - 1;
+
   return (
-    <div className="flex justify-between mt-6">
+    <div className="flex justify-between mt-8">
       <Button
-        onClick={onPrevious}
         variant="outline"
-        disabled={currentStep === 0}
-        className="flex items-center gap-2"
+        onClick={onPrevious}
+        disabled={currentStep === 0 || isSubmitting}
       >
-        <ChevronLeft className="w-4 h-4" />
         Précédent
       </Button>
-
-      {currentStep === totalSteps - 1 ? (
-        <Button 
-          onClick={onSubmit}
-          className="bg-primary hover:bg-primary/90 text-white font-semibold px-8 py-2 rounded-lg transition-all duration-200 hover:shadow-lg flex items-center gap-2"
-        >
-          Terminer
-        </Button>
-      ) : (
-        <Button 
-          onClick={onNext}
-          className="bg-primary hover:bg-primary/90 text-white font-semibold px-8 py-2 rounded-lg transition-all duration-200 hover:shadow-lg flex items-center gap-2"
-        >
-          Suivant
-          <ChevronRight className="w-4 h-4" />
-        </Button>
-      )}
+      <Button 
+        onClick={onNext}
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Enregistrement...
+          </>
+        ) : (
+          isLastStep ? "Terminer" : "Suivant"
+        )}
+      </Button>
     </div>
   );
 };

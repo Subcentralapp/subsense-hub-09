@@ -1,16 +1,16 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { OnboardingFormData } from "@/types/onboarding";
 import { Steps } from "./Steps";
 import { StepContent } from "./StepContent";
 import { StepNavigation } from "./StepNavigation";
 import { StepHeader } from "./StepHeader";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { SkipDialog } from "./SkipDialog";
+import { useOnboardingSubmit } from "@/hooks/useOnboardingSubmit";
 
 // Import all section components
 import { FavoriteSubscriptionsSection } from "./sections/FavoriteSubscriptionsSection";
@@ -29,6 +29,7 @@ export const OnboardingForm = () => {
   const [showSkipDialog, setShowSkipDialog] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
+  const { handleSubmit, isSubmitting } = useOnboardingSubmit();
 
   const [formData, setFormData] = useState<OnboardingFormData>({
     favorite_subscriptions: [],
@@ -108,6 +109,8 @@ export const OnboardingForm = () => {
     if (currentStep < steps.length - 1) {
       setDirection(1);
       setCurrentStep((prev) => prev + 1);
+    } else {
+      handleSubmit(formData);
     }
   };
 
@@ -115,41 +118,6 @@ export const OnboardingForm = () => {
     if (currentStep > 0) {
       setDirection(-1);
       setCurrentStep((prev) => prev - 1);
-    }
-  };
-
-  const handleSubmit = async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        toast({
-          title: "Erreur",
-          description: "Vous devez être connecté pour continuer",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      const { error } = await supabase
-        .from('user_preferences')
-        .insert([{ id: user.id, ...formData }]);
-
-      if (error) throw error;
-
-      toast({
-        title: "Profil complété !",
-        description: "Nous avons personnalisé votre tableau de bord selon vos réponses.",
-      });
-
-      navigate("/dashboard");
-    } catch (error) {
-      console.error("Error saving preferences:", error);
-      toast({
-        title: "Erreur",
-        description: "Une erreur est survenue lors de l'enregistrement de vos préférences",
-        variant: "destructive",
-      });
     }
   };
 
@@ -193,55 +161,35 @@ export const OnboardingForm = () => {
 
           <Steps currentStep={currentStep} totalSteps={steps.length} />
 
-          <AnimatePresence mode="wait" custom={direction}>
-            <StepContent
-              currentStep={currentStep}
-              direction={direction}
-              StepComponent={currentStepConfig.component}
-              formData={formData}
-              stepKey={currentStepConfig.key}
-              onChange={(value: any) => 
-                setFormData(prev => ({ 
-                  ...prev, 
-                  [currentStepConfig.key]: value 
-                }))
-              }
-            />
-          </AnimatePresence>
+          <StepContent
+            currentStep={currentStep}
+            direction={direction}
+            StepComponent={currentStepConfig.component}
+            formData={formData}
+            stepKey={currentStepConfig.key}
+            onChange={(value: any) => 
+              setFormData(prev => ({ 
+                ...prev, 
+                [currentStepConfig.key]: value 
+              }))
+            }
+          />
 
           <StepNavigation
             currentStep={currentStep}
             totalSteps={steps.length}
             onPrevious={handlePrevious}
             onNext={handleNext}
-            onSubmit={handleSubmit}
+            isSubmitting={isSubmitting}
           />
         </Card>
       </motion.div>
 
-      <AlertDialog open={showSkipDialog} onOpenChange={setShowSkipDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Êtes-vous sûr de vouloir passer cette étape ?</AlertDialogTitle>
-            <AlertDialogDescription className="space-y-2">
-              <p>
-                Ce questionnaire nous aide à personnaliser votre expérience et à améliorer notre application.
-              </p>
-              <p>
-                Vous pourrez toujours y revenir plus tard dans les paramètres de votre compte.
-              </p>
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter className="space-x-2">
-            <AlertDialogCancel onClick={() => setShowSkipDialog(false)}>
-              Reprendre le questionnaire
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmSkip}>
-              Passer et accéder à l'application
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      <SkipDialog
+        open={showSkipDialog}
+        onOpenChange={setShowSkipDialog}
+        onConfirm={handleConfirmSkip}
+      />
     </div>
   );
 };
