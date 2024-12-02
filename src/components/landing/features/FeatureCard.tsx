@@ -19,10 +19,7 @@ export const FeatureCard = ({
   title,
   description,
   icon,
-  image,
   benefits,
-  index,
-  isReversed = false,
   isPremium = false,
 }: FeatureCardProps) => {
   const navigate = useNavigate();
@@ -38,71 +35,53 @@ export const FeatureCard = ({
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 40 }}
+      initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.7, delay: index * 0.2 }}
-      className={`flex flex-col ${
-        isReversed ? 'lg:flex-row-reverse' : 'lg:flex-row'
-      } items-center gap-12`}
+      transition={{ duration: 0.5 }}
+      className="glass-card p-8 rounded-xl hover-scale"
     >
-      <div className="lg:w-1/2 space-y-6">
-        <div className="flex items-center gap-4">
-          <div className="inline-block p-3 bg-primary/10 rounded-2xl">
-            {icon}
-          </div>
-          {isPremium && (
-            <Badge variant="secondary" className="gap-1">
-              <Crown className="w-3 h-3" />
-              Premium
-            </Badge>
-          )}
+      <div className="flex items-center gap-3 mb-4">
+        <div className="p-3 bg-primary/10 rounded-xl">
+          {icon}
         </div>
-        <h3 className="text-3xl font-bold text-gray-900">
-          {title}
-        </h3>
-        <p className="text-lg text-gray-600">
-          {description}
-        </p>
-        <ul className="space-y-3">
-          {benefits.map((benefit) => (
-            <motion.li
-              key={benefit}
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              className="flex items-center gap-2 text-gray-700"
-            >
-              <span className="h-2 w-2 bg-primary rounded-full" />
-              {benefit}
-            </motion.li>
-          ))}
-        </ul>
-        <Button
-          size="lg"
-          onClick={handleAction}
-          className="mt-6"
-          variant={isPremium ? "secondary" : "default"}
-        >
-          {isPremium ? "Débloquer avec le Crowdfunding" : "Essayer Gratuitement"}
-        </Button>
+        {isPremium && (
+          <Badge variant="secondary" className="gap-1">
+            <Crown className="w-3 h-3" />
+            Early Supporter
+          </Badge>
+        )}
       </div>
-      <div className="lg:w-1/2">
-        <div className="relative">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-2xl blur-3xl" />
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+
+      <h3 className="text-2xl font-bold mb-2">
+        {title}
+      </h3>
+      <p className="text-gray-600 mb-6">
+        {description}
+      </p>
+
+      <ul className="space-y-3 mb-8">
+        {benefits.map((benefit) => (
+          <motion.li
+            key={benefit}
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
-            className="relative"
+            className="flex items-center gap-2 text-gray-700"
           >
-            <img
-              src={image}
-              alt={title}
-              className="rounded-2xl shadow-2xl w-full object-cover aspect-video"
-            />
-          </motion.div>
-        </div>
-      </div>
+            <span className="h-2 w-2 bg-primary rounded-full" />
+            {benefit}
+          </motion.li>
+        ))}
+      </ul>
+
+      <Button
+        size="lg"
+        onClick={handleAction}
+        variant={isPremium ? "secondary" : "default"}
+        className="w-full"
+      >
+        {isPremium ? "Devenir Early Supporter" : "Commencer Gratuitement"}
+      </Button>
     </motion.div>
   );
 };
