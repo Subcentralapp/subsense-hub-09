@@ -15,10 +15,13 @@ const PaymentSection = () => {
 
   return (
     <div className="space-y-6">
-      <PaymentCharts />
-      <UpcomingPayments />
+      <Card className="p-6">
+        <UpcomingPayments />
+      </Card>
       
-      <Card className="p-6 glass-card">
+      <PaymentCharts />
+      
+      <Card className="p-6">
         <h2 className="text-xl font-semibold mb-4">Gestion des Factures</h2>
         <div className="space-y-4">
           <InvoiceUploader isLoading={isLoading} onUpload={addInvoice} />

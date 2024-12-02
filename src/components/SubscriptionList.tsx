@@ -5,9 +5,14 @@ import { SubscriptionCard } from "./subscription/SubscriptionCard";
 import { SubscriptionHeader } from "./subscription/SubscriptionHeader";
 import { EmptySubscriptionState } from "./subscription/EmptySubscriptionState";
 import ApplicationList from "./ApplicationList";
+import { useState } from "react";
+import { useToast } from "@/components/ui/use-toast";
 
 const SubscriptionList = () => {
-  const { data: subscriptions, isLoading } = useQuery({
+  const { toast } = useToast();
+  const [editingSubscription, setEditingSubscription] = useState<number | null>(null);
+
+  const { data: subscriptions, isLoading, refetch } = useQuery({
     queryKey: ["subscriptions"],
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -31,6 +36,37 @@ const SubscriptionList = () => {
       return data;
     }
   });
+
+  const handleEdit = (subscription: any) => {
+    setEditingSubscription(subscription.id);
+    // Implement edit logic here
+    console.log("Editing subscription:", subscription);
+  };
+
+  const handleDelete = async (id: number) => {
+    try {
+      const { error } = await supabase
+        .from('subscriptions')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Succès",
+        description: "L'abonnement a été supprimé avec succès.",
+      });
+
+      refetch();
+    } catch (error) {
+      console.error("Error deleting subscription:", error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la suppression de l'abonnement.",
+        variant: "destructive",
+      });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -61,6 +97,8 @@ const SubscriptionList = () => {
             <SubscriptionCard 
               key={subscription.id} 
               subscription={subscription}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
             />
           ))}
         </div>
