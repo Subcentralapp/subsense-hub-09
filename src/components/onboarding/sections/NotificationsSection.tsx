@@ -1,5 +1,6 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import { motion } from "framer-motion";
 
 interface Props {
   value: string[];
@@ -31,11 +32,17 @@ export const NotificationsSection = ({ value, onChange }: Props) => {
   };
 
   return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-medium">Notifications et rappels</h3>
+    <div className="space-y-4 bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
+      <h3 className="text-xl font-semibold text-gray-900">Notifications et rappels</h3>
       <div className="space-y-3">
-        {options.map((option) => (
-          <div key={option.id} className="flex items-center space-x-2">
+        {options.map((option, index) => (
+          <motion.div
+            key={option.id}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: index * 0.1 }}
+            className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50 transition-colors"
+          >
             <Checkbox
               id={`notification-${option.id}`}
               checked={value.includes(option.id)}
@@ -44,11 +51,36 @@ export const NotificationsSection = ({ value, onChange }: Props) => {
                 option.id !== "none" && value.includes("none") ||
                 option.id === "none" && value.length > 0 && !value.includes("none")
               }
+              className="data-[state=checked]:bg-primary data-[state=checked]:border-primary"
             />
-            <Label htmlFor={`notification-${option.id}`}>{option.label}</Label>
-          </div>
+            <Label 
+              htmlFor={`notification-${option.id}`}
+              className="text-sm font-medium text-gray-700 cursor-pointer"
+            >
+              {option.label}
+            </Label>
+          </motion.div>
         ))}
       </div>
+
+      {value.length > 0 && value[0] !== "none" && (
+        <div className="mt-4">
+          <p className="text-sm text-gray-500 mb-2">Notifications activées :</p>
+          <div className="flex flex-wrap gap-2">
+            {value.map((notification) => (
+              <motion.span
+                key={notification}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-primary/10 text-primary"
+              >
+                {options.find(o => o.id === notification)?.label}
+              </motion.span>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };
