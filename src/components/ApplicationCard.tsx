@@ -50,16 +50,19 @@ export const ApplicationCard = ({ app, onAdd }: ApplicationCardProps) => {
   const logoUrl = app.logo_url || (logoError ? null : getClearbitLogoUrl(app.name || '', app.website_url));
 
   const handleTryApp = () => {
-    if (!app.website_url) {
+    console.log("Trying to open URL:", app.website_url);
+    
+    if (!app.website_url || app.website_url.trim() === '') {
       console.log("No website URL available for:", app.name);
       return;
     }
 
-    let url = app.website_url;
+    let url = app.website_url.trim();
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
       url = 'https://' + url;
     }
 
+    console.log("Opening URL:", url);
     window.open(url, '_blank');
   };
 
