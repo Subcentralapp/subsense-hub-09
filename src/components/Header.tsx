@@ -34,11 +34,14 @@ export const Header = () => {
         <div className="flex justify-between items-center h-16">
           <Logo />
           
-          {/* Message promotionnel */}
-          <div className="flex-1 flex justify-center">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-green-100 text-green-600">
-              <Timer className="w-4 h-4 animate-pulse" />
-              <span className="text-sm font-medium">Offre limitée : Accès gratuit à vie pour les 1000 premiers inscrits ! 🚀</span>
+          {/* Message promotionnel - Responsive */}
+          <div className="flex-1 flex justify-center px-2">
+            <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 rounded-full bg-green-100 text-green-600 max-w-[280px] sm:max-w-none mx-auto">
+              <Timer className="w-4 h-4 animate-pulse hidden sm:block" />
+              <span className="text-xs sm:text-sm font-medium text-center">
+                <span className="hidden sm:inline">Offre limitée : </span>
+                Accès gratuit à vie pour les 1000 premiers inscrits ! 🚀
+              </span>
             </div>
           </div>
 
