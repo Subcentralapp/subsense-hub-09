@@ -12,30 +12,33 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-8">
           {/* Colonne de gauche */}
           <div className="text-center md:text-left">
-            <h3 className="font-bold text-lg mb-4">Liens rapides</h3>
+            <h3 className="font-bold text-lg mb-4">Navigation</h3>
             <ul className="space-y-2">
-              <li><Link to="/dashboard" className="hover:text-primary transition-colors">Dashboard</Link></li>
-              <li><Link to="/profile" className="hover:text-primary transition-colors">Profil</Link></li>
-              <li><Link to="/subscriptions" className="hover:text-primary transition-colors">Abonnements</Link></li>
+              <li><Link to="/dashboard" className="hover:text-primary transition-colors">Tableau de bord</Link></li>
+              <li><Link to="/profile" className="hover:text-primary transition-colors">Mon compte</Link></li>
+              <li><Link to="/subscriptions" className="hover:text-primary transition-colors">Mes abonnements</Link></li>
             </ul>
           </div>
 
           {/* Colonne du milieu */}
           <div className="text-center">
-            <h3 className="font-bold text-lg mb-4">Contact</h3>
-            <button className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-6 py-2 rounded-full transition-colors">
-              Réserver un appel
-            </button>
+            <h3 className="font-bold text-lg mb-4">Économisez plus</h3>
+            <Link 
+              to="/dashboard"
+              className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-6 py-2 rounded-full transition-colors inline-block"
+            >
+              Analyser mes dépenses
+            </Link>
           </div>
 
           {/* Colonne de droite */}
           <div className="text-center md:text-right">
-            <h3 className="font-bold text-lg mb-4">Suivez-nous</h3>
+            <h3 className="font-bold text-lg mb-4">Communauté</h3>
             <div className="flex justify-center md:justify-end space-x-4">
-              <a href="#" className="hover:text-primary transition-colors">
+              <a href="#" className="hover:text-primary transition-colors" title="Suivez nos conseils d'économies sur Twitter">
                 <Twitter className="h-6 w-6" />
               </a>
-              <a href="#" className="hover:text-primary transition-colors">
+              <a href="#" className="hover:text-primary transition-colors" title="Découvrez nos astuces sur Instagram">
                 <Instagram className="h-6 w-6" />
               </a>
             </div>
@@ -44,7 +47,7 @@ export function Footer() {
 
         {/* Copyright */}
         <div className="border-t border-gray-200 py-4 text-center text-sm">
-          <p>&copy; {new Date().getFullYear()} Tous droits réservés</p>
+          <p>&copy; {new Date().getFullYear()} SubaCentral - Simplifiez la gestion de vos abonnements</p>
         </div>
       </div>
     </footer>
