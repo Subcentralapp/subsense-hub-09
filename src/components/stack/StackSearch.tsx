@@ -3,6 +3,7 @@ import { SearchDropdown } from '../search/SearchDropdown';
 import { supabase } from '@/integrations/supabase/client';
 import { Application } from '@/types/application';
 import { toast } from '@/hooks/use-toast';
+import { Search } from 'lucide-react';
 
 interface StackSearchProps {
   onAddTool: (app: Application) => void;
@@ -80,13 +81,19 @@ export const StackSearch = ({ onAddTool }: StackSearchProps) => {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full space-y-4">
+      <div className="flex items-center gap-3 mb-2">
+        <Search className="h-5 w-5 text-gray-400" />
+        <h3 className="text-lg font-medium text-gray-700">
+          Rechercher une application
+        </h3>
+      </div>
       <SearchDropdown
         searchTerm={searchTerm}
         onSearchChange={handleSearchChange}
         filteredApps={filteredApps}
         onSelectApp={handleSelectApp}
-        placeholder="Rechercher une application..."
+        placeholder="Nom de l'application..."
       />
     </div>
   );

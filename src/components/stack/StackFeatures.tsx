@@ -10,14 +10,14 @@ export const StackFeatures = ({ tools }: StackFeaturesProps) => {
 
   return uniqueFeatures.length > 0 ? (
     <div>
-      <h4 className="font-medium text-gray-700 mb-2">
+      <h3 className="text-lg font-medium text-gray-700 mb-4">
         Fonctionnalités disponibles
-      </h4>
+      </h3>
       <div className="flex flex-wrap gap-2">
         {uniqueFeatures.map((feature, index) => (
           <span
             key={index}
-            className="px-2 py-1 bg-primary/10 text-primary rounded-full text-sm"
+            className="px-3 py-1.5 bg-white/50 text-primary rounded-full text-sm"
           >
             {feature}
           </span>

@@ -28,22 +28,17 @@ export const CustomStackBuilder = () => {
 
   const exportToPDF = () => {
     const doc = new jsPDF();
-    
     doc.setFontSize(20);
     doc.text("Ma Stack Technique Personnalisée", 20, 20);
-    
     doc.setFontSize(14);
     const totalBudget = tools.reduce((sum, tool) => sum + tool.price, 0);
     doc.text(`Budget Total: ${totalBudget.toFixed(2)}€/mois`, 20, 40);
-    
     let y = 60;
     tools.forEach(tool => {
       doc.text(`${tool.name} - ${tool.price}€/mois`, 30, y);
       y += 10;
     });
-    
     doc.save("ma-stack-technique.pdf");
-    
     toast({
       title: "Export réussi !",
       description: "Votre stack technique a été exportée en PDF.",
@@ -51,48 +46,47 @@ export const CustomStackBuilder = () => {
   };
 
   return (
-    <Card className="p-6 mt-8 bg-white shadow-lg border border-gray-100">
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Zap className="h-5 w-5 text-primary" />
-            <h3 className="text-xl font-semibold text-gray-900">
-              Stack Technique Personnalisée
-            </h3>
-          </div>
-          {tools.length > 0 && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={exportToPDF}
-              className="hover:bg-primary/5"
-            >
-              <Download className="h-4 w-4 mr-2" />
-              Exporter ma stack
-            </Button>
-          )}
+    <div className="space-y-6">
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-2">
+          <Zap className="h-6 w-6 text-primary" />
+          <h2 className="text-2xl font-semibold">Stack Technique Personnalisée</h2>
         </div>
-
-        <StackSearch onAddTool={handleAddTool} />
-
-        {tools.map((tool, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="p-4 bg-white rounded-lg border border-gray-200"
+        {tools.length > 0 && (
+          <Button
+            variant="outline"
+            onClick={exportToPDF}
+            className="hover:bg-primary/5"
           >
+            <Download className="h-4 w-4 mr-2" />
+            Exporter ma stack
+          </Button>
+        )}
+      </div>
+
+      <Card className="p-6 bg-[#F1F0FB] border-0 shadow-sm">
+        <StackSearch onAddTool={handleAddTool} />
+      </Card>
+
+      {tools.map((tool, index) => (
+        <motion.div
+          key={index}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: index * 0.1 }}
+        >
+          <Card className="p-6 bg-white hover:shadow-md transition-all duration-200">
             <div className="flex justify-between items-center">
               <div>
                 <h4 className="font-medium text-gray-900">{tool.name}</h4>
                 <p className="text-sm text-gray-500">{tool.price}€/mois</p>
               </div>
-              {tool.features.length > 0 && (
+              {tool.features && tool.features.length > 0 && (
                 <div className="flex flex-wrap gap-2">
                   {tool.features.map((feature, idx) => (
                     <span
                       key={idx}
-                      className="px-2 py-1 bg-primary/10 text-primary text-xs rounded-full"
+                      className="px-3 py-1 bg-[#E5DEFF] text-primary text-xs rounded-full"
                     >
                       {feature}
                     </span>
@@ -100,16 +94,20 @@ export const CustomStackBuilder = () => {
                 </div>
               )}
             </div>
-          </motion.div>
-        ))}
+          </Card>
+        </motion.div>
+      ))}
 
-        {tools.length > 0 && (
-          <div>
+      {tools.length > 0 && (
+        <div className="space-y-6">
+          <Card className="p-6 bg-[#FDE1D3] border-0">
             <StackSummary tools={tools} />
+          </Card>
+          <Card className="p-6 bg-[#D3E4FD] border-0">
             <StackFeatures tools={tools} />
-          </div>
-        )}
-      </div>
-    </Card>
+          </Card>
+        </div>
+      )}
+    </div>
   );
 };
