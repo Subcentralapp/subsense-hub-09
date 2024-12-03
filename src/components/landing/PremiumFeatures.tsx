@@ -110,37 +110,64 @@ export const PremiumFeatures = () => {
                   initial={{ opacity: 0, x: 20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3, delay: 0.1 }}
-                  className="flex items-center gap-2"
+                  className="flex items-start gap-3"
                 >
-                  <span className="text-lg animate-bounce">✅</span>
-                  <p className="text-sm">100% gratuit et illimité dès maintenant</p>
+                  <span className="text-lg flex-shrink-0">🌟</span>
+                  <p className="text-sm">Simplifiez votre quotidien : Prenez le contrôle de tous vos abonnements en un seul endroit avec une interface intuitive et efficace.</p>
                 </motion.div>
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3, delay: 0.2 }}
-                  className="flex items-center gap-2"
+                  className="flex items-start gap-3"
                 >
-                  <span className="text-lg animate-pulse">🛠️</span>
-                  <p className="text-sm">Développée pour simplifier votre quotidien</p>
+                  <span className="text-lg flex-shrink-0">📊</span>
+                  <p className="text-sm">Gratuit et illimité pour les premières fonctionnalités : Gérez vos abonnements sans limite, suivez vos dépenses, et recevez des rappels, tout cela gratuitement.</p>
                 </motion.div>
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3, delay: 0.3 }}
-                  className="flex items-center gap-2"
+                  className="flex items-start gap-3"
                 >
-                  <span className="text-lg animate-bounce">🔒</span>
-                  <p className="text-sm">Sécurité garantie pour vos données</p>
+                  <span className="text-lg flex-shrink-0">💳</span>
+                  <p className="text-sm">Pas besoin de carte bancaire : Créez un compte en quelques secondes et profitez immédiatement de l'offre gratuite pour les 1000 premiers inscrits.</p>
                 </motion.div>
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3, delay: 0.4 }}
-                  className="flex items-center gap-2"
+                  className="flex items-start gap-3"
                 >
-                  <span className="text-lg animate-pulse">🚀</span>
-                  <p className="text-sm">Soutenu par une communauté engagée</p>
+                  <span className="text-lg flex-shrink-0">🎯</span>
+                  <p className="text-sm">Devenez un acteur du changement : En rejoignant notre communauté d'Early Supporters, participez activement aux décisions sur l'évolution de SubaCentral.</p>
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 0.5 }}
+                  className="flex items-start gap-3"
+                >
+                  <span className="text-lg flex-shrink-0">👑</span>
+                  <p className="text-sm">Avantages exclusifs à vie : En devenant Early Supporter, obtenez des privilèges premium exclusifs et profitez de réductions sur vos abonnements préférés.</p>
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 0.6 }}
+                  className="flex items-start gap-3"
+                >
+                  <span className="text-lg flex-shrink-0">🔐</span>
+                  <p className="text-sm">Vos données sont en sécurité : Nous utilisons les standards de sécurité les plus élevés pour protéger vos informations.</p>
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 0.7 }}
+                  className="flex items-start gap-3"
+                >
+                  <span className="text-lg flex-shrink-0">🚀</span>
+                  <p className="text-sm">Soutenez une vision ambitieuse : SubaCentral évolue grâce à ses utilisateurs. En tant qu'Early Supporter, vous contribuez directement au développement de fonctionnalités innovantes.</p>
                 </motion.div>
               </CardContent>
             </Card>
