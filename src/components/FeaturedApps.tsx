@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
+import { toast } from "@/hooks/use-toast";
 
 const logoUrls = {
   'Amazon': 'https://logo.clearbit.com/amazon.com',
@@ -30,7 +31,7 @@ const FeaturedApps = () => {
       const { data, error } = await supabase
         .from('applications')
         .select('*')
-        .in('NOM', Object.keys(logoUrls)); // Changed 'name' to 'NOM' to match the database column
+        .in('NOM', Object.keys(logoUrls));
 
       if (error) {
         console.error("Error fetching featured apps:", error);
@@ -40,11 +41,35 @@ const FeaturedApps = () => {
       console.log("Featured apps data:", data);
       return data?.map(app => ({
         ...app,
-        name: app.NOM, // Map NOM to name for consistency in the frontend
+        name: app.NOM,
         logo_url: logoUrls[app.NOM as keyof typeof logoUrls] || app["URL DU LOGO"]
       }));
     }
   });
+
+  const handleVisitClick = (app: any) => {
+    console.log("Handling visit click for app:", app);
+    const websiteUrl = app["URL DU SITE WEB"];
+    
+    if (!websiteUrl) {
+      console.log("No website URL found for app:", app.name);
+      toast({
+        title: "Lien non disponible",
+        description: "Le lien vers le site web n'est pas disponible pour le moment.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Ensure URL has protocol
+    let url = websiteUrl.trim();
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      url = 'https://' + url;
+    }
+
+    console.log("Opening URL:", url);
+    window.open(url, '_blank');
+  };
 
   if (isLoading) {
     return (
@@ -161,8 +186,9 @@ const FeaturedApps = () => {
             <Button 
               variant="secondary" 
               className="w-full flex items-center justify-center gap-2"
+              onClick={() => handleVisitClick(app)}
             >
-              <span>Visiter</span>
+              <span>Je veux essayer</span>
               <ExternalLink className="h-4 w-4" />
             </Button>
           </Card>
