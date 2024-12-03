@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
+import { Card } from "@/components/ui/card";
 import { EarlySupporter } from "./premium/EarlySupporter";
 import { WhyChooseUs } from "./premium/WhyChooseUs";
 import { Guarantees } from "./premium/Guarantees";
