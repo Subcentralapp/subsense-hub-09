@@ -36,7 +36,7 @@ export const Header = () => {
           
           {/* Message promotionnel */}
           <div className="flex-1 flex justify-center">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-100 text-red-600">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-green-100 text-green-600">
               <Timer className="w-4 h-4 animate-pulse" />
               <span className="text-sm font-medium">Offre limitée : Accès gratuit à vie pour les 1000 premiers inscrits ! 🚀</span>
             </div>
