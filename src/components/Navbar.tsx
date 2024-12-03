@@ -2,6 +2,7 @@ import { UserNav } from "./UserNav";
 import { NotificationBell } from "./notifications/NotificationBell";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
+import { Timer } from "lucide-react";
 
 export const Navbar = () => {
   const navigate = useNavigate();
@@ -22,9 +23,10 @@ export const Navbar = () => {
         </Button>
         
         <div className="flex-1 flex justify-center mb-4 sm:mb-0">
-          <p className="text-base sm:text-lg font-semibold text-primary animate-wave text-center">
-            L'application N°1 pour faire des économies
-          </p>
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-100 text-red-600">
+            <Timer className="w-4 h-4 animate-pulse" />
+            <span className="text-sm font-medium">Offre limitée : Accès gratuit à vie pour les 1000 premiers inscrits ! 🚀</span>
+          </div>
         </div>
 
         <div className="flex items-center space-x-4">
