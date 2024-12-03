@@ -1,13 +1,14 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Moon, Wind } from "lucide-react";
+import { Moon, Wind, HandshakeIcon } from "lucide-react";
 
 const NuitisPromo = () => {
   return (
-    <div className="space-y-2 mt-8">
-      <p className="text-sm text-neutral-600 italic text-center">
-        Découvrez notre partenaire privilégié
-      </p>
+    <div className="space-y-4 mt-8">
+      <h2 className="text-2xl font-bold text-gray-800 flex items-center gap-2 justify-center">
+        <HandshakeIcon className="h-6 w-6 text-primary" />
+        Nos Partenaires Privilégiés
+      </h2>
       <Card className="p-6 bg-gradient-to-br from-neutral-900 to-neutral-800 text-white hover:shadow-xl transition-shadow duration-300">
         <div className="flex items-center justify-between">
           <div className="flex-1 space-y-4">
