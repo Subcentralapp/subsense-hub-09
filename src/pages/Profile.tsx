@@ -38,15 +38,17 @@ export default function Profile() {
     <div className="min-h-screen bg-neutral-light">
       <ProfilePageHeader />
       <div className="max-w-4xl mx-auto px-4 space-y-6 animate-fade-in pb-8">
-        <Card className="p-6">
-          <ProfileHeader
-            profile={profile}
-            user={user}
-            onSignOut={handleSignOut}
-            onAvatarUpload={uploadAvatar}
-            onUpdateProfile={updateProfile}
-            uploading={uploading}
-          />
+        <Card className="p-6 overflow-hidden">
+          <div className="max-w-full">
+            <ProfileHeader
+              profile={profile}
+              user={user}
+              onSignOut={handleSignOut}
+              onAvatarUpload={uploadAvatar}
+              onUpdateProfile={updateProfile}
+              uploading={uploading}
+            />
+          </div>
         </Card>
 
         <Tabs defaultValue="account" className="w-full">
@@ -56,13 +58,29 @@ export default function Profile() {
           </TabsList>
           
           <TabsContent value="account" className="space-y-4">
-            <AccountInfo user={user} />
+            <Card className="p-6 overflow-hidden">
+              <div className="max-w-full">
+                <AccountInfo user={user} />
+              </div>
+            </Card>
           </TabsContent>
           
           <TabsContent value="security" className="space-y-4">
-            <SecurityInfo user={user} />
-            <PasswordManagement />
-            <AccountDeletion />
+            <Card className="p-6 overflow-hidden">
+              <div className="max-w-full">
+                <SecurityInfo user={user} />
+              </div>
+            </Card>
+            <Card className="p-6 overflow-hidden">
+              <div className="max-w-full">
+                <PasswordManagement />
+              </div>
+            </Card>
+            <Card className="p-6 overflow-hidden">
+              <div className="max-w-full">
+                <AccountDeletion />
+              </div>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>
