@@ -2,6 +2,7 @@ import { MessageSquare, Music, Play, Book, Heart, Globe, Zap, Gamepad, Video, Bo
 import { Button } from "@/components/ui/button";
 import { Application } from "@/types/application";
 import { useState } from 'react';
+import { toast } from "@/hooks/use-toast";
 
 interface ApplicationCardProps {
   app: Application;
@@ -49,6 +50,18 @@ export const ApplicationCard = ({ app, onAdd }: ApplicationCardProps) => {
   const [logoError, setLogoError] = useState(false);
   const logoUrl = app.logo_url || (logoError ? null : getClearbitLogoUrl(app.name || '', app.website_url));
 
+  const handleDiscover = () => {
+    if (!app.website_url) {
+      toast({
+        title: "Site web non disponible",
+        description: "Désolé, le lien vers le site web n'est pas disponible pour cette application.",
+        variant: "destructive"
+      });
+      return;
+    }
+    window.open(app.website_url, '_blank');
+  };
+
   return (
     <div className="flex flex-col p-4 bg-white rounded-lg border border-gray-100 hover:border-primary/20 transition-all hover:shadow-md w-full">
       <div className="flex items-center gap-3 mb-3">
@@ -78,11 +91,11 @@ export const ApplicationCard = ({ app, onAdd }: ApplicationCardProps) => {
       <div className="mt-auto">
         <p className="font-medium text-primary mb-2">{app.price}€/mois</p>
         <Button 
-          onClick={() => onAdd(app)}
+          onClick={handleDiscover}
           size="sm"
           className="w-full bg-primary/10 text-primary hover:bg-primary/20"
         >
-          Ajouter
+          Je découvre
         </Button>
       </div>
     </div>
