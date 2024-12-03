@@ -71,6 +71,7 @@ export const SubscriptionCard = ({ subscription, onEdit, onDelete, alternative }
           </p>
           <div className="space-y-2">
             <SubscriptionProgress 
+              subscriptionId={subscription.id}
               nextBilling={subscription.next_billing} 
               isTrial={subscription.is_trial}
               trialEndDate={subscription.trial_end_date}

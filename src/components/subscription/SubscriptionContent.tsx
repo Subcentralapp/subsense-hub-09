@@ -1,8 +1,6 @@
-import { Card } from "@/components/ui/card";
-import { SubscriptionProgress } from "./SubscriptionProgress";
-import { Subscription } from "@/types/subscription";
 import { SubscriptionCard } from "./SubscriptionCard";
 import { EmptySubscriptionState } from "./EmptySubscriptionState";
+import { Subscription } from "@/types/subscription";
 
 interface SubscriptionContentProps {
   subscriptions: Subscription[] | null;
@@ -16,21 +14,14 @@ export const SubscriptionContent = ({ subscriptions, onEdit, onDelete }: Subscri
   }
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       {subscriptions.map((subscription) => (
-        <Card key={subscription.id} className="p-6 space-y-4">
-          <SubscriptionCard
-            subscription={subscription}
-            onEdit={() => onEdit(subscription)}
-            onDelete={() => onDelete(subscription.id)}
-          />
-          <SubscriptionProgress
-            subscriptionId={subscription.id}
-            nextBilling={subscription.next_billing || new Date().toISOString()}
-            isTrial={subscription.is_trial}
-            trialEndDate={subscription.trial_end_date}
-          />
-        </Card>
+        <SubscriptionCard 
+          key={subscription.id} 
+          subscription={subscription}
+          onEdit={onEdit}
+          onDelete={onDelete}
+        />
       ))}
     </div>
   );
