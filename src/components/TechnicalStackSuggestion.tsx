@@ -8,6 +8,7 @@ import { ApplicationCard } from "./ApplicationCard";
 import { CustomStackBuilder } from "./stack/CustomStackBuilder";
 import { TrendingTools2025 } from "./TrendingTools2025";
 import { StackHeroBanner } from "./stack/StackHeroBanner";
+import { CategoryDiscovery } from './tools/CategoryDiscovery';
 
 export const TechnicalStackSuggestion = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -81,6 +82,8 @@ export const TechnicalStackSuggestion = () => {
       <div className="mt-12">
         <TrendingTools2025 />
       </div>
+
+      <CategoryDiscovery />
     </div>
   );
 };
