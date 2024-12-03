@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Rocket, Zap } from "lucide-react";
+import { ArrowRight, Timer, Zap } from "lucide-react";
 import { motion } from "framer-motion";
+import { SignupCounter } from "./SignupCounter";
 
 export const HeroSection = () => {
   const navigate = useNavigate();
@@ -20,12 +21,16 @@ export const HeroSection = () => {
               transition={{ duration: 0.5 }}
               className="space-y-4"
             >
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary mb-4">
+                <Timer className="w-4 h-4 animate-pulse" />
+                <span className="text-sm font-medium">Offre limitée dans le temps</span>
+              </div>
+              
               <h1 className="text-5xl sm:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
-                Centralisez, suivez et maîtrisez vos abonnements, gratuitement et en illimité !
+                Accès gratuit à vie pour les 1000 premiers inscrits !
               </h1>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto lg:mx-0">
-                Participez à la révolution de la gestion d'abonnements. Profitez de l'application aujourd'hui, 
-                soutenez-nous et débloquez des fonctionnalités premium à vie en rejoignant notre campagne de crowdfunding !
+                Soyez parmi les premiers à profiter gratuitement de SubaCentral et bénéficiez d'un accès illimité à nos fonctionnalités de base. Après les 1000 premiers utilisateurs, l'application coûtera 4,99€/mois.
               </p>
             </motion.div>
 
@@ -38,22 +43,10 @@ export const HeroSection = () => {
               <Button 
                 size="lg"
                 onClick={() => navigate("/auth")}
-                className="text-lg px-8 py-6 bg-primary hover:bg-primary/90 group"
+                className="text-lg px-8 py-6 bg-primary hover:bg-primary/90 group animate-pulse"
               >
-                J'utilise gratuitement
+                Je profite de l'offre gratuite
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
-              </Button>
-              <Button 
-                size="lg"
-                variant="outline"
-                onClick={() => {
-                  const premiumSection = document.getElementById('premium-features');
-                  premiumSection?.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="text-lg px-8 py-6 border-primary/20 hover:bg-primary/10 group"
-              >
-                <Rocket className="mr-2 h-5 w-5 group-hover:animate-bounce" />
-                Soutenir le projet
               </Button>
             </motion.div>
 
@@ -65,15 +58,15 @@ export const HeroSection = () => {
             >
               <div className="flex items-center gap-2">
                 <Zap className="h-4 w-4 text-primary" />
-                <span>100% Gratuit</span>
+                <span>Gestion illimitée</span>
               </div>
               <div className="flex items-center gap-2">
                 <Zap className="h-4 w-4 text-primary" />
-                <span>Sans limite</span>
+                <span>Notifications</span>
               </div>
               <div className="flex items-center gap-2">
                 <Zap className="h-4 w-4 text-primary" />
-                <span>Support inclus</span>
+                <span>Recommandations</span>
               </div>
             </motion.div>
           </div>
@@ -82,9 +75,11 @@ export const HeroSection = () => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="hidden lg:block lg:w-1/2"
+            className="lg:w-1/2 mt-12 lg:mt-0"
           >
-            <div className="relative">
+            <SignupCounter />
+            
+            <div className="relative mt-8">
               <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-2xl blur-3xl" />
               <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 shadow-2xl">
                 <div className="aspect-[16/9] rounded-lg overflow-hidden bg-gradient-to-br from-primary/5 to-secondary/5">

@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Timer } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
@@ -17,19 +17,23 @@ export const CTASection = () => {
             transition={{ duration: 0.5 }}
             className="relative bg-white/80 backdrop-blur-sm rounded-3xl p-12 text-center"
           >
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-100 text-red-600 mb-6">
+              <Timer className="w-4 h-4 animate-pulse" />
+              <span className="text-sm font-medium">Ne manquez pas cette opportunité !</span>
+            </div>
             <h2 className="text-4xl font-bold text-gray-900 mb-6">
-              Prêt à optimiser vos finances ?
+              L'offre gratuite à vie est limitée aux 1000 premiers inscrits
             </h2>
             <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-              Rejoignez des milliers d'utilisateurs qui font confiance à SubaCentral
-              pour gérer leurs abonnements et optimiser leurs dépenses.
+              Après les 1000 premiers utilisateurs, l'accès à SubaCentral sera facturé 4,99€/mois. 
+              Inscrivez-vous maintenant pour bénéficier de l'accès gratuit à vie !
             </p>
             <Button
               size="lg"
               onClick={() => navigate("/auth")}
-              className="text-lg px-8 py-6 bg-primary hover:bg-primary/90 group"
+              className="text-lg px-8 py-6 bg-primary hover:bg-primary/90 group animate-pulse"
             >
-              Commencer Gratuitement
+              Je m'inscris gratuitement
               <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
             </Button>
           </motion.div>
