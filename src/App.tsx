@@ -6,15 +6,10 @@ import Onboarding from "@/pages/Onboarding";
 import Dashboard from "@/pages/Dashboard";
 import Applications from "@/pages/Applications";
 import Subscriptions from "@/pages/Subscriptions";
-import Settings from "@/pages/Settings";
-import Invoices from "@/pages/Invoices";
-import Budget from "@/pages/Budget";
-import Statistics from "@/pages/Statistics";
 import { ThemeProvider } from "@/components/theme-provider";
 import Index from "@/pages/Index";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Header } from "./components/Header";
-import { Navbar } from "./components/Navbar";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -26,27 +21,6 @@ const queryClient = new QueryClient({
   },
 });
 
-// Layout component that includes Header
-const Layout = ({ children }: { children: React.ReactNode }) => {
-  return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <div className="pt-16"> {/* Add padding to account for fixed header */}
-        {children}
-      </div>
-    </div>
-  );
-};
-
-// Wrap each route with the Layout component
-const wrapWithLayout = (Component: React.ComponentType) => {
-  return () => (
-    <Layout>
-      <Component />
-    </Layout>
-  );
-};
-
 const router = createBrowserRouter([
   {
     path: "/",
@@ -54,7 +28,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/landing",
-    element: wrapWithLayout(Landing)(),
+    element: <Landing />,
   },
   {
     path: "/auth",
@@ -66,35 +40,15 @@ const router = createBrowserRouter([
   },
   {
     path: "/dashboard",
-    element: wrapWithLayout(Dashboard)(),
-  },
-  {
-    path: "/app/applications",
-    element: wrapWithLayout(Applications)(),
+    element: <Dashboard />,
   },
   {
     path: "/applications",
-    element: wrapWithLayout(Applications)(),
+    element: <Applications />,
   },
   {
     path: "/subscriptions",
-    element: wrapWithLayout(Subscriptions)(),
-  },
-  {
-    path: "/settings",
-    element: wrapWithLayout(Settings)(),
-  },
-  {
-    path: "/invoices",
-    element: wrapWithLayout(Invoices)(),
-  },
-  {
-    path: "/budget",
-    element: wrapWithLayout(Budget)(),
-  },
-  {
-    path: "/statistics",
-    element: wrapWithLayout(Statistics)(),
+    element: <Subscriptions />,
   },
 ]);
 
