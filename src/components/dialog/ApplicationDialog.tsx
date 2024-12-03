@@ -72,17 +72,17 @@ const ApplicationDialog = ({ applications, isLoading, onAddSubscription }: Appli
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="bg-primary hover:bg-primary/90">
+        <Button className="w-full sm:w-auto bg-primary hover:bg-primary/90 px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base rounded-lg sm:rounded-md">
           <Plus className="mr-2 h-4 w-4" />
           Ajouter un abonnement
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
-        <DialogHeader className="flex flex-row justify-between items-center">
-          <DialogTitle className="text-2xl font-bold">Choisir une application</DialogTitle>
+        <DialogHeader className="flex flex-col sm:flex-row justify-between items-center gap-4">
+          <DialogTitle className="text-xl sm:text-2xl font-bold">Choisir une application</DialogTitle>
           <button
             onClick={() => setShowCustomForm(!showCustomForm)}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors bg-neutral-light rounded-lg hover:bg-neutral-light/80"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-3 sm:px-4 py-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors bg-neutral-light rounded-lg hover:bg-neutral-light/80"
           >
             <Plus className="h-4 w-4" />
             Je ne trouve pas mon abonnement
