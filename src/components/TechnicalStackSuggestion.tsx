@@ -32,7 +32,7 @@ export const TechnicalStackSuggestion = () => {
           features: [],
           pros: null,
           cons: null,
-          website_url: rec.website_url || null, // Ajout de l'URL du site web
+          website_url: rec.website_url || '', // Ensure website_url is passed correctly
           logo_url: null,
           rating: null,
           review: null,
@@ -40,7 +40,7 @@ export const TechnicalStackSuggestion = () => {
         }))
     : [];
 
-  console.log('Recommended apps:', recommendedApps); // Pour le débogage
+  console.log('Recommended apps with URLs:', recommendedApps); // Debug log
 
   return (
     <div className="space-y-8">
