@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Application } from "@/types/application";
 import { CategoryCard } from "./stack/CategoryCard";
 import { ApplicationCard } from "./stack/ApplicationCard";
+import { StackSummary } from "./stack/StackSummary";
 
 const categories = [
   {
@@ -44,7 +45,7 @@ const categories = [
 
 export const TechnicalStackSuggestion = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedApps, setSelectedApps] = useState<string[]>([]);
+  const [selectedApps, setSelectedApps] = useState<Application[]>([]);
 
   const { data: applications } = useQuery({
     queryKey: ['applications'],
@@ -78,15 +79,20 @@ export const TechnicalStackSuggestion = () => {
 
   const handleCategorySelect = (categoryName: string) => {
     setSelectedCategory(categoryName);
-    setSelectedApps([]);
   };
 
-  const handleAppToggle = (appName: string) => {
-    setSelectedApps(prev => 
-      prev.includes(appName) 
-        ? prev.filter(name => name !== appName)
-        : [...prev, appName]
-    );
+  const handleAppToggle = (app: Application) => {
+    setSelectedApps(prev => {
+      const isAlreadySelected = prev.some(a => a.name === app.name);
+      if (isAlreadySelected) {
+        return prev.filter(a => a.name !== app.name);
+      }
+      return [...prev, app];
+    });
+  };
+
+  const handleRemoveApp = (appName: string) => {
+    setSelectedApps(prev => prev.filter(app => app.name !== appName));
   };
 
   const getAppDetails = (appName: string) => {
@@ -145,30 +151,20 @@ export const TechnicalStackSuggestion = () => {
                     <ApplicationCard
                       key={appName}
                       app={app}
-                      isSelected={selectedApps.includes(appName)}
-                      onToggle={() => handleAppToggle(appName)}
+                      onAdd={() => handleAppToggle(app)}
                     />
                   );
                 })}
             </div>
-
-            {selectedApps.length > 0 && (
-              <div className="mt-6">
-                <Button 
-                  className="w-full bg-primary hover:bg-primary/90"
-                  onClick={() => {
-                    // TODO: Implement adding selected apps to user's subscriptions
-                    console.log('Selected apps:', selectedApps);
-                  }}
-                >
-                  Ajouter à mes abonnements
-                  <Plus className="ml-2 h-4 w-4" />
-                </Button>
-              </div>
-            )}
           </Card>
         </motion.div>
       )}
+
+      {/* Résumé de la stack */}
+      <StackSummary 
+        selectedApps={selectedApps}
+        onRemoveApp={handleRemoveApp}
+      />
     </div>
   );
 };
