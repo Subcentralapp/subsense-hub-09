@@ -40,84 +40,33 @@ export const PremiumFeatures = () => {
             <Card className="bg-white/80 backdrop-blur-sm border-2 border-primary/20 h-full hover:shadow-xl transition-shadow duration-300">
               <CardHeader>
                 <CardTitle className="text-2xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                  Rejoignez la communauté Early Supporters et obtenez des avantages exclusifs à vie !
+                  Rejoignez la communauté Early Supporters !
                 </CardTitle>
-                <CardDescription className="space-y-4">
-                  <p className="text-base">
-                    Devenez membre de notre communauté d'Early Supporters et participez activement à l'évolution de SubaCentral.
-                  </p>
-                  <div className="bg-primary/5 rounded-lg p-4 space-y-3">
-                    <div className="flex items-start gap-3">
-                      <Users className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                      <div>
-                        <p className="text-sm font-semibold text-primary mb-1">Conseil des Supporters</p>
-                        <p className="text-sm text-gray-600">
-                          Votez pour les prochaines fonctionnalités et aidez-nous à façonner l'avenir de SubaCentral
-                        </p>
+                <CardDescription>
+                  <div className="space-y-6">
+                    <PricingComparison />
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.2 }}
+                      className="flex flex-col items-center gap-4 pt-4"
+                    >
+                      <Badge variant="secondary" className="py-2 px-4 text-sm flex items-center gap-2 animate-pulse">
+                        <BadgeCheck className="w-4 h-4" />
+                        <span>Badge Early Supporter à vie</span>
+                      </Badge>
+                      <div className="flex gap-4">
+                        <Button size="lg" className="font-semibold">
+                          Je soutiens pour 19,99€
+                        </Button>
+                        <Button variant="outline" size="lg">
+                          En savoir plus
+                        </Button>
                       </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Crown className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                      <div>
-                        <p className="text-sm font-semibold text-primary mb-1">Avantages à vie</p>
-                        <p className="text-sm text-gray-600">
-                          Gardez votre statut premium exclusif pour toujours, même après la période initiale
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Gift className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                      <div>
-                        <p className="text-sm font-semibold text-primary mb-1">Réductions permanentes</p>
-                        <p className="text-sm text-gray-600">
-                          Profitez de réductions exclusives sur vos abonnements préférés grâce à nos partenariats
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                      <div>
-                        <p className="text-sm font-semibold text-primary mb-1">Support prioritaire</p>
-                        <p className="text-sm text-gray-600">
-                          Bénéficiez d'une assistance VIP avec des réponses rapides et un accès direct à notre équipe
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <Rocket className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                      <div>
-                        <p className="text-sm font-semibold text-primary mb-1">Accès anticipé</p>
-                        <p className="text-sm text-gray-600">
-                          Découvrez et testez les nouvelles fonctionnalités en avant-première, avant tout le monde
-                        </p>
-                      </div>
-                    </div>
+                    </motion.div>
                   </div>
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-6">
-                <PricingComparison />
-                <FeatureGrid />
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: 0.2 }}
-                  className="flex flex-col items-center gap-4 pt-4"
-                >
-                  <Badge variant="secondary" className="py-2 px-4 text-sm flex items-center gap-2 animate-pulse">
-                    <BadgeCheck className="w-4 h-4" />
-                    <span>Badge Early Supporter à vie</span>
-                  </Badge>
-                  <div className="flex gap-4">
-                    <Button size="lg" className="font-semibold">
-                      Je soutiens pour 19,99€
-                    </Button>
-                    <Button variant="outline" size="lg">
-                      En savoir plus
-                    </Button>
-                  </div>
-                </motion.div>
-              </CardContent>
             </Card>
           </motion.div>
 
@@ -125,9 +74,9 @@ export const PremiumFeatures = () => {
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
-            className="space-y-6 flex flex-col"
+            className="space-y-6"
           >
-            <Card className="bg-white/80 backdrop-blur-sm border-2 border-primary/20 flex-grow hover:shadow-xl transition-shadow duration-300">
+            <Card className="bg-white/80 backdrop-blur-sm border-2 border-primary/20 hover:shadow-xl transition-shadow duration-300">
               <CardHeader>
                 <CardTitle className="text-lg bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                   Pourquoi devenir Early Supporter ?
@@ -138,46 +87,61 @@ export const PremiumFeatures = () => {
                   initial={{ opacity: 0, x: 20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3, delay: 0.1 }}
-                  className="flex items-center gap-2"
+                  className="flex items-start gap-3"
                 >
-                  <Crown className="w-5 h-5 text-primary" />
-                  <p className="text-sm">Un investissement unique pour des privilèges exclusifs à vie</p>
+                  <Users className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                  <div>
+                    <p className="text-sm font-semibold text-primary mb-1">Conseil des Supporters</p>
+                    <p className="text-sm text-gray-600">Votez pour les prochaines fonctionnalités</p>
+                  </div>
                 </motion.div>
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3, delay: 0.2 }}
-                  className="flex items-center gap-2"
+                  className="flex items-start gap-3"
                 >
-                  <Sparkles className="w-5 h-5 text-primary" />
-                  <p className="text-sm">Tarif unique de 19,99€ au lieu de 9,99€/mois</p>
+                  <Crown className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                  <div>
+                    <p className="text-sm font-semibold text-primary mb-1">Avantages à vie</p>
+                    <p className="text-sm text-gray-600">Gardez votre statut premium exclusif pour toujours</p>
+                  </div>
                 </motion.div>
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3, delay: 0.3 }}
-                  className="flex items-center gap-2"
+                  className="flex items-start gap-3"
                 >
-                  <Users className="w-5 h-5 text-primary" />
-                  <p className="text-sm">Faites partie des pionniers qui façonnent l'avenir de SubaCentral</p>
+                  <Gift className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                  <div>
+                    <p className="text-sm font-semibold text-primary mb-1">Réductions permanentes</p>
+                    <p className="text-sm text-gray-600">Profitez de réductions exclusives sur vos abonnements</p>
+                  </div>
                 </motion.div>
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3, delay: 0.4 }}
-                  className="flex items-center gap-2"
+                  className="flex items-start gap-3"
                 >
-                  <Shield className="w-5 h-5 text-primary" />
-                  <p className="text-sm">Vos données protégées avec les plus hauts standards de sécurité</p>
+                  <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                  <div>
+                    <p className="text-sm font-semibold text-primary mb-1">Support prioritaire</p>
+                    <p className="text-sm text-gray-600">Bénéficiez d'une assistance VIP</p>
+                  </div>
                 </motion.div>
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.3, delay: 0.5 }}
-                  className="flex items-center gap-2"
+                  className="flex items-start gap-3"
                 >
-                  <Rocket className="w-5 h-5 text-primary" />
-                  <p className="text-sm">Impact direct sur le développement de nouvelles fonctionnalités</p>
+                  <Rocket className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                  <div>
+                    <p className="text-sm font-semibold text-primary mb-1">Accès anticipé</p>
+                    <p className="text-sm text-gray-600">Testez les nouvelles fonctionnalités en avant-première</p>
+                  </div>
                 </motion.div>
               </CardContent>
             </Card>
