@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { Card } from "@/components/ui/card";
-import { Zap, X } from "lucide-react";
+import { Zap, X, ArrowRight } from "lucide-react";
 import { Application } from '@/types/application';
 import { StackSearch } from './StackSearch';
 import { toast } from '@/hooks/use-toast';
+import { motion } from "framer-motion";
 
 export const CustomStackBuilder = () => {
   const [tools, setTools] = useState<Application[]>([]);
@@ -26,7 +27,6 @@ export const CustomStackBuilder = () => {
   };
 
   const totalBudget = tools.reduce((sum, tool) => sum + tool.price, 0);
-  const allFeatures = Array.from(new Set(tools.flatMap(tool => tool.features || [])));
 
   return (
     <div className="space-y-4">
@@ -41,64 +41,58 @@ export const CustomStackBuilder = () => {
 
       {tools.length > 0 && (
         <div className="space-y-4">
-          <div className="flex flex-wrap gap-2">
-            {tools.map((tool) => (
-              <Card 
+          <div className="flex items-center flex-wrap gap-2">
+            {tools.map((tool, index) => (
+              <motion.div 
                 key={tool.id}
-                className="flex items-center gap-2 p-2 pr-3 bg-white hover:shadow-sm transition-shadow"
+                className="flex items-center"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3 }}
               >
-                {tool.logo_url ? (
-                  <img 
-                    src={tool.logo_url} 
-                    alt={tool.name}
-                    className="w-6 h-6 rounded object-contain"
-                  />
-                ) : (
-                  <div className="w-6 h-6 rounded bg-primary/10 flex items-center justify-center">
-                    <span className="text-xs font-semibold text-primary">
-                      {tool.name[0]}
-                    </span>
-                  </div>
+                <Card className="flex items-center gap-2 p-2 pr-3 bg-white hover:shadow-sm transition-shadow">
+                  {tool.logo_url ? (
+                    <img 
+                      src={tool.logo_url} 
+                      alt={tool.name}
+                      className="w-6 h-6 rounded object-contain"
+                    />
+                  ) : (
+                    <div className="w-6 h-6 rounded bg-primary/10 flex items-center justify-center">
+                      <span className="text-xs font-semibold text-primary">
+                        {tool.name[0]}
+                      </span>
+                    </div>
+                  )}
+                  <span className="text-sm font-medium">{tool.name}</span>
+                  <span className="text-sm text-primary">{tool.price}€</span>
+                  <button
+                    onClick={() => handleRemoveTool(tool.id)}
+                    className="ml-1 text-gray-400 hover:text-gray-600"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                </Card>
+                {index < tools.length - 1 && (
+                  <motion.div 
+                    className="mx-2"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.2 }}
+                  >
+                    <ArrowRight className="h-4 w-4 text-primary/60" />
+                  </motion.div>
                 )}
-                <span className="text-sm font-medium">{tool.name}</span>
-                <span className="text-sm text-primary">{tool.price}€</span>
-                <button
-                  onClick={() => handleRemoveTool(tool.id)}
-                  className="ml-1 text-gray-400 hover:text-gray-600"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </Card>
+              </motion.div>
             ))}
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <Card className="p-3 bg-primary/5 border-0">
-              <h4 className="text-sm font-medium text-gray-600 mb-1">Coût mensuel total</h4>
-              <span className="text-xl font-bold text-primary">
-                {totalBudget.toFixed(2)}€/mois
-              </span>
-            </Card>
-
-            <Card className="p-3 bg-white">
-              <h4 className="text-sm font-medium text-gray-600 mb-2">Fonctionnalités</h4>
-              <div className="flex flex-wrap gap-1">
-                {allFeatures.slice(0, 3).map((feature, idx) => (
-                  <span
-                    key={idx}
-                    className="px-2 py-1 bg-primary/5 text-primary text-xs rounded-full"
-                  >
-                    {feature}
-                  </span>
-                ))}
-                {allFeatures.length > 3 && (
-                  <span className="px-2 py-1 text-xs text-gray-500">
-                    +{allFeatures.length - 3}
-                  </span>
-                )}
-              </div>
-            </Card>
-          </div>
+          <Card className="p-3 bg-primary/5 border-0">
+            <h4 className="text-sm font-medium text-gray-600 mb-1">Coût mensuel total</h4>
+            <span className="text-xl font-bold text-primary">
+              {totalBudget.toFixed(2)}€/mois
+            </span>
+          </Card>
         </div>
       )}
     </div>
