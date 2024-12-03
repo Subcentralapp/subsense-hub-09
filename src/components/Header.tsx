@@ -48,18 +48,6 @@ export const Header = () => {
           <div className="flex justify-between items-center h-16">
             <Logo />
             <div className="flex items-center gap-4 sm:hidden">
-              {user ? (
-                <UserNav />
-              ) : (
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => navigate("/auth")}
-                  className="inline-flex items-center justify-center text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3 py-2 rounded-md"
-                >
-                  Connexion
-                </motion.button>
-              )}
               <Sheet>
                 <SheetTrigger asChild>
                   <button className="p-2">
@@ -82,6 +70,7 @@ export const Header = () => {
                   </nav>
                 </SheetContent>
               </Sheet>
+              {user && <UserNav />}
             </div>
           </div>
           
@@ -110,7 +99,9 @@ export const Header = () => {
           {/* Navigation - Desktop */}
           <div className="hidden sm:flex items-center space-x-4">
             <SupportMessage />
-            {user ? <UserNav /> : (
+            {user ? (
+              <UserNav />
+            ) : (
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
