@@ -6,6 +6,7 @@ import { stackCategories } from "@/data/stackSuggestions";
 import { Application } from "@/types/application";
 import { ApplicationCard } from "./ApplicationCard";
 import { CustomStackBuilder } from "./stack/CustomStackBuilder";
+import { TrendingTools2025 } from "./TrendingTools2025";
 
 export const TechnicalStackSuggestion = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -73,6 +74,10 @@ export const TechnicalStackSuggestion = () => {
       )}
 
       <CustomStackBuilder />
+      
+      <div className="mt-12">
+        <TrendingTools2025 />
+      </div>
     </div>
   );
 };
