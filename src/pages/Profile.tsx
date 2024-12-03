@@ -32,39 +32,47 @@ export default function Profile() {
   useEffect(() => {
     const getUser = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
+        const { data: { user }, error: userError } = await supabase.auth.getUser();
+        if (userError) throw userError;
+        
         if (!user) {
           navigate("/auth");
           return;
         }
+
         setUser(user);
         console.log("Current user:", user);
         
-        // First try to fetch the profile
-        let { data: profile, error } = await supabase
+        // Fetch the profile
+        const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('username, avatar_url')
           .eq('id', user.id)
           .single();
         
-        // If there's an error or no profile, create one
-        if (error || !profile) {
-          console.log("No profile found, creating one...");
-          const { data: newProfile, error: insertError } = await supabase
-            .from('profiles')
-            .insert([{ id: user.id }])
-            .select()
-            .single();
+        if (profileError) {
+          if (profileError.code === 'PGRST116') {
+            // Profile doesn't exist, create one
+            console.log("No profile found, creating one...");
+            const { data: newProfile, error: insertError } = await supabase
+              .from('profiles')
+              .insert([{ 
+                id: user.id,
+                username: user.email?.split('@')[0] // Set a default username
+              }])
+              .select()
+              .single();
+              
+            if (insertError) {
+              console.error("Error creating profile:", insertError);
+              throw insertError;
+            }
             
-          if (insertError) {
-            console.error("Error creating profile:", insertError);
-            throw insertError;
+            setProfile(newProfile);
+          } else {
+            throw profileError;
           }
-          
-          profile = newProfile;
-        }
-        
-        if (profile) {
+        } else {
           setProfile(profile);
         }
       } catch (error) {
