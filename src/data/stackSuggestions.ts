@@ -1,212 +1,142 @@
-export interface StackCategory {
-  name: string;
-  description: string;
-  color: string;
-  currentStack: string[];
-  recommendations: {
-    name: string;
-    description: string;
-    price?: string;
-  }[];
-}
-
-export const stackCategories: StackCategory[] = [
+export const stackCategories = [
   {
-    name: "Automatisation",
-    description: "Automatisez vos tâches répétitives",
-    color: "bg-purple-100",
-    currentStack: ["Make", "Airtable", "Google Sheets", "Pipedrive", "DocuSign"],
+    name: "Automatisation et développement sans code",
     recommendations: [
-      {
-        name: "Integromat",
-        description: "Pour ceux qui recherchent des automatisations avancées dans Make.",
-        price: "Intégré à Make"
-      },
-      {
-        name: "Coda",
-        description: "Combine automatisation et collaboration pour créer des workflows dynamiques avec des données issues de Google Sheets et Airtable.",
-        price: "Gratuit/Premium"
-      },
-      {
-        name: "Calendly",
-        description: "Planifiez automatiquement des réunions en intégrant Airtable ou Google Sheets.",
-        price: "Gratuit/Premium"
-      },
       {
         name: "Zapier",
-        description: "Alternative à Make pour les automatisations simples avec des intégrations rapides.",
-        price: "19.99€/mois"
+        price: "19.99",
+        description: "Automatisez vos tâches répétitives entre vos applications",
+        website_url: "https://zapier.com"
       },
       {
-        name: "Tally",
-        description: "Automatisation des formulaires connectés à Airtable.",
-        price: "Gratuit/Premium"
-      }
+        name: "Make (Integromat)",
+        price: "9.99",
+        description: "Plateforme d'automatisation visuelle puissante",
+        website_url: "https://www.make.com"
+      },
+      {
+        name: "Automate.io",
+        price: "9.00",
+        description: "Automatisez votre travail avec des intégrations simples",
+        website_url: "https://automate.io"
+      },
+      {
+        name: "Unito",
+        price: "10.00",
+        description: "Connectez vos outils pour une collaboration fluide",
+        website_url: "https://unito.io"
+      },
+      {
+        name: "Pipedream",
+        price: "0.00",
+        description: "Intégrez vos API et automatisez des workflows",
+        website_url: "https://pipedream.com"
+      },
     ]
   },
   {
-    name: "Design",
-    description: "Créez des designs professionnels",
-    color: "bg-pink-100",
-    currentStack: ["Adobe Illustrator", "Figma", "Canva", "Procreate", "Blender"],
+    name: "Gestion de projet",
     recommendations: [
       {
-        name: "Adobe Photoshop",
-        description: "Pour des retouches photo avancées en complément d'Illustrator.",
-        price: "24.99€/mois"
-      },
-      {
-        name: "Affinity Designer",
-        description: "Alternative économique à Illustrator pour les projets vectoriels.",
-        price: "69.99€ - achat unique"
-      },
-      {
-        name: "InVision",
-        description: "Ajoutez des outils de prototypage et de collaboration à Figma.",
-        price: "Gratuit/Premium"
-      },
-      {
-        name: "Krita",
-        description: "Dessin numérique en complément de Procreate pour PC/Mac.",
-        price: "Gratuit"
-      },
-      {
-        name: "Cinema 4D",
-        description: "Pour des animations 3D avancées, complément idéal à Blender.",
-        price: "59€/mois"
-      }
-    ]
-  },
-  {
-    name: "Productivité",
-    description: "Optimisez votre flux de travail",
-    color: "bg-blue-100",
-    currentStack: ["Notion", "Trello", "Slack", "Google Calendar", "ClickUp"],
-    recommendations: [
-      {
-        name: "Todoist",
-        description: "Gestion personnelle des tâches, intégrable avec Slack et Google Calendar.",
-        price: "Gratuit/Premium"
+        name: "Trello",
+        price: "0.00",
+        description: "Gestion de projet visuelle avec des tableaux",
+        website_url: "https://trello.com"
       },
       {
         name: "Asana",
-        description: "Alternative puissante à Trello pour les équipes.",
-        price: "Gratuit/Premium"
+        price: "10.99",
+        description: "Planifiez, organisez et gérez vos projets",
+        website_url: "https://asana.com"
       },
       {
-        name: "Obsidian",
-        description: "Prise de notes avancée avec des fonctionnalités de connectivité, complément à Notion.",
-        price: "Gratuit"
+        name: "Notion",
+        price: "4.00",
+        description: "Espace de travail tout-en-un pour notes et projets",
+        website_url: "https://www.notion.so"
       },
       {
-        name: "Zapier + Slack",
-        description: "Automatisez vos notifications Slack avec vos outils de productivité.",
-        price: "Variable"
+        name: "Monday.com",
+        price: "8.00",
+        description: "Gérez votre équipe avec des workflows personnalisés",
+        website_url: "https://monday.com"
       },
       {
-        name: "Clockify",
-        description: "Suivi du temps et productivité, parfait en complément de Trello ou ClickUp.",
-        price: "Gratuit/Premium"
-      }
+        name: "Basecamp",
+        price: "99.00",
+        description: "Outil de collaboration et de gestion de projet",
+        website_url: "https://basecamp.com"
+      },
     ]
   },
   {
-    name: "Marketing Digital",
-    description: "Développez votre présence en ligne",
-    color: "bg-green-100",
-    currentStack: ["HubSpot", "Hootsuite", "SEMrush", "Canva", "ActiveCampaign"],
+    name: "Communication",
     recommendations: [
       {
-        name: "Buffer",
-        description: "Alternative ou complément à Hootsuite pour planifier des posts sur les réseaux sociaux.",
-        price: "Gratuit/Premium"
+        name: "Slack",
+        price: "6.67",
+        description: "Communication d'équipe instantanée",
+        website_url: "https://slack.com"
       },
       {
-        name: "Google Analytics",
-        description: "Analyse du trafic web, essentiel en complément de SEMrush.",
-        price: "Gratuit"
+        name: "Microsoft Teams",
+        price: "5.00",
+        description: "Outil de collaboration et de communication",
+        website_url: "https://www.microsoft.com/en/microsoft-teams/group-chat-software"
       },
       {
-        name: "Mailchimp",
-        description: "Alternative ou complément à ActiveCampaign pour les petites entreprises.",
-        price: "Gratuit/Premium"
+        name: "Zoom",
+        price: "14.99",
+        description: "Visioconférence et webinaires",
+        website_url: "https://zoom.us"
       },
       {
-        name: "Mojo",
-        description: "Création de contenus vidéo et stories pour les réseaux sociaux, complément à Canva.",
-        price: "Gratuit/Premium"
+        name: "Discord",
+        price: "0.00",
+        description: "Plateforme de communication pour les communautés",
+        website_url: "https://discord.com"
       },
       {
-        name: "Ahrefs",
-        description: "Pour des recherches SEO approfondies en complément de SEMrush.",
-        price: "99€/mois"
-      }
+        name: "Google Meet",
+        price: "0.00",
+        description: "Communiquez par vidéo à travers le monde",
+        website_url: "https://meet.google.com"
+      },
     ]
   },
   {
-    name: "Intelligence Artificielle",
-    description: "Intégrez l'IA dans votre workflow",
-    color: "bg-indigo-100",
-    currentStack: ["ChatGPT", "Runway ML", "Synthesia", "DALL-E", "Jasper AI"],
+    name: "Gestion des tâches",
     recommendations: [
       {
-        name: "MidJourney",
-        description: "Génération d'images IA avancées, complément parfait à DALL-E.",
-        price: "10$/mois"
+        name: "Todoist",
+        price: "3.00",
+        description: "Gestion de tâches simple et efficace",
+        website_url: "https://todoist.com"
       },
       {
-        name: "DeepL",
-        description: "Traduction assistée par IA, utile pour les entreprises internationales.",
-        price: "Gratuit/Premium"
+        name: "ClickUp",
+        price: "0.00",
+        description: "Gestion de projets et de tâches tout-en-un",
+        website_url: "https://clickup.com"
       },
       {
-        name: "Descript",
-        description: "Édition audio et vidéo basée sur l'IA, complément à Runway ML.",
-        price: "Gratuit/Premium"
+        name: "Wunderlist",
+        price: "0.00",
+        description: "Créez et partagez des listes de tâches",
+        website_url: "https://www.wunderlist.com"
       },
       {
-        name: "Writesonic",
-        description: "Alternative ou complément à Jasper pour les contenus longs (blogs, landing pages).",
-        price: "12€/mois"
+        name: "Microsoft To Do",
+        price: "0.00",
+        description: "Application de gestion de tâches par Microsoft",
+        website_url: "https://todo.microsoft.com"
       },
       {
-        name: "Whisper AI",
-        description: "Transcription audio en texte assistée par l'IA, complément parfait à Synthesia.",
-        price: "Open-source"
-      }
+        name: "Any.do",
+        price: "0.00",
+        description: "Application de gestion de tâches et agenda",
+        website_url: "https://www.any.do"
+      },
     ]
   },
-  {
-    name: "Développement Web",
-    description: "Créez et déployez des applications web",
-    color: "bg-yellow-100",
-    currentStack: ["Bubble", "GitHub", "Vercel", "Webflow", "Visual Studio Code"],
-    recommendations: [
-      {
-        name: "Figma",
-        description: "Créez des maquettes interactives avant de passer au développement avec Webflow ou Bubble.",
-        price: "Gratuit/Premium"
-      },
-      {
-        name: "Netlify",
-        description: "Alternative ou complément à Vercel pour l'hébergement et le déploiement de sites.",
-        price: "Gratuit/Premium"
-      },
-      {
-        name: "Postman",
-        description: "Testez vos API en complément de GitHub et Visual Studio Code.",
-        price: "Gratuit/Premium"
-      },
-      {
-        name: "Sentry",
-        description: "Suivi des bugs et des performances en temps réel pour vos projets hébergés sur Vercel.",
-        price: "29€/mois"
-      },
-      {
-        name: "Tailwind CSS",
-        description: "Framework CSS moderne pour accélérer le développement front-end avec Webflow ou Visual Studio Code.",
-        price: "Gratuit"
-      }
-    ]
-  }
 ];
