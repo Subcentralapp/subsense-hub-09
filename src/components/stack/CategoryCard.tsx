@@ -16,10 +16,10 @@ export const CategoryCard = ({ name, description, color, isSelected, onSelect }:
       whileTap={{ scale: 0.98 }}
     >
       <Card
-        className={`p-4 cursor-pointer ${color} border-2 transition-all ${
+        className={`p-4 cursor-pointer ${color} transition-all ${
           isSelected 
-            ? 'border-primary shadow-lg' 
-            : 'border-transparent hover:border-primary/20'
+            ? 'border-2 border-primary shadow-lg' 
+            : 'border-2 border-transparent hover:border-primary/20'
         }`}
         onClick={onSelect}
       >
