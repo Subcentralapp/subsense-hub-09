@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { BadgeCheck, Sparkles } from "lucide-react";
+import { BadgeCheck, Sparkles, Users, Gift, Crown } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -49,8 +49,30 @@ export const PremiumFeatures = () => {
                 <CardTitle className="text-2xl bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                   Offre Early Supporter Exclusive
                 </CardTitle>
-                <CardDescription>
-                  Accédez à toutes les fonctionnalités premium pendant 1 an
+                <CardDescription className="space-y-4">
+                  <p className="text-base">
+                    Accédez à toutes les fonctionnalités premium dès que notre objectif de crowdfunding sera atteint !
+                  </p>
+                  <div className="bg-primary/5 rounded-lg p-4 space-y-3">
+                    <div className="flex items-start gap-3">
+                      <Users className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                      <p className="text-sm text-gray-600">
+                        <span className="font-semibold text-primary">Rejoignez notre conseil des supporters</span> : participez activement aux décisions sur l'évolution de la plateforme
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Crown className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                      <p className="text-sm text-gray-600">
+                        <span className="font-semibold text-primary">Avantages à vie</span> : conservez votre statut premium et vos privilèges exclusifs
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Gift className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                      <p className="text-sm text-gray-600">
+                        <span className="font-semibold text-primary">Réductions exclusives</span> : bénéficiez de tarifs préférentiels sur les abonnements aux applications les plus populaires
+                      </p>
+                    </div>
+                  </div>
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
