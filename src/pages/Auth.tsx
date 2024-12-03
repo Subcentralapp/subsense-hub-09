@@ -5,7 +5,7 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, CreditCard } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function Auth() {
@@ -100,6 +100,10 @@ export default function Auth() {
         <div className="text-center space-y-2 mt-8">
           <h1 className="text-2xl font-bold text-primary">Commencez à économiser dès aujourd'hui</h1>
           <p className="text-muted-foreground">Rejoignez des milliers d'utilisateurs qui optimisent déjà leurs dépenses</p>
+          <div className="flex items-center justify-center gap-2 text-sm text-primary mt-4">
+            <CreditCard className="w-4 h-4" />
+            <span>Aucune carte bancaire requise : créez votre compte en quelques secondes et profitez automatiquement de l'offre gratuite pour les 1000 premiers inscrits !</span>
+          </div>
         </div>
         
         <SupabaseAuth
