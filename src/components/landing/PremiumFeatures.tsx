@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { BadgeCheck, Sparkles, Users, Gift, Crown } from "lucide-react";
+import { BadgeCheck, Sparkles, Users, Gift, Crown, Heart, Shield, Rocket } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -24,8 +24,8 @@ export const PremiumFeatures = () => {
             transition={{ duration: 0.5 }}
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary mb-4"
           >
-            <Sparkles className="w-4 h-4" />
-            <span className="text-sm font-medium">Offre limitée</span>
+            <Heart className="w-4 h-4" />
+            <span className="text-sm font-medium">Soutenez l'innovation</span>
           </motion.div>
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
@@ -33,8 +33,11 @@ export const PremiumFeatures = () => {
             transition={{ duration: 0.5 }}
             className="text-4xl font-bold text-gray-900 mb-6"
           >
-            Devenez Early Supporter
+            Ensemble, créons l'avenir de la gestion d'abonnements
           </motion.h2>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+            En devenant Early Supporter, vous contribuez directement au développement de nouvelles fonctionnalités et à l'amélioration continue de SubaCentral.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -51,26 +54,53 @@ export const PremiumFeatures = () => {
                 </CardTitle>
                 <CardDescription className="space-y-4">
                   <p className="text-base">
-                    Accédez à toutes les fonctionnalités premium dès que notre objectif de crowdfunding sera atteint !
+                    Rejoignez notre communauté d'Early Supporters et bénéficiez d'avantages exclusifs dès que notre objectif de crowdfunding sera atteint !
                   </p>
                   <div className="bg-primary/5 rounded-lg p-4 space-y-3">
                     <div className="flex items-start gap-3">
                       <Users className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                      <p className="text-sm text-gray-600">
-                        <span className="font-semibold text-primary">Rejoignez notre conseil des supporters</span> : participez activement aux décisions sur l'évolution de la plateforme
-                      </p>
+                      <div>
+                        <p className="text-sm font-semibold text-primary mb-1">Conseil des Supporters</p>
+                        <p className="text-sm text-gray-600">
+                          Participez activement aux décisions sur l'évolution de la plateforme et votez pour les prochaines fonctionnalités
+                        </p>
+                      </div>
                     </div>
                     <div className="flex items-start gap-3">
                       <Crown className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                      <p className="text-sm text-gray-600">
-                        <span className="font-semibold text-primary">Avantages à vie</span> : conservez votre statut premium et vos privilèges exclusifs
-                      </p>
+                      <div>
+                        <p className="text-sm font-semibold text-primary mb-1">Avantages à vie</p>
+                        <p className="text-sm text-gray-600">
+                          Conservez votre statut premium et vos privilèges exclusifs même après la période initiale
+                        </p>
+                      </div>
                     </div>
                     <div className="flex items-start gap-3">
                       <Gift className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
-                      <p className="text-sm text-gray-600">
-                        <span className="font-semibold text-primary">Réductions exclusives</span> : bénéficiez de tarifs préférentiels sur les abonnements aux applications les plus populaires
-                      </p>
+                      <div>
+                        <p className="text-sm font-semibold text-primary mb-1">Réductions exclusives</p>
+                        <p className="text-sm text-gray-600">
+                          Accédez à des réductions permanentes sur les abonnements aux applications les plus populaires
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Shield className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                      <div>
+                        <p className="text-sm font-semibold text-primary mb-1">Support prioritaire</p>
+                        <p className="text-sm text-gray-600">
+                          Bénéficiez d'une assistance dédiée et de réponses rapides à vos questions
+                        </p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Rocket className="w-5 h-5 text-primary flex-shrink-0 mt-1" />
+                      <div>
+                        <p className="text-sm font-semibold text-primary mb-1">Accès anticipé</p>
+                        <p className="text-sm text-gray-600">
+                          Testez les nouvelles fonctionnalités en avant-première et participez à leur évolution
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </CardDescription>
