@@ -6,7 +6,7 @@ import { SupportMessage } from "./header/SupportMessage";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { UserNav } from "./UserNav";
-import { Timer, Menu } from "lucide-react";
+import { Timer, Menu, BarChart, Receipt, ArrowRightLeft, AppWindow } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 
 export const Header = () => {
@@ -27,6 +27,13 @@ export const Header = () => {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  const navigationItems = [
+    { icon: BarChart, label: "Tableau de bord", path: "/dashboard" },
+    { icon: Receipt, label: "Paiements", path: "/dashboard?tab=payments" },
+    { icon: ArrowRightLeft, label: "Comparer", path: "/dashboard?tab=compare" },
+    { icon: AppWindow, label: "Applications", path: "/dashboard?tab=apps" },
+  ];
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-sm z-50">
@@ -56,8 +63,16 @@ export const Header = () => {
                 </SheetTrigger>
                 <SheetContent>
                   <nav className="flex flex-col gap-4 mt-8">
-                    <a href="/dashboard" className="text-lg font-medium">Dashboard</a>
-                    <a href="/profile" className="text-lg font-medium">Profil</a>
+                    {navigationItems.map((item) => (
+                      <a 
+                        key={item.label}
+                        href={item.path}
+                        className="flex items-center gap-3 text-lg font-medium hover:text-primary transition-colors"
+                      >
+                        <item.icon className="h-5 w-5" />
+                        {item.label}
+                      </a>
+                    ))}
                     <SupportMessage />
                   </nav>
                 </SheetContent>
