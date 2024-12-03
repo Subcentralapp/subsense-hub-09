@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { BackgroundLines } from "./header/BackgroundLines";
 import { Logo } from "./header/Logo";
 import { SupportMessage } from "./header/SupportMessage";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
 import { UserNav } from "./UserNav";
 import { Timer, Menu, BarChart, Receipt, ArrowRightLeft, AppWindow } from "lucide-react";
@@ -12,6 +12,7 @@ import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 export const Header = () => {
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -29,11 +30,15 @@ export const Header = () => {
   }, []);
 
   const navigationItems = [
-    { icon: BarChart, label: "Tableau de bord", path: "/dashboard" },
-    { icon: Receipt, label: "Paiements", path: "/dashboard?tab=payments" },
-    { icon: ArrowRightLeft, label: "Comparer", path: "/dashboard?tab=compare" },
-    { icon: AppWindow, label: "Applications", path: "/dashboard?tab=apps" },
+    { icon: BarChart, label: "Tableau de bord", path: "/dashboard", tab: "dashboard" },
+    { icon: Receipt, label: "Paiements", path: "/dashboard", tab: "payments" },
+    { icon: ArrowRightLeft, label: "Comparer", path: "/dashboard", tab: "compare" },
+    { icon: AppWindow, label: "Applications", path: "/dashboard", tab: "apps" },
   ];
+
+  const handleNavigation = (path: string, tab: string) => {
+    navigate(path, { state: { activeTab: tab } });
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-sm z-50">
@@ -64,14 +69,14 @@ export const Header = () => {
                 <SheetContent>
                   <nav className="flex flex-col gap-4 mt-8">
                     {navigationItems.map((item) => (
-                      <a 
+                      <button 
                         key={item.label}
-                        href={item.path}
-                        className="flex items-center gap-3 text-lg font-medium hover:text-primary transition-colors"
+                        onClick={() => handleNavigation(item.path, item.tab)}
+                        className="flex items-center gap-3 text-lg font-medium hover:text-primary transition-colors text-left"
                       >
                         <item.icon className="h-5 w-5" />
                         {item.label}
-                      </a>
+                      </button>
                     ))}
                     <SupportMessage />
                   </nav>
