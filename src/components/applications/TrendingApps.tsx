@@ -10,13 +10,19 @@ export const TrendingApps = () => {
   const { data: trendingApps } = useQuery({
     queryKey: ['trending-apps'],
     queryFn: async () => {
+      console.log("Fetching trending apps...");
       const { data, error } = await supabase
         .from('applications')
         .select('*')
         .limit(6)
         .order('users_count', { ascending: false });
       
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching trending apps:", error);
+        throw error;
+      }
+      
+      console.log("Raw trending apps data:", data);
       
       return (data || []).map(app => ({
         id: app.id,
@@ -39,6 +45,8 @@ export const TrendingApps = () => {
       })) as Application[];
     }
   });
+
+  console.log("Rendered trending apps:", trendingApps);
 
   return (
     <section className="space-y-6">
