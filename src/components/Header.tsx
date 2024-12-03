@@ -6,6 +6,7 @@ import { SupportMessage } from "./header/SupportMessage";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { UserNav } from "./UserNav";
+import { Timer } from "lucide-react";
 
 export const Header = () => {
   const [user, setUser] = useState<any>(null);
@@ -26,23 +27,6 @@ export const Header = () => {
     return () => subscription.unsubscribe();
   }, []);
 
-  const handleTabChange = (path: string) => {
-    const [basePath, queryParams] = path.split('?');
-    if (queryParams) {
-      const tab = queryParams.split('=')[1];
-      navigate(basePath, { state: { activeTab: tab } });
-    } else {
-      navigate(path);
-    }
-  };
-
-  const navigationItems = [
-    { label: "Tableau de bord", path: "/dashboard" },
-    { label: "Paiements", path: "/dashboard?tab=payments" },
-    { label: "Comparer", path: "/dashboard?tab=compare" },
-    { label: "Applications", path: "/dashboard?tab=apps" },
-  ];
-
   return (
     <header className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-sm z-50">
       <BackgroundLines />
@@ -50,20 +34,13 @@ export const Header = () => {
         <div className="flex justify-between items-center h-16">
           <Logo />
           
-          {/* Navigation Menu */}
-          <nav className="hidden md:flex space-x-8">
-            {navigationItems.map((item) => (
-              <motion.button
-                key={item.label}
-                onClick={() => handleTabChange(item.path)}
-                className="text-neutral hover:text-primary transition-colors"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                {item.label}
-              </motion.button>
-            ))}
-          </nav>
+          {/* Message promotionnel */}
+          <div className="flex-1 flex justify-center">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-red-100 text-red-600">
+              <Timer className="w-4 h-4 animate-pulse" />
+              <span className="text-sm font-medium">Offre limitée : Accès gratuit à vie pour les 1000 premiers inscrits ! 🚀</span>
+            </div>
+          </div>
 
           <div className="flex items-center space-x-4">
             <SupportMessage />
