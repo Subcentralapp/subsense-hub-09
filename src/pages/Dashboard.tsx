@@ -17,8 +17,11 @@ const Dashboard = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
+      console.log("🔍 Checking authentication status...");
       const { data: { user } } = await supabase.auth.getUser();
+      
       if (!user) {
+        console.log("❌ No user found, redirecting to auth");
         toast({
           title: "Session expirée",
           description: "Veuillez vous reconnecter",
@@ -28,18 +31,8 @@ const Dashboard = () => {
         return;
       }
 
-      const { data: preferences } = await supabase
-        .from('user_preferences')
-        .select('*')
-        .eq('id', user.id)
-        .single();
-
-      if (!preferences) {
-        navigate("/onboarding");
-        return;
-      }
-
-      console.log("User authenticated and onboarding completed");
+      // On vérifie uniquement si l'utilisateur est authentifié
+      console.log("✅ User is authenticated");
     };
 
     checkAuth();
