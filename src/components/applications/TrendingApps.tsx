@@ -10,19 +10,13 @@ export const TrendingApps = () => {
   const { data: trendingApps } = useQuery({
     queryKey: ['trending-apps'],
     queryFn: async () => {
-      console.log("Fetching trending apps...");
       const { data, error } = await supabase
         .from('applications')
         .select('*')
         .limit(6)
-        .order('users_count', { ascending: false });
+        .order('NOMBRE D\'UTILISATEURS', { ascending: false });
       
-      if (error) {
-        console.error("Error fetching trending apps:", error);
-        throw error;
-      }
-      
-      console.log("Raw trending apps data:", data);
+      if (error) throw error;
       
       return (data || []).map(app => ({
         id: app.id,
@@ -46,7 +40,9 @@ export const TrendingApps = () => {
     }
   });
 
-  console.log("Rendered trending apps:", trendingApps);
+  if (!trendingApps?.length) {
+    return null;
+  }
 
   return (
     <section className="space-y-6">
@@ -62,7 +58,7 @@ export const TrendingApps = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {trendingApps?.map((app) => (
+        {trendingApps.map((app) => (
           <motion.div
             key={app.id}
             initial={{ opacity: 0, y: 20 }}
@@ -77,6 +73,10 @@ export const TrendingApps = () => {
                     src={app.logo_url} 
                     alt={app.name} 
                     className="w-12 h-12 rounded-lg object-contain bg-gray-50"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(app.name)}&background=random`;
+                    }}
                   />
                 ) : (
                   <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
