@@ -12,6 +12,7 @@ import Statistics from "@/pages/Statistics";
 import { ThemeProvider } from "@/components/theme-provider";
 import Index from "@/pages/Index";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Header } from "@/components/Header";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -23,46 +24,55 @@ const queryClient = new QueryClient({
   },
 });
 
+const Layout = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <>
+      <Header />
+      {children}
+    </>
+  );
+};
+
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Index />,
+    element: <Layout><Index /></Layout>,
   },
   {
     path: "/landing",
-    element: <Landing />,
+    element: <Layout><Landing /></Layout>,
   },
   {
     path: "/auth",
-    element: <Auth />,
+    element: <Layout><Auth /></Layout>,
   },
   {
     path: "/onboarding",
-    element: <Onboarding />,
+    element: <Layout><Onboarding /></Layout>,
   },
   {
     path: "/dashboard",
-    element: <Dashboard />,
+    element: <Layout><Dashboard /></Layout>,
   },
   {
     path: "/subscriptions",
-    element: <Subscriptions />,
+    element: <Layout><Subscriptions /></Layout>,
   },
   {
     path: "/settings",
-    element: <Settings />,
+    element: <Layout><Settings /></Layout>,
   },
   {
     path: "/invoices",
-    element: <Invoices />,
+    element: <Layout><Invoices /></Layout>,
   },
   {
     path: "/budget",
-    element: <Budget />,
+    element: <Layout><Budget /></Layout>,
   },
   {
     path: "/statistics",
-    element: <Statistics />,
+    element: <Layout><Statistics /></Layout>,
   },
 ]);
 
