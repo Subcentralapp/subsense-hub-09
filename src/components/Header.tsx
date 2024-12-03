@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { BackgroundLines } from "./header/BackgroundLines";
 import { Logo } from "./header/Logo";
 import { SupportMessage } from "./header/SupportMessage";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { UserNav } from "./UserNav";
 import { Timer, Menu, BarChart, Receipt, ArrowRightLeft, AppWindow } from "lucide-react";
@@ -12,7 +12,6 @@ import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 export const Header = () => {
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
-  const location = useLocation();
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -46,7 +45,17 @@ export const Header = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <div className="flex flex-col sm:flex-row sm:items-center">
           <div className="flex justify-between items-center h-16">
-            <Logo />
+            {/* Mobile Layout */}
+            <div className="flex items-center gap-4 sm:hidden">
+              {user && <UserNav />}
+            </div>
+            
+            {/* Logo - Centered on mobile */}
+            <div className="absolute left-1/2 transform -translate-x-1/2 sm:relative sm:left-0 sm:transform-none">
+              <Logo />
+            </div>
+
+            {/* Menu Hamburger - Right side on mobile */}
             <div className="flex items-center gap-4 sm:hidden">
               <Sheet>
                 <SheetTrigger asChild>
@@ -70,7 +79,6 @@ export const Header = () => {
                   </nav>
                 </SheetContent>
               </Sheet>
-              {user && <UserNav />}
             </div>
           </div>
           
