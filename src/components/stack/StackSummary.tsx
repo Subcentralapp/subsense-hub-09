@@ -8,7 +8,7 @@ import jsPDF from "jspdf";
 
 interface StackSummaryProps {
   selectedApps: Application[];
-  onRemoveApp: (appName: string) => void;
+  onRemoveApp: (app: Application) => void;
 }
 
 export const StackSummary = ({ selectedApps, onRemoveApp }: StackSummaryProps) => {
@@ -102,7 +102,7 @@ export const StackSummary = ({ selectedApps, onRemoveApp }: StackSummaryProps) =
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => onRemoveApp(app.name)}
+                    onClick={() => onRemoveApp(app)}
                     className="text-gray-500 hover:text-red-500"
                   >
                     <X className="h-4 w-4" />

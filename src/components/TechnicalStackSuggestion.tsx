@@ -5,22 +5,23 @@ import { CategoryList } from "./stack/CategoryList";
 import { StackSummary } from "./stack/StackSummary";
 import { CustomStackBuilder } from "./stack/CustomStackBuilder";
 import { stackCategories } from "@/data/stackSuggestions";
+import { Application } from "@/types/application";
 
 export const TechnicalStackSuggestion = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedApps, setSelectedApps] = useState<string[]>([]);
+  const [selectedApps, setSelectedApps] = useState<Application[]>([]);
 
   const handleCategorySelect = (categoryName: string) => {
     setSelectedCategory(categoryName === "" ? null : categoryName);
   };
 
-  const handleAppToggle = (appName: string) => {
+  const handleAppToggle = (app: Application) => {
     setSelectedApps(prev => {
-      const isAlreadySelected = prev.includes(appName);
+      const isAlreadySelected = prev.some(a => a.name === app.name);
       if (isAlreadySelected) {
-        return prev.filter(a => a !== appName);
+        return prev.filter(a => a.name !== app.name);
       }
-      return [...prev, appName];
+      return [...prev, app];
     });
   };
 
@@ -44,7 +45,7 @@ export const TechnicalStackSuggestion = () => {
         >
           <StackSummary
             selectedApps={selectedApps}
-            onRemoveApp={(appName) => handleAppToggle(appName)}
+            onRemoveApp={(app) => handleAppToggle(app)}
           />
         </motion.div>
       )}
