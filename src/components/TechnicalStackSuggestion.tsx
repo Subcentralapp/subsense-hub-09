@@ -7,6 +7,7 @@ import { Application } from "@/types/application";
 import { ApplicationCard } from "./ApplicationCard";
 import { CustomStackBuilder } from "./stack/CustomStackBuilder";
 import { TrendingTools2025 } from "./TrendingTools2025";
+import { StackHeroBanner } from "./stack/StackHeroBanner";
 
 export const TechnicalStackSuggestion = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
@@ -40,6 +41,8 @@ export const TechnicalStackSuggestion = () => {
 
   return (
     <div className="space-y-8">
+      <StackHeroBanner />
+      
       <div className="flex items-center gap-2 mb-6">
         <Layers className="h-6 w-6 text-primary" />
         <h2 className="text-2xl font-semibold">Créez votre Stack Technique</h2>
