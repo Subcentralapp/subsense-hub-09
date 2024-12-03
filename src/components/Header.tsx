@@ -6,7 +6,8 @@ import { SupportMessage } from "./header/SupportMessage";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { UserNav } from "./UserNav";
-import { Timer } from "lucide-react";
+import { Timer, Menu } from "lucide-react";
+import { Sheet, SheetContent, SheetTrigger } from "./ui/sheet";
 
 export const Header = () => {
   const [user, setUser] = useState<any>(null);
@@ -34,8 +35,10 @@ export const Header = () => {
         <div className="flex flex-col sm:flex-row sm:items-center">
           <div className="flex justify-between items-center h-16">
             <Logo />
-            <div className="sm:hidden">
-              {user ? <UserNav /> : (
+            <div className="flex items-center gap-4 sm:hidden">
+              {user ? (
+                <UserNav />
+              ) : (
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -45,6 +48,20 @@ export const Header = () => {
                   Connexion
                 </motion.button>
               )}
+              <Sheet>
+                <SheetTrigger asChild>
+                  <button className="p-2">
+                    <Menu className="h-6 w-6" />
+                  </button>
+                </SheetTrigger>
+                <SheetContent>
+                  <nav className="flex flex-col gap-4 mt-8">
+                    <a href="/dashboard" className="text-lg font-medium">Dashboard</a>
+                    <a href="/profile" className="text-lg font-medium">Profil</a>
+                    <SupportMessage />
+                  </nav>
+                </SheetContent>
+              </Sheet>
             </div>
           </div>
           
