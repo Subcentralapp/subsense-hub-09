@@ -7,23 +7,32 @@ const Index = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
+      console.log("🔍 Checking authentication status...");
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        navigate("/auth");
+        console.log("👤 No user found, redirecting to landing page");
+        navigate("/landing");
         return;
       }
 
-      // Vérifier si l'utilisateur a complété l'onboarding
-      const { data: preferences } = await supabase
+      // Vérifier si l'utilisateur a déjà complété l'onboarding
+      const { data: preferences, error } = await supabase
         .from('user_preferences')
         .select('*')
         .eq('id', user.id)
         .single();
 
+      if (error) {
+        console.error("❌ Error checking user preferences:", error);
+      }
+
+      // Si l'utilisateur vient de s'inscrire et n'a pas de préférences
       if (!preferences) {
+        console.log("🆕 New user detected, redirecting to onboarding");
         navigate("/onboarding");
       } else {
+        console.log("✅ User has completed onboarding, redirecting to dashboard");
         navigate("/dashboard");
       }
     };
@@ -31,7 +40,7 @@ const Index = () => {
     checkAuth();
   }, [navigate]);
 
-  return null; // Cette page est juste un redirecteur
+  return null;
 };
 
 export default Index;
