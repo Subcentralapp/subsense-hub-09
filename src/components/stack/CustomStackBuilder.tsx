@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Card } from "@/components/ui/card";
-import { Zap } from "lucide-react";
+import { Zap, X } from "lucide-react";
 import { Application } from '@/types/application';
 import { StackSearch } from './StackSearch';
 import { toast } from '@/hooks/use-toast';
@@ -21,7 +21,12 @@ export const CustomStackBuilder = () => {
     setTools(prev => [...prev, app]);
   };
 
+  const handleRemoveTool = (appId: number) => {
+    setTools(prev => prev.filter(tool => tool.id !== appId));
+  };
+
   const totalBudget = tools.reduce((sum, tool) => sum + tool.price, 0);
+  const allFeatures = Array.from(new Set(tools.flatMap(tool => tool.features || [])));
 
   return (
     <div className="space-y-4">
@@ -35,41 +40,65 @@ export const CustomStackBuilder = () => {
       </Card>
 
       {tools.length > 0 && (
-        <div className="space-y-3">
-          {tools.map((tool) => (
-            <Card 
-              key={tool.id}
-              className="p-3 bg-white hover:shadow-sm transition-shadow"
-            >
-              <div className="flex justify-between items-center">
-                <div>
-                  <h4 className="font-medium text-gray-900">{tool.name}</h4>
-                  <p className="text-sm text-primary">{tool.price}€/mois</p>
-                </div>
-                {tool.features && tool.features.length > 0 && (
-                  <div className="flex flex-wrap gap-2">
-                    {tool.features.slice(0, 2).map((feature, idx) => (
-                      <span
-                        key={idx}
-                        className="px-2 py-1 bg-primary/5 text-primary text-xs rounded-full"
-                      >
-                        {feature}
-                      </span>
-                    ))}
+        <div className="space-y-4">
+          <div className="flex flex-wrap gap-2">
+            {tools.map((tool) => (
+              <Card 
+                key={tool.id}
+                className="flex items-center gap-2 p-2 pr-3 bg-white hover:shadow-sm transition-shadow"
+              >
+                {tool.logo_url ? (
+                  <img 
+                    src={tool.logo_url} 
+                    alt={tool.name}
+                    className="w-6 h-6 rounded object-contain"
+                  />
+                ) : (
+                  <div className="w-6 h-6 rounded bg-primary/10 flex items-center justify-center">
+                    <span className="text-xs font-semibold text-primary">
+                      {tool.name[0]}
+                    </span>
                   </div>
                 )}
-              </div>
-            </Card>
-          ))}
+                <span className="text-sm font-medium">{tool.name}</span>
+                <span className="text-sm text-primary">{tool.price}€</span>
+                <button
+                  onClick={() => handleRemoveTool(tool.id)}
+                  className="ml-1 text-gray-400 hover:text-gray-600"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </Card>
+            ))}
+          </div>
 
-          <Card className="p-4 bg-primary/5 border-0">
-            <div className="flex justify-between items-center">
-              <span className="text-gray-600">Coût mensuel total</span>
+          <div className="grid grid-cols-2 gap-4">
+            <Card className="p-3 bg-primary/5 border-0">
+              <h4 className="text-sm font-medium text-gray-600 mb-1">Coût mensuel total</h4>
               <span className="text-xl font-bold text-primary">
                 {totalBudget.toFixed(2)}€/mois
               </span>
-            </div>
-          </Card>
+            </Card>
+
+            <Card className="p-3 bg-white">
+              <h4 className="text-sm font-medium text-gray-600 mb-2">Fonctionnalités</h4>
+              <div className="flex flex-wrap gap-1">
+                {allFeatures.slice(0, 3).map((feature, idx) => (
+                  <span
+                    key={idx}
+                    className="px-2 py-1 bg-primary/5 text-primary text-xs rounded-full"
+                  >
+                    {feature}
+                  </span>
+                ))}
+                {allFeatures.length > 3 && (
+                  <span className="px-2 py-1 text-xs text-gray-500">
+                    +{allFeatures.length - 3}
+                  </span>
+                )}
+              </div>
+            </Card>
+          </div>
         </div>
       )}
     </div>
