@@ -22,15 +22,15 @@ export const HeroSection = () => {
               className="space-y-4"
             >
               <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary mb-4">
-                <Timer className="w-4 h-4 animate-pulse" />
-                <span className="text-sm font-medium">Offre limitée dans le temps</span>
+                <Timer className="w-4 h-4" />
+                <span className="text-sm font-medium">L'application N°1 pour faire des économies</span>
               </div>
               
               <h1 className="text-5xl sm:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
-                Accès gratuit à vie pour les 1000 premiers inscrits !
+                Reprenez le contrôle de vos abonnements
               </h1>
               <p className="text-xl text-muted-foreground max-w-2xl mx-auto lg:mx-0">
-                Soyez parmi les premiers à profiter gratuitement de SubaCentral et bénéficiez d'un accès illimité à nos fonctionnalités de base. Après les 1000 premiers utilisateurs, l'application coûtera 4,99€/mois.
+                Gérez tous vos abonnements en un seul endroit, recevez des alertes intelligentes et découvrez des alternatives plus économiques pour optimiser vos dépenses.
               </p>
             </motion.div>
 
@@ -43,9 +43,9 @@ export const HeroSection = () => {
               <Button 
                 size="lg"
                 onClick={() => navigate("/auth")}
-                className="text-lg px-8 py-6 bg-primary hover:bg-primary/90 group animate-pulse"
+                className="text-lg px-8 py-6 bg-primary hover:bg-primary/90 group"
               >
-                Je profite de l'offre gratuite
+                Commencer gratuitement
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
             </motion.div>

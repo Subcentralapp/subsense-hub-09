@@ -30,27 +30,20 @@ export const SignupCounter = () => {
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.5 }}
-        className="bg-white/80 backdrop-blur-sm border-2 border-primary/20 rounded-xl p-6 text-center"
+        className="glass-card rounded-xl p-4 text-center"
       >
-        <div className="mb-4">
-          <div className="text-4xl font-bold text-primary mb-2">{count}</div>
-          <div className="text-sm text-gray-600">inscrits sur 1000</div>
-        </div>
-        <div className="w-full bg-gray-200 rounded-full h-2 mb-4">
+        <div className="text-sm text-gray-600 mb-2">Offre spéciale de lancement</div>
+        <div className="w-full bg-gray-200 rounded-full h-1.5 mb-2">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${(count / 1000) * 100}%` }}
             transition={{ duration: 1, ease: "easeOut" }}
-            className="bg-primary rounded-full h-2"
+            className="bg-primary rounded-full h-1.5"
           />
         </div>
-        <motion.div
-          animate={{ scale: [1, 1.05, 1] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="text-sm font-semibold text-red-500"
-        >
-          Plus que {remainingSpots} places gratuites !
-        </motion.div>
+        <div className="text-xs text-primary font-medium">
+          Gratuit à vie pour les {remainingSpots} prochains inscrits
+        </div>
       </motion.div>
     </div>
   );
