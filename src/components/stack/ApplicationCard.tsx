@@ -5,23 +5,18 @@ import { Application } from "@/types/application";
 
 interface ApplicationCardProps {
   app: Application;
-  isSelected: boolean;
-  onToggle: () => void;
+  onAdd: () => void;
 }
 
-export const ApplicationCard = ({ app, isSelected, onToggle }: ApplicationCardProps) => {
+export const ApplicationCard = ({ app, onAdd }: ApplicationCardProps) => {
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
       whileTap={{ scale: 0.98 }}
     >
       <Card 
-        className={`p-4 cursor-pointer transition-all ${
-          isSelected 
-            ? 'border-primary bg-primary/5' 
-            : 'hover:border-primary/20'
-        }`}
-        onClick={onToggle}
+        className="p-4 cursor-pointer transition-all hover:border-primary/20"
+        onClick={onAdd}
       >
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
@@ -45,11 +40,7 @@ export const ApplicationCard = ({ app, isSelected, onToggle }: ApplicationCardPr
               </p>
             </div>
           </div>
-          {isSelected ? (
-            <Check className="h-5 w-5 text-primary" />
-          ) : (
-            <Plus className="h-5 w-5 text-gray-400" />
-          )}
+          <Plus className="h-5 w-5 text-gray-400" />
         </div>
       </Card>
     </motion.div>
