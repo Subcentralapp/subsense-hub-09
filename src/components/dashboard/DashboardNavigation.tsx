@@ -1,53 +1,47 @@
-import { Button } from "@/components/ui/button";
-import { BarChart, Receipt, ArrowRightLeft, AppWindow } from "lucide-react";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { Link, useLocation } from "react-router-dom";
+import { cn } from "@/lib/utils";
+import {
+  LayoutDashboard,
+  CreditCard,
+  Settings,
+  FileText,
+  PiggyBank,
+  BarChart3,
+  Apps,
+  Boxes
+} from "lucide-react";
 
-interface DashboardNavigationProps {
-  activeTab: string;
-  onTabChange: (tab: string) => void;
-}
+const navigation = [
+  { name: 'Tableau de bord', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Applications', href: '/applications', icon: Apps },
+  { name: 'Abonnements', href: '/subscriptions', icon: Boxes },
+  { name: 'Paiements', href: '/invoices', icon: CreditCard },
+  { name: 'Budget', href: '/budget', icon: PiggyBank },
+  { name: 'Statistiques', href: '/statistics', icon: BarChart3 },
+  { name: 'Paramètres', href: '/settings', icon: Settings },
+];
 
-export const DashboardNavigation = ({ activeTab, onTabChange }: DashboardNavigationProps) => {
+export const DashboardNavigation = () => {
+  const location = useLocation();
+
   return (
-    <ScrollArea className="w-full sm:w-auto">
-      <nav className="flex space-x-2 px-2 py-1 overflow-x-auto">
-        <Button
-          variant={activeTab === "dashboard" ? "default" : "ghost"}
-          onClick={() => onTabChange("dashboard")}
-          className="hover-scale whitespace-nowrap text-sm sm:text-base"
-          size="sm"
-        >
-          <BarChart className="mr-2 h-4 w-4" />
-          Tableau de bord
-        </Button>
-        <Button
-          variant={activeTab === "payments" ? "default" : "ghost"}
-          onClick={() => onTabChange("payments")}
-          className="hover-scale whitespace-nowrap text-sm sm:text-base"
-          size="sm"
-        >
-          <Receipt className="mr-2 h-4 w-4" />
-          Paiements
-        </Button>
-        <Button
-          variant={activeTab === "compare" ? "default" : "ghost"}
-          onClick={() => onTabChange("compare")}
-          className="hover-scale whitespace-nowrap text-sm sm:text-base"
-          size="sm"
-        >
-          <ArrowRightLeft className="mr-2 h-4 w-4" />
-          Comparer
-        </Button>
-        <Button
-          variant={activeTab === "apps" ? "default" : "ghost"}
-          onClick={() => onTabChange("apps")}
-          className="hover-scale whitespace-nowrap text-sm sm:text-base"
-          size="sm"
-        >
-          <AppWindow className="mr-2 h-4 w-4" />
-          Applications
-        </Button>
-      </nav>
-    </ScrollArea>
+    <nav className="flex flex-col gap-2">
+      {navigation.map((item) => {
+        const Icon = item.icon;
+        return (
+          <Link
+            key={item.name}
+            to={item.href}
+            className={cn(
+              "flex items-center gap-3 rounded-lg px-3 py-2 text-gray-500 transition-all hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-50",
+              location.pathname === item.href && "bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-50"
+            )}
+          >
+            <Icon className="h-4 w-4" />
+            {item.name}
+          </Link>
+        );
+      })}
+    </nav>
   );
 };
