@@ -1,12 +1,18 @@
 import { Progress } from "@/components/ui/progress";
+import { useEffect } from "react";
+import { useSubscriptions } from "@/hooks/useSubscriptions";
+import { addMonths } from "date-fns";
 
 interface SubscriptionProgressProps {
+  subscriptionId: number;
   nextBilling: string;
   isTrial?: boolean;
   trialEndDate?: string | null;
 }
 
-export const SubscriptionProgress = ({ nextBilling, isTrial, trialEndDate }: SubscriptionProgressProps) => {
+export const SubscriptionProgress = ({ subscriptionId, nextBilling, isTrial, trialEndDate }: SubscriptionProgressProps) => {
+  const { updateNextBillingDate } = useSubscriptions();
+
   const calculateDaysProgress = (date: string): number => {
     const now = new Date();
     const nextDate = new Date(date);
@@ -39,6 +45,19 @@ export const SubscriptionProgress = ({ nextBilling, isTrial, trialEndDate }: Sub
     }
     return nextBilling;
   };
+
+  useEffect(() => {
+    const dateToUse = getDateToUse();
+    const nextDate = new Date(dateToUse);
+    const now = new Date();
+
+    if (nextDate < now && !isTrial) {
+      // Si la date est dépassée, on met à jour pour le mois suivant
+      const newNextBilling = addMonths(nextDate, 1);
+      console.log("Updating next billing date for subscription", subscriptionId, "to", newNextBilling);
+      updateNextBillingDate(subscriptionId, newNextBilling);
+    }
+  }, [nextBilling, isTrial, trialEndDate, subscriptionId, updateNextBillingDate]);
 
   const dateToUse = getDateToUse();
   const progress = calculateDaysProgress(dateToUse);

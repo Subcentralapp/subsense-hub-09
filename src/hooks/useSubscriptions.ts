@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { Subscription } from "@/types/subscription";
+import { addMonths } from "date-fns";
 
 export const useSubscriptions = () => {
   const { toast } = useToast();
@@ -56,10 +57,32 @@ export const useSubscriptions = () => {
     }
   };
 
+  const updateNextBillingDate = async (id: number, nextBilling: Date) => {
+    try {
+      const { error } = await supabase
+        .from('subscriptions')
+        .update({ next_billing: nextBilling.toISOString() })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      console.log("Next billing date updated successfully:", nextBilling);
+      refetch();
+    } catch (error) {
+      console.error("Error updating next billing date:", error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la mise à jour de la date de prochain paiement.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return {
     subscriptions,
     isLoading,
     refetch,
-    handleDelete
+    handleDelete,
+    updateNextBillingDate
   };
 };
