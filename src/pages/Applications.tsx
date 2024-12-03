@@ -1,10 +1,8 @@
 import { Card } from "@/components/ui/card";
-import { TechnicalStackSuggestion } from "@/components/TechnicalStackSuggestion";
 import { motion } from "framer-motion";
 import { Sparkles, Rocket, Target, Zap } from "lucide-react";
 import { ApplicationExplorer } from "@/components/applications/ApplicationExplorer";
 import { TrendingApps } from "@/components/applications/TrendingApps";
-import { Button } from "@/components/ui/button";
 
 const Applications = () => {
   return (
@@ -64,7 +62,6 @@ const Applications = () => {
 
       {/* Main Content */}
       <div className="space-y-12">
-        <TechnicalStackSuggestion />
         <TrendingApps />
         <ApplicationExplorer />
       </div>

@@ -22,20 +22,20 @@ export const TrendingApps = () => {
         id: app.id,
         name: app.NOM || '',
         price: parseFloat(app.PRICE || '0'),
-        category: app.CATÉGORIE,
-        description: app.DESCRIPTION,
+        category: app.CATÉGORIE || '',
+        description: app.DESCRIPTION || '',
         features: Array.isArray(app.CARACTÉRISTIQUES) 
           ? app.CARACTÉRISTIQUES.map(String)
           : typeof app.CARACTÉRISTIQUES === 'string' 
             ? [app.CARACTÉRISTIQUES]
             : [],
-        pros: app.AVANTAGES,
-        cons: app.INCONVÉNIENTS,
-        website_url: app["URL DU SITE WEB"],
-        logo_url: app["URL DU LOGO"],
-        rating: app.NOTE,
-        review: app.REVUE,
-        users_count: app["NOMBRE D'UTILISATEURS"]
+        pros: app.AVANTAGES || '',
+        cons: app.INCONVÉNIENTS || '',
+        website_url: app["URL DU SITE WEB"] || '',
+        logo_url: app["URL DU LOGO"] || '',
+        rating: app.NOTE || null,
+        review: app.REVUE || '',
+        users_count: app["NOMBRE D'UTILISATEURS"] || 0
       })) as Application[];
     }
   });
