@@ -21,34 +21,49 @@ const queryClient = new QueryClient({
   },
 });
 
+const Layout = () => {
+  return (
+    <>
+      <Header />
+      <Toaster />
+    </>
+  );
+};
+
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Index />,
-  },
-  {
-    path: "/landing",
-    element: <Landing />,
-  },
-  {
-    path: "/auth",
-    element: <Auth />,
-  },
-  {
-    path: "/onboarding",
-    element: <Onboarding />,
-  },
-  {
-    path: "/dashboard",
-    element: <Dashboard />,
-  },
-  {
-    path: "/applications",
-    element: <Applications />,
-  },
-  {
-    path: "/subscriptions",
-    element: <Subscriptions />,
+    element: <Layout />,
+    children: [
+      {
+        path: "/",
+        element: <Index />,
+      },
+      {
+        path: "/landing",
+        element: <Landing />,
+      },
+      {
+        path: "/auth",
+        element: <Auth />,
+      },
+      {
+        path: "/onboarding",
+        element: <Onboarding />,
+      },
+      {
+        path: "/dashboard",
+        element: <Dashboard />,
+      },
+      {
+        path: "/applications",
+        element: <Applications />,
+      },
+      {
+        path: "/subscriptions",
+        element: <Subscriptions />,
+      },
+    ],
   },
 ]);
 
@@ -56,9 +71,7 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-        <Header />
         <RouterProvider router={router} />
-        <Toaster />
       </ThemeProvider>
     </QueryClientProvider>
   );
