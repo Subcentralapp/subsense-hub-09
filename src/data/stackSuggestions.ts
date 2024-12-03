@@ -7,6 +7,7 @@ export interface StackCategory {
     name: string;
     description: string;
     price?: string;
+    website_url?: string;
   }[];
 }
 
@@ -20,27 +21,32 @@ export const stackCategories: StackCategory[] = [
       {
         name: "Integromat",
         description: "Pour ceux qui recherchent des automatisations avancées dans Make.",
-        price: "Intégré à Make"
+        price: "Intégré à Make",
+        website_url: "https://www.make.com"
       },
       {
         name: "Coda",
         description: "Combine automatisation et collaboration pour créer des workflows dynamiques avec des données issues de Google Sheets et Airtable.",
-        price: "Gratuit/Premium"
+        price: "Gratuit/Premium",
+        website_url: "https://coda.io"
       },
       {
         name: "Calendly",
         description: "Planifiez automatiquement des réunions en intégrant Airtable ou Google Sheets.",
-        price: "Gratuit/Premium"
+        price: "Gratuit/Premium",
+        website_url: "https://calendly.com"
       },
       {
         name: "Zapier",
         description: "Alternative à Make pour les automatisations simples avec des intégrations rapides.",
-        price: "19.99€/mois"
+        price: "19.99€/mois",
+        website_url: "https://zapier.com"
       },
       {
         name: "Tally",
         description: "Automatisation des formulaires connectés à Airtable.",
-        price: "Gratuit/Premium"
+        price: "Gratuit/Premium",
+        website_url: "https://tally.so"
       }
     ]
   },
