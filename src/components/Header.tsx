@@ -3,9 +3,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { BackgroundLines } from "./header/BackgroundLines";
 import { Logo } from "./header/Logo";
 import { SupportMessage } from "./header/SupportMessage";
-import { AuthButtons } from "./header/AuthButtons";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import { UserNav } from "./UserNav";
 
 export const Header = () => {
   const [user, setUser] = useState<any>(null);
@@ -26,6 +26,16 @@ export const Header = () => {
     return () => subscription.unsubscribe();
   }, []);
 
+  const handleTabChange = (path: string) => {
+    const [basePath, queryParams] = path.split('?');
+    if (queryParams) {
+      const tab = queryParams.split('=')[1];
+      navigate(basePath, { state: { activeTab: tab } });
+    } else {
+      navigate(path);
+    }
+  };
+
   const navigationItems = [
     { label: "Tableau de bord", path: "/dashboard" },
     { label: "Paiements", path: "/dashboard?tab=payments" },
@@ -45,7 +55,7 @@ export const Header = () => {
             {navigationItems.map((item) => (
               <motion.button
                 key={item.label}
-                onClick={() => navigate(item.path)}
+                onClick={() => handleTabChange(item.path)}
                 className="text-neutral hover:text-primary transition-colors"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -57,7 +67,16 @@ export const Header = () => {
 
           <div className="flex items-center space-x-4">
             <SupportMessage />
-            <AuthButtons user={user} />
+            {user ? <UserNav /> : (
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => navigate("/auth")}
+                className="inline-flex items-center justify-center text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 rounded-md"
+              >
+                Connexion
+              </motion.button>
+            )}
           </div>
         </div>
       </div>

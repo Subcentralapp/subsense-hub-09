@@ -3,12 +3,20 @@ import { DashboardContent } from "@/components/dashboard/DashboardContent";
 import { AppsContent } from "@/components/dashboard/AppsContent";
 import { PaymentsContent } from "@/components/dashboard/PaymentsContent";
 import { CompareContent } from "@/components/dashboard/CompareContent";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { TechnicalStackSuggestion } from "@/components/TechnicalStackSuggestion";
 
 const Dashboard = () => {
-  console.log("Dashboard page rendering");
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState("dashboard");
+
+  useEffect(() => {
+    // Update active tab based on location state
+    if (location.state?.activeTab) {
+      setActiveTab(location.state.activeTab);
+    }
+  }, [location.state]);
 
   const renderContent = () => {
     switch (activeTab) {
