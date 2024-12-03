@@ -1,6 +1,20 @@
-export const stackCategories = [
+interface StackCategory {
+  name: string;
+  description: string;
+  color: string;
+  recommendations: {
+    name: string;
+    price: string;
+    description: string;
+    website_url: string | null;
+  }[];
+}
+
+export const stackCategories: StackCategory[] = [
   {
     name: "Automatisation et développement sans code",
+    description: "Automatisez vos tâches et créez sans coder",
+    color: "blue",
     recommendations: [
       {
         name: "Zapier",
@@ -36,6 +50,8 @@ export const stackCategories = [
   },
   {
     name: "Gestion de projet",
+    description: "Gérez vos projets efficacement",
+    color: "green",
     recommendations: [
       {
         name: "Trello",
@@ -71,6 +87,8 @@ export const stackCategories = [
   },
   {
     name: "Communication",
+    description: "Communiquez efficacement en équipe",
+    color: "purple",
     recommendations: [
       {
         name: "Slack",
@@ -106,6 +124,8 @@ export const stackCategories = [
   },
   {
     name: "Gestion des tâches",
+    description: "Organisez et suivez vos tâches",
+    color: "orange",
     recommendations: [
       {
         name: "Todoist",

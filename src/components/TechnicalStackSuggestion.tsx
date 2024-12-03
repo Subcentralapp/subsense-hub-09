@@ -32,7 +32,7 @@ export const TechnicalStackSuggestion = () => {
           features: [],
           pros: null,
           cons: null,
-          website_url: rec.website_url || null, // Ajout de l'URL du site web
+          website_url: rec.website_url,
           logo_url: null,
           rating: null,
           review: null,
