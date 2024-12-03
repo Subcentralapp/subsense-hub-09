@@ -2,7 +2,6 @@ import { MessageSquare, Music, Play, Book, Heart, Globe, Zap, Gamepad, Video, Bo
 import { Button } from "@/components/ui/button";
 import { Application } from "@/types/application";
 import { useState } from 'react';
-import { toast } from "@/hooks/use-toast";
 
 interface ApplicationCardProps {
   app: Application;
@@ -50,19 +49,12 @@ export const ApplicationCard = ({ app, onAdd }: ApplicationCardProps) => {
   const [logoError, setLogoError] = useState(false);
   const logoUrl = app.logo_url || (logoError ? null : getClearbitLogoUrl(app.name || '', app.website_url));
 
-  const handleDiscover = () => {
-    console.log("handleDiscover called with website_url:", app.website_url); // Debug log
-    
-    if (!app.website_url || app.website_url.trim() === '') {
-      toast({
-        title: "Site web non disponible",
-        description: "Désolé, le lien vers le site web n'est pas disponible pour cette application.",
-        variant: "destructive"
-      });
+  const handleTryApp = () => {
+    if (!app.website_url) {
+      console.log("No website URL available for:", app.name);
       return;
     }
 
-    // Ensure the URL has a protocol
     let url = app.website_url;
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
       url = 'https://' + url;
@@ -100,11 +92,11 @@ export const ApplicationCard = ({ app, onAdd }: ApplicationCardProps) => {
       <div className="mt-auto">
         <p className="font-medium text-primary mb-2">{app.price}€/mois</p>
         <Button 
-          onClick={handleDiscover}
+          onClick={handleTryApp}
           size="sm"
-          className="w-full bg-primary/10 text-primary hover:bg-primary/20"
+          className="w-full bg-primary text-white hover:bg-primary/90"
         >
-          Je découvre
+          Je veux essayer
         </Button>
       </div>
     </div>
