@@ -34,13 +34,15 @@ export const useProfile = () => {
       console.log("Current user:", user);
       
       // Fetch the profile
-      const { data: profile, error: profileError } = await supabase
+      let { data: profile, error: profileError } = await supabase
         .from('profiles')
         .select('username, avatar_url')
         .eq('id', user.id)
         .single();
       
       if (profileError) {
+        console.log("Profile error:", profileError);
+        
         if (profileError.code === 'PGRST116') {
           // Profile doesn't exist, create one
           console.log("No profile found, creating one...");
@@ -58,15 +60,16 @@ export const useProfile = () => {
             throw insertError;
           }
           
-          setProfile(newProfile);
+          profile = newProfile;
         } else {
           throw profileError;
         }
-      } else {
-        setProfile(profile);
       }
+
+      setProfile(profile || {});
+      
     } catch (error) {
-      console.error("Error fetching user:", error);
+      console.error("Error in getUser:", error);
       toast({
         title: "Erreur",
         description: "Impossible de charger les informations utilisateur",
