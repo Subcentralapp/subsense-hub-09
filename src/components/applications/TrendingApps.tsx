@@ -10,13 +10,17 @@ export const TrendingApps = () => {
   const { data: trendingApps } = useQuery({
     queryKey: ['trending-apps'],
     queryFn: async () => {
+      console.log("Fetching trending apps...");
       const { data, error } = await supabase
         .from('applications')
         .select('*')
         .limit(6)
-        .order('NOMBRE D\'UTILISATEURS', { ascending: false });
+        .order('"NOMBRE D\'UTILISATEURS"', { ascending: false });
       
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching trending apps:", error);
+        throw error;
+      }
       
       return (data || []).map(app => ({
         id: app.id,
