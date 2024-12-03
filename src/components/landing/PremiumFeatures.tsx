@@ -25,19 +25,8 @@ export const PremiumFeatures = () => {
             className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary mb-4"
           >
             <Heart className="w-4 h-4" />
-            <span className="text-sm font-medium">Soutenez l'innovation</span>
+            <span className="text-sm font-medium">Devenez Early Supporter</span>
           </motion.div>
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="text-4xl font-bold text-gray-900 mb-6"
-          >
-            Ensemble, créons l'avenir de la gestion d'abonnements
-          </motion.h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            En devenant Early Supporter, vous contribuez directement au développement de nouvelles fonctionnalités et à l'amélioration continue de SubaCentral.
-          </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -142,8 +131,8 @@ export const PremiumFeatures = () => {
                   transition={{ duration: 0.3, delay: 0.1 }}
                   className="flex items-center gap-2"
                 >
-                  <span className="text-lg animate-bounce">✅</span>
-                  <p className="text-sm">100% gratuit et illimité dès maintenant</p>
+                  <span className="text-lg">✨</span>
+                  <p className="text-sm">Rejoignez la communauté des Early Supporters et participez à l'évolution de la plateforme</p>
                 </motion.div>
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
@@ -151,8 +140,8 @@ export const PremiumFeatures = () => {
                   transition={{ duration: 0.3, delay: 0.2 }}
                   className="flex items-center gap-2"
                 >
-                  <span className="text-lg animate-pulse">🛠️</span>
-                  <p className="text-sm">Développée pour simplifier votre quotidien</p>
+                  <span className="text-lg">🎁</span>
+                  <p className="text-sm">Avantages exclusifs à vie dès que l'objectif de crowdfunding est atteint</p>
                 </motion.div>
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
@@ -160,8 +149,8 @@ export const PremiumFeatures = () => {
                   transition={{ duration: 0.3, delay: 0.3 }}
                   className="flex items-center gap-2"
                 >
-                  <span className="text-lg animate-bounce">🔒</span>
-                  <p className="text-sm">Sécurité garantie pour vos données</p>
+                  <span className="text-lg">💰</span>
+                  <p className="text-sm">Réductions permanentes sur vos abonnements préférés</p>
                 </motion.div>
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
@@ -169,8 +158,17 @@ export const PremiumFeatures = () => {
                   transition={{ duration: 0.3, delay: 0.4 }}
                   className="flex items-center gap-2"
                 >
-                  <span className="text-lg animate-pulse">🚀</span>
-                  <p className="text-sm">Soutenu par une communauté engagée</p>
+                  <span className="text-lg">🔒</span>
+                  <p className="text-sm">Sécurité et confidentialité garanties pour vos données</p>
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 0.5 }}
+                  className="flex items-center gap-2"
+                >
+                  <span className="text-lg">🚀</span>
+                  <p className="text-sm">Accès anticipé aux nouvelles fonctionnalités</p>
                 </motion.div>
               </CardContent>
             </Card>
