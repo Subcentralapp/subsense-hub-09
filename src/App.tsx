@@ -4,7 +4,6 @@ import Landing from "@/pages/Landing";
 import Auth from "@/pages/Auth";
 import Onboarding from "@/pages/Onboarding";
 import Dashboard from "@/pages/Dashboard";
-import Applications from "@/pages/Applications";
 import Subscriptions from "@/pages/Subscriptions";
 import Settings from "@/pages/Settings";
 import Invoices from "@/pages/Invoices";
@@ -44,10 +43,6 @@ const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: <Dashboard />,
-  },
-  {
-    path: "/applications",
-    element: <Applications />,
   },
   {
     path: "/subscriptions",

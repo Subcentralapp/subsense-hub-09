@@ -4,16 +4,16 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface DashboardNavigationProps {
   activeTab: string;
-  onTabChange: (tab: string) => void;
+  setActiveTab: (tab: string) => void;
 }
 
-export const DashboardNavigation = ({ activeTab, onTabChange }: DashboardNavigationProps) => {
+export const DashboardNavigation = ({ activeTab, setActiveTab }: DashboardNavigationProps) => {
   return (
     <ScrollArea className="w-full sm:w-auto">
       <nav className="flex space-x-2 px-2 py-1 overflow-x-auto">
         <Button
           variant={activeTab === "dashboard" ? "default" : "ghost"}
-          onClick={() => onTabChange("dashboard")}
+          onClick={() => setActiveTab("dashboard")}
           className="hover-scale whitespace-nowrap text-sm sm:text-base"
           size="sm"
         >
@@ -22,7 +22,7 @@ export const DashboardNavigation = ({ activeTab, onTabChange }: DashboardNavigat
         </Button>
         <Button
           variant={activeTab === "payments" ? "default" : "ghost"}
-          onClick={() => onTabChange("payments")}
+          onClick={() => setActiveTab("payments")}
           className="hover-scale whitespace-nowrap text-sm sm:text-base"
           size="sm"
         >
@@ -31,7 +31,7 @@ export const DashboardNavigation = ({ activeTab, onTabChange }: DashboardNavigat
         </Button>
         <Button
           variant={activeTab === "compare" ? "default" : "ghost"}
-          onClick={() => onTabChange("compare")}
+          onClick={() => setActiveTab("compare")}
           className="hover-scale whitespace-nowrap text-sm sm:text-base"
           size="sm"
         >
@@ -40,7 +40,7 @@ export const DashboardNavigation = ({ activeTab, onTabChange }: DashboardNavigat
         </Button>
         <Button
           variant={activeTab === "apps" ? "default" : "ghost"}
-          onClick={() => onTabChange("apps")}
+          onClick={() => setActiveTab("apps")}
           className="hover-scale whitespace-nowrap text-sm sm:text-base"
           size="sm"
         >
