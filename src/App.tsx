@@ -72,6 +72,8 @@ const router = createBrowserRouter([
 ]);
 
 function App() {
+  console.log("App rendering, current route:", window.location.pathname);
+  
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
