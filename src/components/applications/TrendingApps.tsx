@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trending, ExternalLink } from "lucide-react";
+import { TrendingUp, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -17,7 +17,26 @@ export const TrendingApps = () => {
         .order('users_count', { ascending: false });
       
       if (error) throw error;
-      return data as Application[];
+      
+      return (data || []).map(app => ({
+        id: app.id,
+        name: app.NOM || '',
+        price: parseFloat(app.PRICE || '0'),
+        category: app.CATÉGORIE,
+        description: app.DESCRIPTION,
+        features: Array.isArray(app.CARACTÉRISTIQUES) 
+          ? app.CARACTÉRISTIQUES.map(String)
+          : typeof app.CARACTÉRISTIQUES === 'string' 
+            ? [app.CARACTÉRISTIQUES]
+            : [],
+        pros: app.AVANTAGES,
+        cons: app.INCONVÉNIENTS,
+        website_url: app["URL DU SITE WEB"],
+        logo_url: app["URL DU LOGO"],
+        rating: app.NOTE,
+        review: app.REVUE,
+        users_count: app["NOMBRE D'UTILISATEURS"]
+      })) as Application[];
     }
   });
 
@@ -25,7 +44,7 @@ export const TrendingApps = () => {
     <section className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Trending className="h-5 w-5 text-primary" />
+          <TrendingUp className="h-5 w-5 text-primary" />
           <h2 className="text-2xl font-semibold">Applications Tendances</h2>
         </div>
         <Button variant="ghost" className="text-primary hover:text-primary/80">
