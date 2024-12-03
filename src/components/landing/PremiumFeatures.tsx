@@ -131,8 +131,8 @@ export const PremiumFeatures = () => {
                   transition={{ duration: 0.3, delay: 0.1 }}
                   className="flex items-center gap-2"
                 >
-                  <span className="text-lg">✨</span>
-                  <p className="text-sm">Rejoignez la communauté des Early Supporters et participez à l'évolution de la plateforme</p>
+                  <Users className="w-5 h-5 text-primary" />
+                  <p className="text-sm">Participez aux décisions sur l'évolution de la plateforme</p>
                 </motion.div>
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
@@ -140,8 +140,8 @@ export const PremiumFeatures = () => {
                   transition={{ duration: 0.3, delay: 0.2 }}
                   className="flex items-center gap-2"
                 >
-                  <span className="text-lg">🎁</span>
-                  <p className="text-sm">Avantages exclusifs à vie dès que l'objectif de crowdfunding est atteint</p>
+                  <Crown className="w-5 h-5 text-primary" />
+                  <p className="text-sm">Statut premium et privilèges exclusifs à vie</p>
                 </motion.div>
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
@@ -149,8 +149,8 @@ export const PremiumFeatures = () => {
                   transition={{ duration: 0.3, delay: 0.3 }}
                   className="flex items-center gap-2"
                 >
-                  <span className="text-lg">💰</span>
-                  <p className="text-sm">Réductions permanentes sur vos abonnements préférés</p>
+                  <Gift className="w-5 h-5 text-primary" />
+                  <p className="text-sm">Réductions permanentes sur les applications populaires</p>
                 </motion.div>
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
@@ -158,8 +158,8 @@ export const PremiumFeatures = () => {
                   transition={{ duration: 0.3, delay: 0.4 }}
                   className="flex items-center gap-2"
                 >
-                  <span className="text-lg">🔒</span>
-                  <p className="text-sm">Sécurité et confidentialité garanties pour vos données</p>
+                  <Shield className="w-5 h-5 text-primary" />
+                  <p className="text-sm">Support prioritaire et assistance dédiée</p>
                 </motion.div>
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
@@ -167,7 +167,7 @@ export const PremiumFeatures = () => {
                   transition={{ duration: 0.3, delay: 0.5 }}
                   className="flex items-center gap-2"
                 >
-                  <span className="text-lg">🚀</span>
+                  <Rocket className="w-5 h-5 text-primary" />
                   <p className="text-sm">Accès anticipé aux nouvelles fonctionnalités</p>
                 </motion.div>
               </CardContent>
