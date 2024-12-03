@@ -32,15 +32,13 @@ export const TechnicalStackSuggestion = () => {
           features: [],
           pros: null,
           cons: null,
-          website_url: rec.website_url,
+          website_url: null,
           logo_url: null,
           rating: null,
           review: null,
           users_count: null
         }))
     : [];
-
-  console.log('Recommended apps:', recommendedApps); // Pour le débogage
 
   return (
     <div className="space-y-8">
