@@ -6,12 +6,14 @@ import { TechnicalStackSuggestion } from "@/components/TechnicalStackSuggestion"
 import DetailedStats from "@/components/statistics/DetailedStats";
 import AdCarousel from "@/components/AdCarousel";
 import RandomAd from "@/components/RandomAd";
+import { TrendingTools2025 } from "@/components/TrendingTools2025";
 
 export const DashboardContent = () => {
   return (
     <div className="space-y-6 fade-in">
       <DashboardStats />
       <SubscriptionList />
+      <TrendingTools2025 />
       <BudgetManager />
       <DetailedStats />
       <RecommendationSection />
