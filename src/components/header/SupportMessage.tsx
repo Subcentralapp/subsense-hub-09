@@ -10,12 +10,23 @@ export const SupportMessage = () => {
   ];
 
   useEffect(() => {
+    console.log("SupportMessage - Initial currentIndex:", currentIndex);
+    
     const timer = setInterval(() => {
-      setCurrentIndex((prev) => (prev === 0 ? 1 : 0));
+      setCurrentIndex((prev) => {
+        const newIndex = prev === 0 ? 1 : 0;
+        console.log("SupportMessage - Changing index from", prev, "to", newIndex);
+        return newIndex;
+      });
     }, 5000); // Change message every 5 seconds
 
-    return () => clearInterval(timer);
+    return () => {
+      console.log("SupportMessage - Cleaning up timer");
+      clearInterval(timer);
+    };
   }, []);
+
+  console.log("SupportMessage - Rendering with currentIndex:", currentIndex, "message:", messages[currentIndex]);
 
   return (
     <div className="relative overflow-hidden h-6">
@@ -26,7 +37,7 @@ export const SupportMessage = () => {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -20, opacity: 0 }}
           transition={{ duration: 0.5 }}
-          className="font-medium absolute inset-0"
+          className="font-medium absolute inset-0 text-muted-foreground"
         >
           {messages[currentIndex]}
         </motion.span>
