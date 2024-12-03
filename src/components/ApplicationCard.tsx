@@ -51,7 +51,9 @@ export const ApplicationCard = ({ app, onAdd }: ApplicationCardProps) => {
   const logoUrl = app.logo_url || (logoError ? null : getClearbitLogoUrl(app.name || '', app.website_url));
 
   const handleDiscover = () => {
-    if (!app.website_url) {
+    console.log("handleDiscover called with website_url:", app.website_url); // Debug log
+    
+    if (!app.website_url || app.website_url.trim() === '') {
       toast({
         title: "Site web non disponible",
         description: "Désolé, le lien vers le site web n'est pas disponible pour cette application.",
@@ -59,7 +61,14 @@ export const ApplicationCard = ({ app, onAdd }: ApplicationCardProps) => {
       });
       return;
     }
-    window.open(app.website_url, '_blank');
+
+    // Ensure the URL has a protocol
+    let url = app.website_url;
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+      url = 'https://' + url;
+    }
+
+    window.open(url, '_blank');
   };
 
   return (
