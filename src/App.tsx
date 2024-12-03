@@ -13,6 +13,8 @@ import Statistics from "@/pages/Statistics";
 import { ThemeProvider } from "@/components/theme-provider";
 import Index from "@/pages/Index";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Header } from "./components/Header";
+import { Navbar } from "./components/Navbar";
 
 // Create a client
 const queryClient = new QueryClient({
@@ -24,6 +26,27 @@ const queryClient = new QueryClient({
   },
 });
 
+// Layout component that includes Header
+const Layout = ({ children }: { children: React.ReactNode }) => {
+  return (
+    <div className="min-h-screen bg-background">
+      <Header />
+      <div className="pt-16"> {/* Add padding to account for fixed header */}
+        {children}
+      </div>
+    </div>
+  );
+};
+
+// Wrap each route with the Layout component
+const wrapWithLayout = (Component: React.ComponentType) => {
+  return () => (
+    <Layout>
+      <Component />
+    </Layout>
+  );
+};
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -31,7 +54,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/landing",
-    element: <Landing />,
+    element: wrapWithLayout(Landing)(),
   },
   {
     path: "/auth",
@@ -43,35 +66,35 @@ const router = createBrowserRouter([
   },
   {
     path: "/dashboard",
-    element: <Dashboard />,
+    element: wrapWithLayout(Dashboard)(),
   },
   {
     path: "/app/applications",
-    element: <Applications />,
+    element: wrapWithLayout(Applications)(),
   },
   {
     path: "/applications",
-    element: <Applications />,
+    element: wrapWithLayout(Applications)(),
   },
   {
     path: "/subscriptions",
-    element: <Subscriptions />,
+    element: wrapWithLayout(Subscriptions)(),
   },
   {
     path: "/settings",
-    element: <Settings />,
+    element: wrapWithLayout(Settings)(),
   },
   {
     path: "/invoices",
-    element: <Invoices />,
+    element: wrapWithLayout(Invoices)(),
   },
   {
     path: "/budget",
-    element: <Budget />,
+    element: wrapWithLayout(Budget)(),
   },
   {
     path: "/statistics",
-    element: <Statistics />,
+    element: wrapWithLayout(Statistics)(),
   },
 ]);
 
