@@ -18,7 +18,7 @@ export const SupportMessage = () => {
         console.log("SupportMessage - Changing index from", prev, "to", newIndex);
         return newIndex;
       });
-    }, 5000); // Change message every 5 seconds
+    }, 5000);
 
     return () => {
       console.log("SupportMessage - Cleaning up timer");
@@ -29,18 +29,18 @@ export const SupportMessage = () => {
   console.log("SupportMessage - Rendering with currentIndex:", currentIndex, "message:", messages[currentIndex]);
 
   return (
-    <div className="relative overflow-hidden h-6">
+    <div className="relative overflow-hidden h-6 flex-1 mx-4">
       <AnimatePresence mode="wait">
-        <motion.span
+        <motion.p
           key={currentIndex}
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: -20, opacity: 0 }}
           transition={{ duration: 0.5 }}
-          className="font-medium absolute inset-0 text-muted-foreground"
+          className="font-medium absolute inset-0 text-muted-foreground text-center"
         >
           {messages[currentIndex]}
-        </motion.span>
+        </motion.p>
       </AnimatePresence>
     </div>
   );
