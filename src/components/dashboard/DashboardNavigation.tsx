@@ -7,13 +7,13 @@ import {
   FileText,
   PiggyBank,
   BarChart3,
-  Apps,
+  LayoutGrid,
   Boxes
 } from "lucide-react";
 
 const navigation = [
   { name: 'Tableau de bord', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Applications', href: '/applications', icon: Apps },
+  { name: 'Applications', href: '/applications', icon: LayoutGrid },
   { name: 'Abonnements', href: '/subscriptions', icon: Boxes },
   { name: 'Paiements', href: '/invoices', icon: CreditCard },
   { name: 'Budget', href: '/budget', icon: PiggyBank },

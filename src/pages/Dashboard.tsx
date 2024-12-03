@@ -31,7 +31,6 @@ const Dashboard = () => {
         return;
       }
 
-      // On vérifie uniquement si l'utilisateur est authentifié
       console.log("✅ User is authenticated");
     };
 
@@ -62,10 +61,7 @@ const Dashboard = () => {
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center sm:text-left">
               Tableau de bord
             </h1>
-            <DashboardNavigation 
-              activeTab={activeTab} 
-              onTabChange={setActiveTab} 
-            />
+            <DashboardNavigation />
           </header>
 
           <main className="space-y-4 sm:space-y-6">
