@@ -2,15 +2,13 @@ import { useState } from 'react';
 import { Layers } from "lucide-react";
 import { motion } from "framer-motion";
 import { CategoryList } from "./stack/CategoryList";
-import { StackSummary } from "./stack/StackSummary";
-import { CustomStackBuilder } from "./stack/CustomStackBuilder";
 import { stackCategories } from "@/data/stackSuggestions";
 import { Application } from "@/types/application";
 import { ApplicationCard } from "./ApplicationCard";
+import { CustomStackBuilder } from "./stack/CustomStackBuilder";
 
 export const TechnicalStackSuggestion = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-  const [selectedApps, setSelectedApps] = useState<Application[]>([]);
 
   const handleCategorySelect = (categoryName: string) => {
     setSelectedCategory(prevCategory => 
@@ -18,25 +16,24 @@ export const TechnicalStackSuggestion = () => {
     );
   };
 
-  const handleAppToggle = (app: Application) => {
-    setSelectedApps(prev => {
-      const isAlreadySelected = prev.some(a => a.name === app.name);
-      if (isAlreadySelected) {
-        return prev.filter(a => a.name !== app.name);
-      }
-      return [...prev, app];
-    });
-  };
-
   // Trouver les applications recommandées pour la catégorie sélectionnée
   const recommendedApps = selectedCategory
     ? stackCategories
         .find(cat => cat.name === selectedCategory)
         ?.recommendations.map(rec => ({
+          id: Date.now(), // Temporary ID for demo
           name: rec.name,
           price: parseFloat(rec.price?.replace(/[^0-9.,]/g, '') || '0'),
           category: selectedCategory,
-          description: rec.description
+          description: rec.description,
+          features: [],
+          pros: null,
+          cons: null,
+          website_url: null,
+          logo_url: null,
+          rating: null,
+          review: null,
+          users_count: null
         }))
     : [];
 
@@ -68,15 +65,10 @@ export const TechnicalStackSuggestion = () => {
               <ApplicationCard
                 key={`${app.name}-${index}`}
                 app={app}
-                onAdd={() => handleAppToggle(app)}
+                onAdd={() => {}}
               />
             ))}
           </div>
-
-          <StackSummary
-            selectedApps={selectedApps}
-            onRemoveApp={(app) => handleAppToggle(app)}
-          />
         </motion.div>
       )}
 

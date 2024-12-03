@@ -3,7 +3,6 @@ import { SearchDropdown } from '../search/SearchDropdown';
 import { supabase } from '@/integrations/supabase/client';
 import { Application } from '@/types/application';
 import { toast } from '@/hooks/use-toast';
-import { Search } from 'lucide-react';
 
 interface StackSearchProps {
   onAddTool: (app: Application) => void;
@@ -20,17 +19,13 @@ export const StackSearch = ({ onAddTool }: StackSearchProps) => {
     }
 
     try {
-      console.log('Searching applications with term:', term);
       const { data, error } = await supabase
         .from('applications')
         .select('*')
         .ilike('NOM', `%${term}%`)
         .limit(5);
 
-      if (error) {
-        console.error('Error searching applications:', error);
-        throw error;
-      }
+      if (error) throw error;
 
       const mappedApps: Application[] = data.map(app => ({
         id: app.id,
@@ -39,7 +34,7 @@ export const StackSearch = ({ onAddTool }: StackSearchProps) => {
         category: app.CATÉGORIE || null,
         description: app.DESCRIPTION || null,
         features: Array.isArray(app.CARACTÉRISTIQUES) 
-          ? app.CARACTÉRISTIQUES 
+          ? app.CARACTÉRISTIQUES.map(String)
           : typeof app.CARACTÉRISTIQUES === 'string'
             ? [app.CARACTÉRISTIQUES]
             : [],
@@ -52,7 +47,6 @@ export const StackSearch = ({ onAddTool }: StackSearchProps) => {
         users_count: app["NOMBRE D'UTILISATEURS"] || null
       }));
 
-      console.log('Found applications:', mappedApps);
       setFilteredApps(mappedApps);
     } catch (error) {
       console.error('Error in searchApplications:', error);
@@ -70,7 +64,6 @@ export const StackSearch = ({ onAddTool }: StackSearchProps) => {
   };
 
   const handleSelectApp = (app: Application) => {
-    console.log('Selected application:', app);
     onAddTool(app);
     setSearchTerm('');
     setFilteredApps([]);
@@ -81,19 +74,13 @@ export const StackSearch = ({ onAddTool }: StackSearchProps) => {
   };
 
   return (
-    <div className="w-full space-y-4">
-      <div className="flex items-center gap-3 mb-2">
-        <Search className="h-5 w-5 text-gray-400" />
-        <h3 className="text-lg font-medium text-gray-700">
-          Rechercher une application
-        </h3>
-      </div>
+    <div className="w-full">
       <SearchDropdown
         searchTerm={searchTerm}
         onSearchChange={handleSearchChange}
         filteredApps={filteredApps}
         onSelectApp={handleSelectApp}
-        placeholder="Nom de l'application..."
+        placeholder="Rechercher une application..."
       />
     </div>
   );
