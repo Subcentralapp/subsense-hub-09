@@ -7,12 +7,13 @@ import { motion } from 'framer-motion';
 import { Search } from 'lucide-react';
 
 const categories = [
-  { id: 'seo', name: 'SEO & Analytics', description: 'Optimisez votre visibilité en ligne' },
-  { id: 'design', name: 'Design & Créativité', description: 'Créez des visuels impactants' },
+  { id: 'streaming-video', name: 'Streaming Vidéo', description: 'Plateformes de streaming vidéo' },
+  { id: 'streaming-musical', name: 'Streaming Musical', description: 'Services de streaming musical' },
+  { id: 'gaming', name: 'Gaming', description: 'Applications et services de jeux' },
   { id: 'productivité', name: 'Productivité', description: 'Optimisez votre workflow' },
-  { id: 'communication', name: 'Communication', description: 'Collaborez efficacement' },
-  { id: 'marketing', name: 'Marketing', description: 'Développez votre audience' },
-  { id: 'finance', name: 'Finance', description: 'Gérez vos finances' },
+  { id: 'éducation', name: 'Éducation', description: 'Outils d\'apprentissage' },
+  { id: 'bien-être', name: 'Bien-être', description: 'Applications de bien-être' },
+  { id: 'vpn-securite', name: 'VPN & Sécurité', description: 'Protection et sécurité en ligne' },
 ];
 
 export const CategoryDiscovery = () => {
@@ -44,7 +45,9 @@ export const CategoryDiscovery = () => {
         price: parseFloat(app.PRICE || '0'),
         category: app.CATÉGORIE,
         description: app.DESCRIPTION,
-        features: Array.isArray(app.CARACTÉRISTIQUES) ? app.CARACTÉRISTIQUES : [],
+        features: Array.isArray(app.CARACTÉRISTIQUES) 
+          ? app.CARACTÉRISTIQUES.map(String)
+          : [],
         pros: app.AVANTAGES,
         cons: app.INCONVÉNIENTS,
         website_url: app["URL DU SITE WEB"],
@@ -66,7 +69,7 @@ export const CategoryDiscovery = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {categories.map((category) => (
           <motion.div
             key={category.id}
@@ -75,7 +78,7 @@ export const CategoryDiscovery = () => {
           >
             <Button
               variant={selectedCategory === category.id ? "default" : "outline"}
-              className="w-full h-full min-h-[100px] flex flex-col gap-2 p-4"
+              className="w-full h-full min-h-[90px] flex flex-col gap-2 p-4"
               onClick={() => setSelectedCategory(prev => prev === category.id ? null : category.id)}
             >
               <span className="font-semibold">{category.name}</span>
