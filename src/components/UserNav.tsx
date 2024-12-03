@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { User } from "lucide-react";
 
 export function UserNav() {
   const navigate = useNavigate();
@@ -28,10 +29,12 @@ export function UserNav() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+        <Button variant="ghost" className="relative h-8 w-8 rounded-full bg-primary p-0">
           <Avatar className="h-8 w-8">
-            <AvatarImage src="/placeholder.svg" alt="User avatar" />
-            <AvatarFallback>U</AvatarFallback>
+            <AvatarImage src="/placeholder.svg" alt="User avatar" className="bg-primary" />
+            <AvatarFallback className="bg-primary">
+              <User className="h-4 w-4 text-white" />
+            </AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
