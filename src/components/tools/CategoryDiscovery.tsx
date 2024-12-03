@@ -4,20 +4,30 @@ import { supabase } from '@/integrations/supabase/client';
 import { ApplicationCard } from '../ApplicationCard';
 import { Button } from '../ui/button';
 import { motion } from 'framer-motion';
-import { Search } from 'lucide-react';
+import { Search, Filter } from 'lucide-react';
+import { Input } from '../ui/input';
 
 const categories = [
-  { id: 'streaming-video', name: 'Streaming Vidéo', description: 'Plateformes de streaming vidéo' },
-  { id: 'streaming-musical', name: 'Streaming Musical', description: 'Services de streaming musical' },
-  { id: 'gaming', name: 'Gaming', description: 'Applications et services de jeux' },
-  { id: 'productivité', name: 'Productivité', description: 'Optimisez votre workflow' },
-  { id: 'éducation', name: 'Éducation', description: 'Outils d\'apprentissage' },
-  { id: 'bien-être', name: 'Bien-être', description: 'Applications de bien-être' },
-  { id: 'vpn-securite', name: 'VPN & Sécurité', description: 'Protection et sécurité en ligne' },
+  { id: 'gestion-financiere', name: 'Gestion financière', description: 'Gérez vos finances efficacement' },
+  { id: 'no-code', name: 'Automatisation et développement sans code', description: 'Solutions no-code et automatisation' },
+  { id: 'social-messaging', name: 'Réseaux sociaux et messagerie', description: 'Communication et réseaux sociaux' },
+  { id: 'collaboration', name: 'Outils de collaboration et de productivité', description: 'Travaillez en équipe' },
+  { id: 'payments', name: 'Applications de paiements et transferts', description: 'Gérez vos transactions' },
+  { id: 'creation', name: 'Applications de création', description: 'Outils créatifs' },
+  { id: 'streaming', name: 'Plateformes de streaming', description: 'Contenu en streaming' },
+  { id: 'ai', name: 'Applications IA', description: 'Intelligence artificielle' },
+  { id: 'health', name: 'Santé et forme physique', description: 'Bien-être et santé' },
+  { id: 'crm', name: 'CRM et outils de vente', description: 'Gestion de la relation client' },
+  { id: 'marketing', name: 'Marketing et gestion des médias sociaux', description: 'Stratégie marketing' },
+  { id: 'ecommerce', name: 'Plateformes de commerce électronique', description: 'Solutions e-commerce' },
+  { id: 'music', name: 'Musique et streaming audio', description: 'Audio et musique' },
+  { id: 'finance', name: 'Paiement et services financiers', description: 'Services financiers' },
+  { id: 'dating', name: 'Applications de rencontre', description: 'Rencontres en ligne' },
 ];
 
 export const CategoryDiscovery = () => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const { data: applications, isLoading } = useQuery({
     queryKey: ['applications', selectedCategory],
@@ -29,7 +39,7 @@ export const CategoryDiscovery = () => {
         .order('NOM');
 
       if (selectedCategory) {
-        query.ilike('CATÉGORIE', `%${selectedCategory}%`);
+        query.ilike('CATÉGORIE', `%${categories.find(c => c.id === selectedCategory)?.name}%`);
       }
 
       const { data, error } = await query;
@@ -60,6 +70,11 @@ export const CategoryDiscovery = () => {
     enabled: true,
   });
 
+  const filteredCategories = categories.filter(category =>
+    category.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    category.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <section className="py-12 space-y-8">
       <div className="text-center space-y-4">
@@ -69,8 +84,19 @@ export const CategoryDiscovery = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {categories.map((category) => (
+      <div className="relative">
+        <Input
+          type="search"
+          placeholder="Rechercher une catégorie..."
+          className="max-w-md mx-auto mb-8"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <Search className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {filteredCategories.map((category) => (
           <motion.div
             key={category.id}
             whileHover={{ scale: 1.02 }}
@@ -78,7 +104,7 @@ export const CategoryDiscovery = () => {
           >
             <Button
               variant={selectedCategory === category.id ? "default" : "outline"}
-              className="w-full h-full min-h-[90px] flex flex-col gap-2 p-4"
+              className="w-full h-full min-h-[90px] flex flex-col gap-2 p-4 text-left items-start"
               onClick={() => setSelectedCategory(prev => prev === category.id ? null : category.id)}
             >
               <span className="font-semibold">{category.name}</span>
