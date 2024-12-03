@@ -17,11 +17,8 @@ const Dashboard = () => {
 
   useEffect(() => {
     const checkAuth = async () => {
-      console.log("🔍 Checking authentication status...");
       const { data: { user } } = await supabase.auth.getUser();
-      
       if (!user) {
-        console.log("❌ No user found, redirecting to auth");
         toast({
           title: "Session expirée",
           description: "Veuillez vous reconnecter",
@@ -31,7 +28,18 @@ const Dashboard = () => {
         return;
       }
 
-      console.log("✅ User is authenticated");
+      const { data: preferences } = await supabase
+        .from('user_preferences')
+        .select('*')
+        .eq('id', user.id)
+        .single();
+
+      if (!preferences) {
+        navigate("/onboarding");
+        return;
+      }
+
+      console.log("User authenticated and onboarding completed");
     };
 
     checkAuth();
@@ -61,7 +69,10 @@ const Dashboard = () => {
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 text-center sm:text-left">
               Tableau de bord
             </h1>
-            <DashboardNavigation />
+            <DashboardNavigation 
+              activeTab={activeTab} 
+              onTabChange={setActiveTab} 
+            />
           </header>
 
           <main className="space-y-4 sm:space-y-6">
