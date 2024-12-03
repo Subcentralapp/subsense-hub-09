@@ -16,8 +16,8 @@ export const Navbar = () => {
   const location = useLocation();
 
   return (
-    <div className="border-b">
-      <div className="flex h-16 items-center px-4">
+    <div className="border-b bg-white">
+      <div className="flex h-16 items-center px-4 max-w-7xl mx-auto">
         <Button
           variant="ghost"
           className="flex items-center space-x-2 px-0 hover:bg-transparent"
@@ -36,7 +36,7 @@ export const Navbar = () => {
               key={item.name}
               variant="ghost"
               className={cn(
-                "text-base",
+                "text-base font-medium",
                 location.pathname === item.href && "bg-accent"
               )}
               onClick={() => navigate(item.href)}
