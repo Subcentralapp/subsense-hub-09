@@ -131,17 +131,25 @@ const Auth = () => {
                   email_label: 'Adresse email',
                   password_label: 'Mot de passe',
                   button_label: 'Se connecter',
+                  email_input_placeholder: 'Votre adresse email',
+                  password_input_placeholder: 'Votre mot de passe',
+                  link_text: 'Déjà inscrit ? Connectez-vous',
                 },
                 sign_up: {
                   email_label: 'Adresse email',
                   password_label: 'Mot de passe',
                   button_label: 'Créer un compte',
+                  email_input_placeholder: 'Votre adresse email',
+                  password_input_placeholder: 'Choisissez un mot de passe',
+                  link_text: 'Pas encore de compte ? Inscrivez-vous',
                 },
                 magic_link: {
                   button_label: 'Connexion avec un lien magique',
+                  link_text: 'Envoyer un lien magique',
                 },
                 forgotten_password: {
                   button_label: 'Mot de passe oublié ?',
+                  link_text: 'Mot de passe oublié ?',
                 },
               },
             }}
