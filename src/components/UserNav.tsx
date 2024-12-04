@@ -12,17 +12,30 @@ import {
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { User } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 export function UserNav() {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleSignOut = async () => {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) throw error;
-      navigate("/auth");
+      
+      toast({
+        title: "Déconnexion réussie",
+        description: "À bientôt !",
+      });
+      
+      navigate("/landing");
     } catch (error) {
       console.error("Error signing out:", error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la déconnexion",
+        variant: "destructive",
+      });
     }
   };
 

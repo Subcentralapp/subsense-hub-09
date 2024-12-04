@@ -16,24 +16,28 @@ const Index = () => {
         return;
       }
 
-      // Vérifier si l'utilisateur a déjà complété l'onboarding
-      const { data: preferences, error } = await supabase
-        .from('user_preferences')
-        .select('*')
-        .eq('id', user.id)
-        .single();
+      console.log("✅ User found, checking preferences...");
+      try {
+        const { data: preferences, error } = await supabase
+          .from('user_preferences')
+          .select('*')
+          .eq('id', user.id);
 
-      if (error) {
-        console.error("❌ Error checking user preferences:", error);
-      }
+        if (error) {
+          console.error("❌ Error checking user preferences:", error);
+          return;
+        }
 
-      // Si l'utilisateur vient de s'inscrire et n'a pas de préférences
-      if (!preferences) {
-        console.log("🆕 New user detected, redirecting to onboarding");
-        navigate("/onboarding");
-      } else {
-        console.log("✅ User has completed onboarding, redirecting to dashboard");
-        navigate("/dashboard");
+        if (!preferences || preferences.length === 0) {
+          console.log("🆕 No preferences found, redirecting to onboarding");
+          navigate("/onboarding");
+        } else {
+          console.log("✅ Preferences found, redirecting to dashboard");
+          navigate("/dashboard");
+        }
+      } catch (error) {
+        console.error("❌ Error in checkAuth:", error);
+        navigate("/landing");
       }
     };
 
