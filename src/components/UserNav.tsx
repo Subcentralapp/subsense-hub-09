@@ -34,11 +34,15 @@ export function UserNav() {
         }
         if (mounted) {
           setIsSessionValid(!!session);
+          if (!session) {
+            navigate("/auth", { replace: true });
+          }
         }
       } catch (error) {
         console.error("Erreur lors de la vérification de la session:", error);
         if (mounted) {
           setIsSessionValid(false);
+          navigate("/auth", { replace: true });
         }
       }
     };
@@ -49,6 +53,9 @@ export function UserNav() {
       if (mounted) {
         console.log("État de l'authentification changé:", event);
         setIsSessionValid(!!session);
+        if (!session) {
+          navigate("/auth", { replace: true });
+        }
       }
     });
 
@@ -60,13 +67,17 @@ export function UserNav() {
 
   const clearAppCache = async () => {
     console.log("🧹 Nettoyage du cache de l'application...");
-    // Purge React Query cache
-    await queryClient.clear();
-    // Clear localStorage
-    localStorage.clear();
-    // Clear sessionStorage
-    sessionStorage.clear();
-    console.log("✨ Cache nettoyé avec succès");
+    try {
+      // Purge React Query cache
+      await queryClient.clear();
+      // Clear localStorage
+      localStorage.clear();
+      // Clear sessionStorage
+      sessionStorage.clear();
+      console.log("✨ Cache nettoyé avec succès");
+    } catch (error) {
+      console.error("❌ Erreur lors du nettoyage du cache:", error);
+    }
   };
 
   const handleSignOut = async () => {
@@ -88,6 +99,8 @@ export function UserNav() {
       }
       
       console.log("✅ Déconnexion réussie");
+      setIsSessionValid(false);
+      
       toast({
         title: "Déconnexion réussie",
         description: "À bientôt !",
