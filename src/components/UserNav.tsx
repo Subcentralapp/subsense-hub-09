@@ -158,7 +158,7 @@ export function UserNav() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Avatar className="h-8 w-8 bg-primary cursor-pointer">
+        <Avatar className="h-8 w-8 bg-[#1a237e] cursor-pointer hover:bg-[#1a237e]">
           <AvatarFallback className="text-white">
             <svg
               xmlns="http://www.w3.org/2000/svg"
