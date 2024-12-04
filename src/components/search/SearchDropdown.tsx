@@ -21,7 +21,6 @@ export const SearchDropdown = ({
 }: SearchDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Ferme la liste déroulante quand on clique en dehors
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       const target = event.target as HTMLElement;
