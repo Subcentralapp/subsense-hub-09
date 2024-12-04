@@ -62,7 +62,7 @@ export const Header = () => {
         <div className="flex items-center h-14 sm:h-16">
           {/* Mobile Layout */}
           <div className="flex items-center gap-4 sm:hidden">
-            {user ? <UserNav /> : <AuthButtons user={user} />}
+            <MobileMenu />
           </div>
           
           {/* Logo - Centered on mobile, left on desktop */}
@@ -70,9 +70,9 @@ export const Header = () => {
             <Logo />
           </div>
 
-          {/* Menu Hamburger - Right side on mobile */}
-          <div className="flex items-center gap-4 sm:hidden">
-            <MobileMenu />
+          {/* User Nav - Right side on mobile */}
+          <div className="flex items-center gap-4 sm:hidden ml-auto">
+            {user ? <UserNav /> : <AuthButtons user={user} />}
           </div>
           
           {/* Message promotionnel - Desktop only */}
