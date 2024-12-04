@@ -98,80 +98,82 @@ export const MVPSection = () => {
           </motion.div>
         </div>
 
-        {/* Nouvelles sections */}
-        <div className="mt-32 space-y-24">
-          {/* Section Stack Technique */}
+        {/* Section unifiée Stack & Outils */}
+        <div className="mt-32">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-primary/5 to-secondary/5 p-8"
+            className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-primary/5 via-secondary/5 to-primary/5 p-12"
           >
-            <div className="grid md:grid-cols-2 gap-8 items-center">
-              <div className="space-y-6">
-                <h2 className="text-3xl font-bold text-gray-900">
-                  Comparez, sélectionnez et créez une stack technique parfaitement adaptée à vos besoins
-                </h2>
-                <Button 
-                  variant="default"
-                  size="lg"
-                  onClick={() => navigate("/stack")}
-                  className="group"
-                >
-                  Créer ma stack
-                  <motion.span
-                    className="inline-block ml-2"
-                    animate={{ x: [0, 4, 0] }}
-                    transition={{ repeat: Infinity, duration: 1.5 }}
+            <div className="space-y-16">
+              {/* Stack Technique */}
+              <div className="grid md:grid-cols-2 gap-12 items-center">
+                <div className="space-y-6">
+                  <h2 className="text-3xl font-bold text-gray-900">
+                    Comparez, sélectionnez et créez une stack technique parfaitement adaptée à vos besoins
+                  </h2>
+                  <Button 
+                    variant="default"
+                    size="lg"
+                    onClick={() => navigate("/stack")}
+                    className="group"
                   >
-                    →
-                  </motion.span>
-                </Button>
+                    Créer ma stack
+                    <motion.span
+                      className="inline-block ml-2"
+                      animate={{ x: [0, 4, 0] }}
+                      transition={{ repeat: Infinity, duration: 1.5 }}
+                    >
+                      →
+                    </motion.span>
+                  </Button>
+                </div>
+                <div className="relative">
+                  <div className="aspect-[16/9] p-4">
+                    <img
+                      src="/lovable-uploads/f15ce945-db4a-495c-b980-3f2c3864a989.png"
+                      alt="Stack technique personnalisée"
+                      className="rounded-xl shadow-lg object-contain w-full h-full"
+                    />
+                  </div>
+                </div>
               </div>
-              <div className="relative aspect-[16/9]">
-                <img
-                  src="/lovable-uploads/f15ce945-db4a-495c-b980-3f2c3864a989.png"
-                  alt="Stack technique personnalisée"
-                  className="rounded-xl shadow-lg object-cover w-full h-full"
-                />
-              </div>
-            </div>
-          </motion.div>
 
-          {/* Section Outils 2025 */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-secondary/5 to-primary/5 p-8"
-          >
-            <div className="grid md:grid-cols-2 gap-8 items-center">
-              <div className="order-2 md:order-1 relative aspect-[16/9]">
-                <img
-                  src="/lovable-uploads/a8bed031-f2ac-4896-9c0c-4cd34b719da5.png"
-                  alt="Outils innovants 2025"
-                  className="rounded-xl shadow-lg object-cover w-full h-full"
-                />
-              </div>
-              <div className="order-1 md:order-2 space-y-6">
-                <h2 className="text-3xl font-bold text-gray-900">
-                  Découvrez les outils innovants qui transformeront votre quotidien et boosteront votre business en 2025
-                </h2>
-                <Button 
-                  variant="default"
-                  size="lg"
-                  onClick={() => navigate("/tools")}
-                  className="group"
-                >
-                  Explorer les outils
-                  <motion.span
-                    className="inline-block ml-2"
-                    animate={{ x: [0, 4, 0] }}
-                    transition={{ repeat: Infinity, duration: 1.5 }}
+              {/* Séparateur */}
+              <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
+
+              {/* Outils 2025 */}
+              <div className="grid md:grid-cols-2 gap-12 items-center">
+                <div className="order-2 md:order-1 relative">
+                  <div className="aspect-[16/9] p-4">
+                    <img
+                      src="/lovable-uploads/a8bed031-f2ac-4896-9c0c-4cd34b719da5.png"
+                      alt="Outils innovants 2025"
+                      className="rounded-xl shadow-lg object-contain w-full h-full"
+                    />
+                  </div>
+                </div>
+                <div className="order-1 md:order-2 space-y-6">
+                  <h2 className="text-3xl font-bold text-gray-900">
+                    Découvrez les outils innovants qui transformeront votre quotidien et boosteront votre business en 2025
+                  </h2>
+                  <Button 
+                    variant="default"
+                    size="lg"
+                    onClick={() => navigate("/tools")}
+                    className="group"
                   >
-                    →
-                  </motion.span>
-                </Button>
+                    Explorer les outils
+                    <motion.span
+                      className="inline-block ml-2"
+                      animate={{ x: [0, 4, 0] }}
+                      transition={{ repeat: Infinity, duration: 1.5 }}
+                    >
+                      →
+                    </motion.span>
+                  </Button>
+                </div>
               </div>
             </div>
           </motion.div>
