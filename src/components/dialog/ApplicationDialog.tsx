@@ -5,9 +5,7 @@ import { useState, useMemo } from "react";
 import ApplicationSearch from "./ApplicationSearch";
 import ApplicationGrid from "./ApplicationGrid";
 import { Application } from "@/types/application";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useToast } from "@/components/ui/use-toast";
+import CustomApplicationForm from "./CustomApplicationForm";
 
 interface ApplicationDialogProps {
   applications: Application[] | undefined;
@@ -26,13 +24,6 @@ const ApplicationDialog = ({
 }: ApplicationDialogProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showCustomForm, setShowCustomForm] = useState(false);
-  const [customApp, setCustomApp] = useState<Partial<Application>>({
-    name: "",
-    price: 0,
-    category: "",
-    description: ""
-  });
-  const { toast } = useToast();
 
   const filteredApplications = useMemo(() => {
     if (!applications) return [];
@@ -45,26 +36,6 @@ const ApplicationDialog = ({
       return appName.includes(searchTermLower) || appDescription.includes(searchTermLower);
     });
   }, [applications, searchTerm]);
-
-  const handleSearch = (newSearchTerm: string) => {
-    setSearchTerm(newSearchTerm);
-  };
-
-  const handleCustomSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!customApp.name || !customApp.price || !customApp.category) {
-      toast({
-        title: "Erreur",
-        description: "Veuillez remplir tous les champs obligatoires",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    await onAddSubscription(customApp as Application);
-    setCustomApp({ name: "", price: 0, category: "", description: "" });
-    setShowCustomForm(false);
-  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -89,73 +60,21 @@ const ApplicationDialog = ({
         <div className="space-y-6 py-4">
           <ApplicationSearch 
             applications={applications} 
-            onSearch={handleSearch}
+            onSearch={setSearchTerm}
           />
 
-          {showCustomForm && (
-            <form onSubmit={handleCustomSubmit} className="animate-fade-in bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name" className="text-sm font-medium">Nom de l'application *</Label>
-                  <Input
-                    id="name"
-                    value={customApp.name}
-                    onChange={(e) => setCustomApp(prev => ({ ...prev, name: e.target.value }))}
-                    placeholder="ex: Netflix, Spotify..."
-                    className="w-full"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="price" className="text-sm font-medium">Prix mensuel *</Label>
-                  <Input
-                    id="price"
-                    type="number"
-                    step="0.01"
-                    value={customApp.price}
-                    onChange={(e) => setCustomApp(prev => ({ ...prev, price: parseFloat(e.target.value) }))}
-                    placeholder="9.99"
-                    className="w-full"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="category" className="text-sm font-medium">Catégorie *</Label>
-                  <Input
-                    id="category"
-                    value={customApp.category}
-                    onChange={(e) => setCustomApp(prev => ({ ...prev, category: e.target.value }))}
-                    placeholder="ex: Streaming vidéo, Gaming..."
-                    className="w-full"
-                    required
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="description" className="text-sm font-medium">Description (optionnelle)</Label>
-                  <Input
-                    id="description"
-                    value={customApp.description || ""}
-                    onChange={(e) => setCustomApp(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder="Description de l'application..."
-                    className="w-full"
-                  />
-                </div>
-
-                <Button type="submit" className="w-full bg-primary hover:bg-primary/90">
-                  Ajouter mon abonnement
-                </Button>
-              </div>
-            </form>
+          {showCustomForm ? (
+            <CustomApplicationForm
+              onSubmit={onAddSubscription}
+              onCancel={() => setShowCustomForm(false)}
+            />
+          ) : (
+            <ApplicationGrid 
+              applications={filteredApplications} 
+              isLoading={isLoading} 
+              onAddSubscription={onAddSubscription}
+            />
           )}
-
-          <ApplicationGrid 
-            applications={filteredApplications} 
-            isLoading={isLoading} 
-            onAddSubscription={onAddSubscription}
-          />
         </div>
       </DialogContent>
     </Dialog>

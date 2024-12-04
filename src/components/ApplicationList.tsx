@@ -15,12 +15,9 @@ const fetchApplications = async () => {
       .select("*")
       .order("NOM");
 
-    if (error) {
-      console.error("Error during fetch:", error);
-      throw error;
-    }
+    if (error) throw error;
 
-    const mappedData = data.map(app => ({
+    return data.map(app => ({
       id: app.id,
       name: app.NOM,
       price: app.PRICE ? parseFloat(app.PRICE) : 0,
@@ -35,11 +32,8 @@ const fetchApplications = async () => {
       review: app.REVUE,
       users_count: app["NOMBRE D'UTILISATEURS"]
     }));
-
-    console.log(`${mappedData.length} applications fetched and mapped:`, mappedData);
-    return mappedData;
   } catch (error) {
-    console.error("Error during fetch:", error);
+    console.error("Error fetching applications:", error);
     throw error;
   }
 };
@@ -81,29 +75,21 @@ const ApplicationList = () => {
 
       if (!selectedApp) return;
 
-      const subscriptionData = {
-        name: selectedApp.name,
-        price: price,
-        category: selectedApp.category,
-        next_billing: nextBilling.toISOString(),
-        description: selectedApp.description,
-        user_id: user.id,
-        is_trial: isTrial,
-        trial_end_date: trialEndDate?.toISOString() || null,
-      };
-
-      console.log("Adding subscription:", subscriptionData);
-
       const { error } = await supabase
         .from("subscriptions")
-        .insert(subscriptionData);
+        .insert({
+          name: selectedApp.name,
+          price: price,
+          category: selectedApp.category,
+          next_billing: nextBilling.toISOString(),
+          description: selectedApp.description,
+          user_id: user.id,
+          is_trial: isTrial,
+          trial_end_date: trialEndDate?.toISOString() || null,
+        });
 
-      if (error) {
-        console.error("Error during insertion:", error);
-        throw error;
-      }
+      if (error) throw error;
 
-      // Optimistically update the cache
       await queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
 
       toast({
