@@ -27,41 +27,60 @@ function Layout() {
   );
 }
 
-// Protected route component
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let mounted = true;
+
     const checkAuth = async () => {
       try {
-        const { data: { session } } = await supabase.auth.getSession();
-        console.log("Session check result:", !!session);
-        setIsAuthenticated(!!session);
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error("Session check error:", error);
+          if (mounted) {
+            setIsAuthenticated(false);
+            setIsLoading(false);
+          }
+          return;
+        }
+
+        if (mounted) {
+          console.log("Session check complete - authenticated:", !!session);
+          setIsAuthenticated(!!session);
+          setIsLoading(false);
+        }
       } catch (error) {
-        console.error("Error checking auth:", error);
-        setIsAuthenticated(false);
-      } finally {
-        setIsLoading(false);
+        console.error("Error in checkAuth:", error);
+        if (mounted) {
+          setIsAuthenticated(false);
+          setIsLoading(false);
+        }
       }
     };
-    
+
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      console.log("Auth state changed, session exists:", !!session);
-      setIsAuthenticated(!!session);
+      if (mounted) {
+        console.log("Auth state changed - session exists:", !!session);
+        setIsAuthenticated(!!session);
+        setIsLoading(false);
+      }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
-  // Show nothing while checking authentication
   if (isLoading) {
     return null;
   }
 
-  // Redirect to auth if not authenticated
   if (!isAuthenticated) {
     console.log("User not authenticated, redirecting to /auth");
     return <Navigate to="/auth" replace />;
