@@ -1,7 +1,6 @@
 import {
   Avatar,
   AvatarFallback,
-  AvatarImage,
 } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -54,7 +53,7 @@ export function UserNav() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8 !bg-primary">
-            <AvatarFallback className="!bg-primary">
+            <AvatarFallback>
               <UserRound className="h-5 w-5 text-white" />
             </AvatarFallback>
           </Avatar>
