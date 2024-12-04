@@ -3,158 +3,100 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
-import { useToast } from "@/hooks/use-toast";
+import { Sparkles } from "lucide-react";
+import { motion } from "framer-motion";
 
-export default function Auth() {
+const Auth = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    let mounted = true;
-
-    const checkSession = async () => {
+    const checkUser = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (error) {
-          console.error("Error checking session:", error);
-          return;
-        }
-
-        if (session && mounted) {
-          console.log("Active session found, checking preferences...");
-          const { data: preferences, error: preferencesError } = await supabase
-            .from('user_preferences')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
-
-          if (preferencesError && preferencesError.code !== 'PGRST116') {
-            console.error("Error checking preferences:", preferencesError);
-            return;
-          }
-
-          if (preferences) {
-            navigate("/dashboard", { replace: true });
-          } else {
-            navigate("/onboarding", { replace: true });
-          }
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          console.log("User already authenticated, redirecting to dashboard");
+          navigate("/dashboard");
         }
       } catch (error) {
-        console.error("Error in checkSession:", error);
+        console.error("Error checking authentication status:", error);
       } finally {
-        if (mounted) {
-          setIsLoading(false);
-        }
+        setIsLoading(false);
       }
     };
 
-    checkSession();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event);
-      
-      if (event === 'SIGNED_IN' && session) {
-        toast({
-          title: "Connexion réussie",
-          description: "Bienvenue !",
-        });
-
-        try {
-          const { data: preferences, error: preferencesError } = await supabase
-            .from('user_preferences')
-            .select('*')
-            .eq('id', session.user.id)
-            .single();
-
-          if (preferencesError && preferencesError.code !== 'PGRST116') {
-            console.error("Error checking preferences:", preferencesError);
-            return;
-          }
-
-          if (preferences) {
-            navigate("/dashboard", { replace: true });
-          } else {
-            navigate("/onboarding", { replace: true });
-          }
-        } catch (error) {
-          console.error("Error checking preferences after sign in:", error);
-        }
-      }
-    });
-
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
-  }, [navigate, toast]);
+    checkUser();
+  }, [navigate]);
 
   if (isLoading) {
-    return null;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-light to-white flex items-center justify-center p-4">
-      <div className="w-full max-w-4xl flex flex-col md:flex-row gap-8 items-center">
+      <div className="w-full max-w-4xl flex flex-col md:flex-row gap-6 items-center">
         {/* Section de motivation - Version mobile */}
-        <div className="w-full md:hidden space-y-4 text-center px-4">
-          <h1 className="text-2xl font-bold tracking-tight">
-            Gérez vos abonnements intelligemment
-          </h1>
-          <div className="flex justify-center">
+        <div className="w-full md:hidden space-y-3 text-center mb-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="space-y-2"
+          >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary">
-              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              <span className="text-sm font-medium">Économisez sur vos abonnements</span>
+              <Sparkles className="w-4 h-4" />
+              <span className="text-sm font-medium">Offre de lancement</span>
             </div>
-          </div>
+            <h1 className="text-xl font-bold text-gray-900 px-4">
+              Simplifiez la gestion de vos abonnements
+            </h1>
+          </motion.div>
         </div>
 
         {/* Section de motivation - Version desktop */}
         <div className="flex-1 hidden md:block">
           <div className="space-y-6">
             <h1 className="text-4xl font-bold tracking-tight">
-              Gérez vos abonnements intelligemment
+              Reprenez le contrôle de vos abonnements
             </h1>
+            <p className="text-lg text-gray-600">
+              Rejoignez des milliers d'utilisateurs qui font déjà des économies sur leurs abonnements.
+            </p>
             <div className="space-y-4">
-              <div className="flex items-start gap-3">
-                <div className="bg-primary/10 p-2 rounded-lg">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Sparkles className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold">Visualisez vos dépenses</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Obtenez une vue claire de tous vos abonnements et de leurs coûts
+                  <h3 className="font-medium">Visualisez vos dépenses</h3>
+                  <p className="text-sm text-gray-500">
+                    Obtenez une vue claire de tous vos abonnements
                   </p>
                 </div>
               </div>
-              <div className="flex items-start gap-3">
-                <div className="bg-primary/10 p-2 rounded-lg">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Sparkles className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold">Économisez de l'argent</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Identifiez les abonnements superflus et optimisez vos dépenses
+                  <h3 className="font-medium">Économisez de l'argent</h3>
+                  <p className="text-sm text-gray-500">
+                    Identifiez les doublons et optimisez vos dépenses
                   </p>
                 </div>
               </div>
-              <div className="flex items-start gap-3">
-                <div className="bg-primary/10 p-2 rounded-lg">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
-                  </svg>
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Sparkles className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-semibold">Ne manquez aucune échéance</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Recevez des rappels pour vos paiements et périodes d'essai
+                  <h3 className="font-medium">Ne manquez aucun paiement</h3>
+                  <p className="text-sm text-gray-500">
+                    Recevez des rappels pour vos échéances
                   </p>
                 </div>
               </div>
@@ -163,7 +105,7 @@ export default function Auth() {
         </div>
 
         {/* Formulaire d'authentification */}
-        <div className="w-full max-w-md glass-card p-8 rounded-xl">
+        <div className="w-full max-w-sm bg-white p-6 rounded-xl shadow-sm">
           <SupabaseAuth
             supabaseClient={supabase}
             appearance={{
@@ -171,16 +113,19 @@ export default function Auth() {
               variables: {
                 default: {
                   colors: {
-                    brand: '#000000',
-                    brandAccent: '#333333',
+                    brand: '#1a237e',
+                    brandAccent: '#1a237e',
                   },
                 },
               },
             }}
-            providers={['google']}
+            providers={["google"]}
+            redirectTo={`${window.location.origin}/auth/callback`}
           />
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default Auth;
