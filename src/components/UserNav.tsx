@@ -16,10 +16,38 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { UserRound } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useEffect, useState } from "react";
 
 export function UserNav() {
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [isSessionValid, setIsSessionValid] = useState(false);
+
+  useEffect(() => {
+    const checkSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error("Erreur lors de la vérification de la session:", error);
+          navigate("/auth");
+          return;
+        }
+        setIsSessionValid(!!session);
+      } catch (error) {
+        console.error("Erreur lors de la vérification de la session:", error);
+        setIsSessionValid(false);
+      }
+    };
+
+    checkSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("État de l'authentification changé:", event);
+      setIsSessionValid(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
   const handleSignOut = async () => {
     try {
@@ -47,6 +75,10 @@ export function UserNav() {
       });
     }
   };
+
+  if (!isSessionValid) {
+    return null;
+  }
 
   return (
     <DropdownMenu>
