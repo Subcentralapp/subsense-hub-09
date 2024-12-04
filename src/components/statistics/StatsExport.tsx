@@ -75,22 +75,24 @@ export const StatsExport = ({ stats }: StatsExportProps) => {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row gap-2">
+    <div className="flex items-center gap-2 text-sm text-gray-600">
       <Button
-        variant="outline"
-        className="flex items-center justify-center gap-2 hover:bg-gray-100 w-full sm:w-auto"
+        variant="ghost"
+        size="sm"
+        className="flex items-center gap-1.5 hover:bg-gray-100"
         onClick={exportToPDF}
       >
-        <FileDown className="h-4 w-4" />
-        Exporter en PDF
+        <FileDown className="h-3.5 w-3.5" />
+        pdf
       </Button>
       <Button
-        variant="outline"
-        className="flex items-center justify-center gap-2 hover:bg-gray-100 w-full sm:w-auto"
+        variant="ghost"
+        size="sm"
+        className="flex items-center gap-1.5 hover:bg-gray-100"
         onClick={exportToExcel}
       >
-        <FileDown className="h-4 w-4" />
-        Exporter en Excel
+        <FileDown className="h-3.5 w-3.5" />
+        excel
       </Button>
     </div>
   );
