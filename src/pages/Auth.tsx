@@ -10,28 +10,35 @@ export default function Auth() {
   const { toast } = useToast();
 
   useEffect(() => {
+    // Check current session on mount
     const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        console.log("No session found");
-        return;
-      }
-
-      console.log("Session found, checking user preferences...");
       try {
-        const { data, error } = await supabase
-          .from('user_preferences')
-          .select('*')
-          .eq('id', session.user.id);
-
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
         if (error) {
-          console.error("Error checking preferences:", error);
+          console.error("Error checking session:", error);
           return;
         }
 
-        if (data && data.length > 0) {
-          console.log("User has preferences, redirecting to dashboard");
+        if (!session) {
+          console.log("No active session found");
+          return;
+        }
+
+        console.log("Active session found, checking user preferences...");
+        const { data: preferences, error: preferencesError } = await supabase
+          .from('user_preferences')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+
+        if (preferencesError) {
+          console.error("Error checking preferences:", preferencesError);
+          return;
+        }
+
+        if (preferences) {
+          console.log("User preferences found, redirecting to dashboard");
           navigate("/dashboard");
         } else {
           console.log("No preferences found, redirecting to onboarding");
@@ -44,38 +51,35 @@ export default function Auth() {
 
     checkSession();
 
+    // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event, session);
       
-      if (event === 'SIGNED_IN') {
-        console.log("User signed in, checking preferences...");
+      if (event === 'SIGNED_IN' && session) {
         toast({
           title: "Connexion réussie",
           description: "Bienvenue !",
         });
 
-        if (session) {
-          try {
-            const { data, error } = await supabase
-              .from('user_preferences')
-              .select('*')
-              .eq('id', session.user.id);
+        try {
+          const { data: preferences, error: preferencesError } = await supabase
+            .from('user_preferences')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
 
-            if (error) {
-              console.error("Error checking preferences:", error);
-              return;
-            }
-
-            if (data && data.length > 0) {
-              console.log("User has preferences, redirecting to dashboard");
-              navigate("/dashboard");
-            } else {
-              console.log("No preferences found, redirecting to onboarding");
-              navigate("/onboarding");
-            }
-          } catch (error) {
-            console.error("Error checking preferences after sign in:", error);
+          if (preferencesError && preferencesError.code !== 'PGRST116') {
+            console.error("Error checking preferences:", preferencesError);
+            return;
           }
+
+          if (preferences) {
+            navigate("/dashboard");
+          } else {
+            navigate("/onboarding");
+          }
+        } catch (error) {
+          console.error("Error checking preferences after sign in:", error);
         }
       }
 
