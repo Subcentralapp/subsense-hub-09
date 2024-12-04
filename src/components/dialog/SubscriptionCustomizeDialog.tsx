@@ -6,6 +6,8 @@ import { Application } from "@/types/application";
 import { useState } from "react";
 import { Switch } from "@/components/ui/switch";
 import { addDays } from "date-fns";
+import confetti from 'canvas-confetti';
+import { useNavigate } from "react-router-dom";
 
 interface SubscriptionCustomizeDialogProps {
   app: Application | null;
@@ -18,11 +20,24 @@ const SubscriptionCustomizeDialog = ({ app, isOpen, onClose, onConfirm }: Subscr
   const [price, setPrice] = useState(app?.price || 0);
   const [nextBilling, setNextBilling] = useState(new Date());
   const [isTrial, setIsTrial] = useState(false);
-  const [trialDays, setTrialDays] = useState(14); // Par défaut 14 jours d'essai
+  const [trialDays, setTrialDays] = useState(14);
+  const navigate = useNavigate();
+
+  const triggerConfetti = () => {
+    confetti({
+      particleCount: 100,
+      spread: 70,
+      origin: { y: 0.6 },
+      colors: ['#9b87f5', '#7E69AB', '#F1F0FB']
+    });
+  };
 
   const handleConfirm = () => {
     const trialEndDate = isTrial ? addDays(new Date(), trialDays) : null;
     onConfirm(price, nextBilling, isTrial, trialEndDate);
+    triggerConfetti();
+    onClose();
+    navigate('/dashboard', { state: { activeTab: 'dashboard' } });
   };
 
   return (
