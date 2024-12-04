@@ -15,11 +15,11 @@ const Auth = () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
-          console.log("Utilisateur déjà authentifié, redirection vers le tableau de bord");
+          console.log("User already authenticated, redirecting to dashboard");
           navigate("/dashboard");
         }
       } catch (error) {
-        console.error("Erreur lors de la vérification de l'authentification:", error);
+        console.error("Error checking authentication status:", error);
       } finally {
         setIsLoading(false);
       }
@@ -39,7 +39,7 @@ const Auth = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-light to-white flex items-center justify-center p-4 pt-24 md:pt-4">
       <div className="w-full max-w-4xl flex flex-col md:flex-row gap-6 items-center">
-        {/* Section de motivation - Version mobile */}
+        {/* Mobile motivation section */}
         <div className="w-full md:hidden space-y-3 text-center mb-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -49,22 +49,22 @@ const Auth = () => {
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary">
               <Sparkles className="w-4 h-4" />
-              <span className="text-sm font-medium">Offre de lancement</span>
+              <span className="text-sm font-medium">Launch Offer</span>
             </div>
             <h1 className="text-xl font-bold text-gray-900 px-4">
-              Gérez vos abonnements en toute simplicité
+              Manage your subscriptions with ease
             </h1>
           </motion.div>
         </div>
 
-        {/* Section de motivation - Version desktop */}
+        {/* Desktop motivation section */}
         <div className="flex-1 hidden md:block">
           <div className="space-y-6">
             <h1 className="text-4xl font-bold tracking-tight">
-              Reprenez le contrôle de vos abonnements
+              Take control of your subscriptions
             </h1>
             <p className="text-lg text-gray-600">
-              Rejoignez des milliers d'utilisateurs qui font déjà des économies sur leurs abonnements.
+              Join thousands of users who are already saving money on their subscriptions.
             </p>
             <div className="space-y-4">
               <div className="flex items-center gap-3">
@@ -72,9 +72,9 @@ const Auth = () => {
                   <Sparkles className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-medium">Visualisez vos dépenses</h3>
+                  <h3 className="font-medium">Visualize your expenses</h3>
                   <p className="text-sm text-gray-500">
-                    Obtenez une vue claire de tous vos abonnements
+                    Get a clear view of all your subscriptions
                   </p>
                 </div>
               </div>
@@ -83,9 +83,9 @@ const Auth = () => {
                   <Sparkles className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-medium">Économisez de l'argent</h3>
+                  <h3 className="font-medium">Save money</h3>
                   <p className="text-sm text-gray-500">
-                    Identifiez les doublons et optimisez vos dépenses
+                    Identify duplicates and optimize your spending
                   </p>
                 </div>
               </div>
@@ -94,9 +94,9 @@ const Auth = () => {
                   <Sparkles className="h-5 w-5 text-primary" />
                 </div>
                 <div>
-                  <h3 className="font-medium">Ne manquez aucun paiement</h3>
+                  <h3 className="font-medium">Never miss a payment</h3>
                   <p className="text-sm text-gray-500">
-                    Recevez des rappels pour vos échéances
+                    Get reminders for your due dates
                   </p>
                 </div>
               </div>
@@ -104,7 +104,7 @@ const Auth = () => {
           </div>
         </div>
 
-        {/* Formulaire d'authentification */}
+        {/* Authentication form */}
         <div className="w-full max-w-sm bg-white p-6 rounded-xl shadow-sm">
           <SupabaseAuth
             supabaseClient={supabase}
@@ -128,23 +128,20 @@ const Auth = () => {
             localization={{
               variables: {
                 sign_in: {
-                  email_label: 'Adresse email',
-                  password_label: 'Mot de passe',
-                  button_label: 'Se connecter',
+                  email_label: 'Email address',
+                  password_label: 'Password',
+                  button_label: 'Sign in',
                 },
                 sign_up: {
-                  email_label: 'Adresse email',
-                  password_label: 'Mot de passe',
-                  button_label: 'Créer mon compte',
+                  email_label: 'Email address',
+                  password_label: 'Password',
+                  button_label: 'Create account',
                 },
                 magic_link: {
-                  button_label: 'Connexion avec un lien magique',
+                  button_label: 'Sign in with magic link',
                 },
                 forgotten_password: {
-                  button_label: 'Mot de passe oublié ?',
-                },
-                confirmation: {
-                  button_label: 'Renvoyer le lien',
+                  button_label: 'Forgot password?',
                 },
               },
             }}
