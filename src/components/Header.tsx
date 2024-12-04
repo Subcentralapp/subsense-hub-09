@@ -11,14 +11,27 @@ import { AuthButtons } from "./header/AuthButtons";
 
 export const Header = () => {
   const [user, setUser] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     // Check current session on mount
     const checkUser = async () => {
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
-      console.log("Current user:", currentUser);
-      setUser(currentUser);
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error("Erreur lors de la vérification de la session:", error);
+          setUser(null);
+          return;
+        }
+        console.log("Session actuelle:", session);
+        setUser(session?.user || null);
+      } catch (error) {
+        console.error("Erreur lors de la vérification de la session:", error);
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
     };
     
     checkUser();
@@ -37,6 +50,10 @@ export const Header = () => {
 
     return () => subscription.unsubscribe();
   }, [navigate]);
+
+  if (isLoading) {
+    return null; // ou un composant de chargement
+  }
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-sm z-50">
