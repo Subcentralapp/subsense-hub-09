@@ -9,13 +9,20 @@ export const uploadInvoiceFile = async (file: File) => {
     const fileName = `${Date.now()}-${cleanFileName}`;
     
     console.log('Generated file name:', fileName);
+
+    // Get the current user
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error('User must be authenticated to upload invoices');
+    }
     
     // 1. Create invoice record first
     const { data: invoice, error: dbError } = await supabase
       .from('invoices')
       .insert([{
         names: file.name,
-        created_at: new Date().toISOString()
+        created_at: new Date().toISOString(),
+        user_id: user.id
       }])
       .select()
       .single();
