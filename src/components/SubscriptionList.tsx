@@ -19,7 +19,7 @@ const SubscriptionList = () => {
   if (isLoading) {
     return (
       <div className="space-y-4">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <SubscriptionHeader />
           <ApplicationList />
         </div>
@@ -32,7 +32,7 @@ const SubscriptionList = () => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <SubscriptionHeader />
         <ApplicationList />
       </div>
