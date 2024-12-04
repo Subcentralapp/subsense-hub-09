@@ -59,33 +59,37 @@ export const Header = () => {
     <header className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-sm z-50">
       <BackgroundLines />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        <div className="flex flex-col sm:flex-row sm:items-center py-2 sm:py-4">
-          <div className="flex justify-between items-center">
-            {/* Mobile Layout */}
-            <div className="flex items-center gap-4 sm:hidden">
-              {user ? <UserNav /> : <AuthButtons user={user} />}
-            </div>
-            
-            {/* Logo - Centered on mobile, left on desktop with proper spacing */}
-            <div className="absolute left-1/2 transform -translate-x-1/2 sm:relative sm:left-0 sm:transform-none sm:mr-8">
-              <Logo />
-            </div>
-
-            {/* Menu Hamburger - Right side on mobile */}
-            <div className="flex items-center gap-4 sm:hidden">
-              <MobileMenu />
-            </div>
+        <div className="flex items-center h-14 sm:h-16">
+          {/* Mobile Layout */}
+          <div className="flex items-center gap-4 sm:hidden">
+            {user ? <UserNav /> : <AuthButtons user={user} />}
           </div>
           
-          {/* Message promotionnel - Mobile & Desktop */}
-          <PromoMessage isMobile={true} />
-          <PromoMessage />
+          {/* Logo - Centered on mobile, left on desktop */}
+          <div className="absolute left-1/2 transform -translate-x-1/2 sm:relative sm:left-0 sm:transform-none sm:mr-4">
+            <Logo />
+          </div>
+
+          {/* Menu Hamburger - Right side on mobile */}
+          <div className="flex items-center gap-4 sm:hidden">
+            <MobileMenu />
+          </div>
+          
+          {/* Message promotionnel - Desktop only */}
+          <div className="hidden sm:block flex-1">
+            <PromoMessage />
+          </div>
 
           {/* Navigation - Desktop */}
-          <div className="hidden sm:flex items-center space-x-4 ml-auto">
+          <div className="hidden sm:flex items-center space-x-4">
             <SupportMessage />
             {user ? <UserNav /> : <AuthButtons user={user} />}
           </div>
+        </div>
+        
+        {/* Message promotionnel - Mobile only */}
+        <div className="sm:hidden">
+          <PromoMessage isMobile={true} />
         </div>
       </div>
     </header>
