@@ -47,7 +47,7 @@ export const SearchDropdown = ({
             setIsOpen(true);
           }}
           onFocus={() => setIsOpen(true)}
-          className="flex h-10 w-full bg-transparent py-3 text-sm outline-none placeholder:text-gray-500"
+          className="flex h-10 w-full bg-transparent py-3 text-sm outline-none placeholder:text-gray-500 [text-size-adjust:none]"
           placeholder={placeholder}
         />
       </div>
