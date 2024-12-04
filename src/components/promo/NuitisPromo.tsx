@@ -12,9 +12,9 @@ const NuitisPromo = () => {
           alt="Nuitis - Révolutionnez vos nuits" 
           className="w-full h-auto"
         />
-        <div className="absolute bottom-8 left-8">
+        <div className="absolute bottom-4 left-4 sm:bottom-8 sm:left-8">
           <Button 
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-2 rounded-full shadow-lg transition-all duration-300 transform hover:scale-105"
+            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 sm:px-8 py-1 sm:py-2 text-sm sm:text-base rounded-full shadow-lg transition-all duration-300 transform hover:scale-105"
             onClick={() => window.open('https://nuitis.com/', '_blank')}
           >
             Découvrez Nuitis
