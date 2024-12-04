@@ -27,14 +27,11 @@ export const SearchDropdown = ({
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedTerm(searchTerm);
+      setIsLoading(false);
     }, 300);
 
     return () => clearTimeout(timer);
   }, [searchTerm]);
-
-  // Log pour le debugging
-  console.log("SearchDropdown - Current search term:", searchTerm);
-  console.log("SearchDropdown - Filtered apps:", filteredApps);
 
   const getHighlightedText = (text: string, highlight: string) => {
     if (!highlight.trim()) return text;
@@ -47,10 +44,11 @@ export const SearchDropdown = ({
   };
 
   return (
-    <Command className={`rounded-lg border shadow-sm overflow-hidden bg-white ${className}`}>
-      <div className="flex items-center border-b px-3 bg-white">
+    <Command className={`rounded-lg border shadow-sm ${className}`}>
+      <div className="flex items-center border-b px-3">
         <Search className="h-4 w-4 shrink-0 text-gray-500" />
         <input
+          type="text"
           value={searchTerm}
           onChange={(e) => {
             console.log("SearchDropdown - Input change:", e.target.value);
@@ -62,7 +60,7 @@ export const SearchDropdown = ({
         />
       </div>
       {searchTerm && (
-        <div className="max-h-[300px] overflow-y-auto p-2 bg-white">
+        <div className="max-h-[300px] overflow-y-auto p-2">
           {isLoading ? (
             <div className="py-6 text-center text-sm text-gray-500">
               Recherche en cours...
