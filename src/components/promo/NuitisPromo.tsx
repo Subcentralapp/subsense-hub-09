@@ -23,7 +23,7 @@ const NuitisPromo = () => {
         </div>
       </div>
       {/* Button below banner for mobile only */}
-      <div className="sm:hidden">
+      <div className="sm:hidden flex justify-center w-full">
         <Button 
           className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-1 text-sm rounded-full shadow-lg transition-all duration-300 transform hover:scale-105"
           onClick={() => window.open('https://nuitis.com/', '_blank')}
