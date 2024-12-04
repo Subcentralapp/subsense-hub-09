@@ -26,8 +26,10 @@ const getAppIcon = (category: string | null, name: string) => {
       return <Smile className="h-6 w-6 text-pink-500" />;
     case "vpn & sécurité":
       return <Shield className="h-6 w-6 text-indigo-500" />;
+    case "design":
+      return <Zap className="h-6 w-6 text-[#1a237e]" />;
     default:
-      return <Globe className="h-6 w-6 text-gray-500" />;
+      return <Globe className="h-6 w-6 text-[#1a237e]" />;
   }
 };
 
@@ -41,8 +43,25 @@ const getClearbitLogoUrl = (appName: string, websiteUrl?: string) => {
     }
   }
   
+  // Cas spéciaux pour certaines applications
+  const specialCases: { [key: string]: string } = {
+    'Figma': 'https://www.figma.com/favicon.ico',
+    'Adobe': 'https://www.adobe.com/favicon.ico',
+    'Canva': 'https://www.canva.com/favicon.ico'
+  };
+  
+  if (specialCases[appName]) {
+    return specialCases[appName];
+  }
+  
   const domain = `${appName.toLowerCase().replace(/[^a-z0-9]/g, '')}.com`;
   return `https://logo.clearbit.com/${domain}`;
+};
+
+const formatPrice = (price: number | undefined | null): string => {
+  if (price === undefined || price === null) return 'Prix non disponible';
+  if (price === 0) return 'Gratuit';
+  return `${price}€/mois`;
 };
 
 export const ApplicationCard = ({ app, onAdd }: ApplicationCardProps) => {
@@ -93,7 +112,7 @@ export const ApplicationCard = ({ app, onAdd }: ApplicationCardProps) => {
       )}
 
       <div className="mt-auto">
-        <p className="font-medium text-primary mb-2">{app.price}€/mois</p>
+        <p className="font-medium text-primary mb-2">{formatPrice(app.price)}</p>
         <Button 
           onClick={handleTryApp}
           size="sm"

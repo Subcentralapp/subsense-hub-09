@@ -23,7 +23,7 @@ const fetchApplications = async () => {
     const mappedData = data.map(app => ({
       id: app.id,
       name: app.NOM,
-      price: parseFloat(app.PRICE || "0"),
+      price: app.PRICE ? parseFloat(app.PRICE) : 0,
       category: app.CATÉGORIE,
       description: app.DESCRIPTION,
       features: app.CARACTÉRISTIQUES as string[],
@@ -36,7 +36,7 @@ const fetchApplications = async () => {
       users_count: app["NOMBRE D'UTILISATEURS"]
     }));
 
-    console.log(`${mappedData.length} applications fetched and mapped`);
+    console.log(`${mappedData.length} applications fetched and mapped:`, mappedData);
     return mappedData;
   } catch (error) {
     console.error("Error during fetch:", error);
