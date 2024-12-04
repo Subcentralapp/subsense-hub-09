@@ -133,6 +133,7 @@ export type Database = {
           merchant_name: string | null
           names: string | null
           url: string | null
+          user_id: string | null
         }
         Insert: {
           created_at?: string | null
@@ -141,6 +142,7 @@ export type Database = {
           merchant_name?: string | null
           names?: string | null
           url?: string | null
+          user_id?: string | null
         }
         Update: {
           created_at?: string | null
@@ -149,6 +151,7 @@ export type Database = {
           merchant_name?: string | null
           names?: string | null
           url?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }

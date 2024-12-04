@@ -20,16 +20,22 @@ export default function Auth() {
         return;
       }
       if (session) {
+        console.log("Session found, checking user preferences...");
         // Check if user has completed onboarding
         supabase
           .from('user_preferences')
           .select('*')
           .eq('id', session.user.id)
           .single()
-          .then(({ data }) => {
+          .then(({ data, error: prefsError }) => {
+            if (prefsError) {
+              console.error("Error checking preferences:", prefsError);
+            }
             if (data) {
+              console.log("User has preferences, redirecting to dashboard");
               navigate("/dashboard");
             } else {
+              console.log("No preferences found, redirecting to onboarding");
               navigate("/onboarding");
             }
           });
@@ -41,21 +47,28 @@ export default function Auth() {
       console.log("Auth state changed:", event, session);
       
       if (event === 'SIGNED_IN') {
+        console.log("User signed in, checking preferences...");
         toast({
           title: "Connexion réussie",
           description: "Bienvenue !",
         });
-        // Check if user has completed onboarding
+
         if (session) {
+          // Check if user has completed onboarding
           supabase
             .from('user_preferences')
             .select('*')
             .eq('id', session.user.id)
             .single()
-            .then(({ data }) => {
+            .then(({ data, error }) => {
+              if (error) {
+                console.error("Error checking preferences:", error);
+              }
               if (data) {
+                console.log("User has preferences, redirecting to dashboard");
                 navigate("/dashboard");
               } else {
+                console.log("No preferences found, redirecting to onboarding");
                 navigate("/onboarding");
               }
             });
@@ -63,21 +76,10 @@ export default function Auth() {
       }
 
       if (event === 'SIGNED_OUT') {
+        console.log("User signed out");
         toast({
           title: "Déconnexion réussie",
           description: "À bientôt !",
-        });
-      }
-
-      if (event === 'USER_UPDATED') {
-        console.log("User profile updated");
-      }
-
-      // Handle specific error events
-      if (event === 'PASSWORD_RECOVERY') {
-        toast({
-          title: "Réinitialisation du mot de passe",
-          description: "Vérifiez votre boîte mail pour les instructions.",
         });
       }
     });
