@@ -11,9 +11,9 @@ export const Logo = () => {
       whileHover={{ scale: 1.05 }}
     >
       <img
-        src="/lovable-uploads/dd2572e4-8d74-4efc-bbd0-a2d9e911be06.png"
-        alt="Logo"
-        className="h-14 w-auto object-contain sm:h-14 h-10"
+        src="/lovable-uploads/06ead9b8-29da-49f3-8b3c-32233b7fa21c.png"
+        alt="Subcentral Logo"
+        className="h-8 w-auto object-contain sm:h-12 md:h-14"
       />
     </motion.div>
   );
