@@ -52,22 +52,22 @@ export const Header = () => {
   }, [navigate]);
 
   if (isLoading) {
-    return null; // ou un composant de chargement
+    return null;
   }
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-sm z-50">
       <BackgroundLines />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        <div className="flex flex-col sm:flex-row sm:items-center">
-          <div className="flex justify-between items-center h-16">
+        <div className="flex flex-col sm:flex-row sm:items-center py-2 sm:py-4">
+          <div className="flex justify-between items-center">
             {/* Mobile Layout */}
             <div className="flex items-center gap-4 sm:hidden">
               {user ? <UserNav /> : <AuthButtons user={user} />}
             </div>
             
-            {/* Logo - Centered on mobile */}
-            <div className="absolute left-1/2 transform -translate-x-1/2 sm:relative sm:left-0 sm:transform-none">
+            {/* Logo - Centered on mobile, left on desktop with proper spacing */}
+            <div className="absolute left-1/2 transform -translate-x-1/2 sm:relative sm:left-0 sm:transform-none sm:mr-8">
               <Logo />
             </div>
 
@@ -82,7 +82,7 @@ export const Header = () => {
           <PromoMessage />
 
           {/* Navigation - Desktop */}
-          <div className="hidden sm:flex items-center space-x-4">
+          <div className="hidden sm:flex items-center space-x-4 ml-auto">
             <SupportMessage />
             {user ? <UserNav /> : <AuthButtons user={user} />}
           </div>

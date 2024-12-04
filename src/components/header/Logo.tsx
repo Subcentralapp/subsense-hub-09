@@ -6,7 +6,7 @@ export const Logo = () => {
   
   return (
     <motion.div 
-      className="flex-shrink-0 cursor-pointer" 
+      className="flex-shrink-0 cursor-pointer py-2" 
       onClick={() => navigate("/")}
       whileHover={{ scale: 1.05 }}
     >
