@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { User } from "lucide-react";
+import { UserRound } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export function UserNav() {
@@ -56,7 +56,7 @@ export function UserNav() {
           <Avatar className="h-8 w-8">
             <AvatarImage src="/placeholder.svg" alt="User avatar" className="bg-blue-500" />
             <AvatarFallback className="bg-blue-500">
-              <User className="h-4 w-4 text-white" />
+              <UserRound className="h-5 w-5 text-white" />
             </AvatarFallback>
           </Avatar>
         </Button>
