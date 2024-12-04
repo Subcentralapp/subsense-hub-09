@@ -95,21 +95,23 @@ const ComparisonSection = () => {
   };
 
   return (
-    <div className="space-y-8 max-w-7xl mx-auto px-4 py-8">
+    <div className="space-y-4 sm:space-y-8 max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-8">
       {!showComparison ? (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="space-y-8"
+          className="space-y-4 sm:space-y-8"
         >
-          <ComparisonHero />
+          <div className="sm:block hidden">
+            <ComparisonHero />
+          </div>
 
-          <div className="rounded-2xl p-4 sm:p-8 bg-gradient-to-br from-white to-primary/5 shadow-lg">
-            <div className="space-y-4 sm:space-y-8">
-              <div className="flex items-center justify-center gap-4">
-                <Sparkles className="h-6 w-6 text-primary hidden sm:block" />
-                <h2 className="text-xl sm:text-2xl font-bold text-center text-primary">
+          <div className="rounded-xl sm:rounded-2xl p-3 sm:p-8 bg-gradient-to-br from-white to-primary/5 shadow-lg">
+            <div className="space-y-3 sm:space-y-8">
+              <div className="flex items-center justify-center gap-2 sm:gap-4">
+                <Sparkles className="h-4 w-4 sm:h-6 sm:w-6 text-primary hidden sm:block" />
+                <h2 className="text-lg sm:text-2xl font-bold text-center text-primary">
                   Comparez jusqu'à 3 applications
                 </h2>
               </div>
@@ -129,11 +131,11 @@ const ComparisonSection = () => {
                 isMobile={window.innerWidth < 640}
               />
 
-              <div className="flex justify-center pt-4">
+              <div className="flex justify-center">
                 <Button
                   onClick={handleCompare}
                   disabled={selectedApps.length < 2 || appsLoading}
-                  className="w-full sm:w-auto px-6 py-4 sm:px-8 sm:py-6 text-base sm:text-lg shadow-lg hover:shadow-xl transition-all bg-primary hover:bg-primary/90"
+                  className="w-full sm:w-auto px-4 py-2 sm:px-8 sm:py-6 text-base sm:text-lg shadow-lg hover:shadow-xl transition-all bg-primary hover:bg-primary/90"
                 >
                   {appsLoading ? (
                     <>
