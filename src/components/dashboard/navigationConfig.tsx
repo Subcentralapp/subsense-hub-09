@@ -5,32 +5,24 @@ export const navigationItems = [
     tab: "dashboard",
     label: "Tableau de bord",
     icon: BarChart,
-    onClick: (tab: string) => {
-      window.history.pushState({ activeTab: tab }, "", "");
-    }
+    path: "/dashboard"
   },
   {
     tab: "payments",
     label: "Paiements",
     icon: Receipt,
-    onClick: (tab: string) => {
-      window.history.pushState({ activeTab: tab }, "", "");
-    }
+    path: "/dashboard"
   },
   {
     tab: "compare",
     label: "Comparer",
     icon: ArrowRightLeft,
-    onClick: (tab: string) => {
-      window.history.pushState({ activeTab: tab }, "", "");
-    }
+    path: "/dashboard"
   },
   {
     tab: "apps",
     label: "Applications",
     icon: AppWindow,
-    onClick: (tab: string) => {
-      window.history.pushState({ activeTab: tab }, "", "");
-    }
+    path: "/dashboard"
   }
 ];

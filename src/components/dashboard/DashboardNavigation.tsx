@@ -1,11 +1,16 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { navigationItems } from "./navigationConfig";
 import { cn } from "@/lib/utils";
 
 export const DashboardNavigation = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const state = location.state as { activeTab?: string } | null;
   const activeTab = state?.activeTab || "dashboard";
+
+  const handleNavigation = (tab: string) => {
+    navigate("/dashboard", { state: { activeTab: tab } });
+  };
 
   return (
     <nav className="flex items-center justify-around pt-8 sm:pt-0 sm:flex-col sm:items-start sm:space-y-1">
@@ -14,7 +19,7 @@ export const DashboardNavigation = () => {
         return (
           <button
             key={item.label}
-            onClick={() => item.onClick(item.tab)}
+            onClick={() => handleNavigation(item.tab)}
             className={cn(
               "p-2 sm:p-0 sm:flex sm:items-center sm:gap-3",
               "transition-colors hover:text-primary",
