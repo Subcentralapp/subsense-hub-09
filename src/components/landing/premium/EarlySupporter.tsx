@@ -5,8 +5,8 @@ import { HeaderSection } from "./sections/HeaderSection";
 import { FeaturesSection } from "./sections/FeaturesSection";
 import { TestimonialsSection } from "./sections/TestimonialsSection";
 import { SecuritySection } from "./sections/SecuritySection";
-import { FAQSection } from "./sections/FAQSection";
 import { ConclusionSection } from "./sections/ConclusionSection";
+import { FAQSection } from "./sections/FAQSection";
 
 export const EarlySupporter = () => {
   return (
@@ -38,8 +38,8 @@ export const EarlySupporter = () => {
 
         <TestimonialsSection />
         <SecuritySection />
-        <FAQSection />
         <ConclusionSection />
+        <FAQSection />
       </div>
     </div>
   );
