@@ -1,5 +1,6 @@
 import { Header } from "@/components/Header";
 import { HeroSection } from "@/components/landing/HeroSection";
+import { WhyChooseSection } from "@/components/landing/WhyChooseSection";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,8 +20,9 @@ const Landing = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <main className="relative">
+      <main className="relative pt-16">
         <HeroSection />
+        <WhyChooseSection />
       </main>
     </div>
   );
