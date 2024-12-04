@@ -3,6 +3,9 @@ import { Button } from "@/components/ui/button";
 const NuitisPromo = () => {
   return (
     <div className="space-y-4 mt-8">
+      <h2 className="text-2xl font-semibold text-gray-900 mb-4">
+        Découvrez nos partenaires qui nous soutiennent
+      </h2>
       <div className="relative overflow-hidden rounded-lg">
         <img 
           src="/lovable-uploads/cc5a4237-1fb2-4cbc-a83f-0477f2278211.png" 
