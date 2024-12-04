@@ -21,7 +21,7 @@ export const DashboardNavigation = () => {
             key={item.label}
             onClick={() => handleNavigation(item.tab)}
             className={cn(
-              "flex flex-col items-center gap-1 px-4 py-2 rounded-lg transition-colors",
+              "flex items-center gap-2 px-4 py-2 rounded-lg transition-colors",
               "hover:bg-primary/10",
               activeTab === item.tab
                 ? "text-primary bg-primary/5"
@@ -30,7 +30,7 @@ export const DashboardNavigation = () => {
             aria-label={item.label}
           >
             <Icon className="h-5 w-5" />
-            <span className="text-sm font-medium">
+            <span className="hidden sm:inline text-sm font-medium">
               {item.label}
             </span>
           </button>
