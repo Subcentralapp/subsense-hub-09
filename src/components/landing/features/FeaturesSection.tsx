@@ -111,17 +111,23 @@ export const FeaturesSection = () => {
         </div>
 
         <div className="w-full space-y-4">
-          <Accordion type="single" collapsible className="w-full space-y-4">
+          <Accordion type="single" collapsible defaultValue="section-0" className="w-full space-y-4">
             {features.map((section, idx) => (
               <AccordionItem
                 key={idx}
                 value={`section-${idx}`}
-                className="border rounded-lg bg-white/50 backdrop-blur-sm"
+                className="border rounded-lg bg-white/50 backdrop-blur-sm group"
               >
                 <AccordionTrigger className="px-4 py-2 hover:no-underline">
                   <div className="flex items-center gap-2 text-lg font-semibold">
                     <span>{section.icon}</span>
                     <span>{section.category}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-primary opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                    <span className="hidden group-data-[state=closed]:inline-flex">
+                      Découvrir les fonctionnalités
+                    </span>
+                    <ArrowRight className="w-4 h-4 transition-transform group-data-[state=open]:rotate-90" />
                   </div>
                 </AccordionTrigger>
                 <AccordionContent className="px-4 pb-4">
