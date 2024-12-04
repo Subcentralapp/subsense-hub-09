@@ -49,13 +49,14 @@ const ApplicationList = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const { data: applications, isLoading } = useQuery({
     queryKey: ["applications"],
     queryFn: fetchApplications,
-    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
-    gcTime: 30 * 60 * 1000,   // Keep unused data in cache for 30 minutes
-    refetchOnWindowFocus: false, // Disable automatic refetch on window focus
+    staleTime: 5 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnWindowFocus: false,
   });
 
   const handleAddSubscription = async (app: Application) => {
@@ -111,6 +112,7 @@ const ApplicationList = () => {
       });
 
       setSelectedApp(null);
+      setIsDialogOpen(false);
     } catch (error) {
       console.error("Error adding subscription:", error);
       toast({
@@ -126,7 +128,9 @@ const ApplicationList = () => {
       <ApplicationDialog 
         applications={applications || []} 
         isLoading={isLoading} 
-        onAddSubscription={handleAddSubscription} 
+        onAddSubscription={handleAddSubscription}
+        isOpen={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
       />
       <SubscriptionCustomizeDialog
         app={selectedApp}

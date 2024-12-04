@@ -7,16 +7,23 @@ import ApplicationGrid from "./ApplicationGrid";
 import { Application } from "@/types/application";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import confetti from 'canvas-confetti';
 import { useToast } from "@/components/ui/use-toast";
 
 interface ApplicationDialogProps {
   applications: Application[] | undefined;
   isLoading: boolean;
   onAddSubscription: (app: Application) => Promise<void>;
+  isOpen: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
-const ApplicationDialog = ({ applications, isLoading, onAddSubscription }: ApplicationDialogProps) => {
+const ApplicationDialog = ({ 
+  applications, 
+  isLoading, 
+  onAddSubscription,
+  isOpen,
+  onOpenChange
+}: ApplicationDialogProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [showCustomForm, setShowCustomForm] = useState(false);
   const [customApp, setCustomApp] = useState<Partial<Application>>({
@@ -26,15 +33,6 @@ const ApplicationDialog = ({ applications, isLoading, onAddSubscription }: Appli
     description: ""
   });
   const { toast } = useToast();
-
-  const triggerConfetti = () => {
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 },
-      colors: ['#9b87f5', '#7E69AB', '#F1F0FB']
-    });
-  };
 
   const filteredApplications = useMemo(() => {
     if (!applications) return [];
@@ -64,13 +62,12 @@ const ApplicationDialog = ({ applications, isLoading, onAddSubscription }: Appli
     }
 
     await onAddSubscription(customApp as Application);
-    triggerConfetti();
     setCustomApp({ name: "", price: 0, category: "", description: "" });
     setShowCustomForm(false);
   };
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         <Button className="w-full sm:w-auto bg-primary hover:bg-primary/90 px-3 sm:px-4 py-2 sm:py-2.5 text-sm sm:text-base rounded-lg sm:rounded-md">
           <Plus className="mr-2 h-4 w-4" />
@@ -157,10 +154,7 @@ const ApplicationDialog = ({ applications, isLoading, onAddSubscription }: Appli
           <ApplicationGrid 
             applications={filteredApplications} 
             isLoading={isLoading} 
-            onAddSubscription={async (app) => {
-              await onAddSubscription(app);
-              triggerConfetti();
-            }} 
+            onAddSubscription={onAddSubscription}
           />
         </div>
       </DialogContent>
