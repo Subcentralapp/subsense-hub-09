@@ -1,7 +1,6 @@
 import { Application } from "@/types/application";
-import { Command } from "cmdk";
 import { Search } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 
 interface SearchDropdownProps {
   searchTerm: string;
@@ -20,32 +19,24 @@ export const SearchDropdown = ({
   placeholder = "Rechercher...",
   className = ""
 }: SearchDropdownProps) => {
-  const [debouncedTerm, setDebouncedTerm] = useState(searchTerm);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
-  // Debounce search term
+  // Ferme la liste déroulante quand on clique en dehors
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedTerm(searchTerm);
-      setIsLoading(false);
-    }, 300);
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (!target.closest('.search-container')) {
+        setIsOpen(false);
+      }
+    };
 
-    return () => clearTimeout(timer);
-  }, [searchTerm]);
-
-  const getHighlightedText = (text: string, highlight: string) => {
-    if (!highlight.trim()) return text;
-    const parts = text.split(new RegExp(`(${highlight})`, 'gi'));
-    return parts.map((part, i) => 
-      part.toLowerCase() === highlight.toLowerCase() ? 
-        <span key={i} className="bg-primary/20 text-primary">{part}</span> : 
-        part
-    );
-  };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   return (
-    <div className={`relative w-full ${className}`}>
-      <div className="flex items-center border rounded-lg px-3 py-2 bg-background">
+    <div className={`relative search-container ${className}`}>
+      <div className="flex items-center border rounded-lg px-3 py-2 bg-white shadow-sm">
         <Search className="h-4 w-4 shrink-0 text-gray-500 mr-2" />
         <input
           type="text"
@@ -53,27 +44,25 @@ export const SearchDropdown = ({
           onChange={(e) => {
             console.log("SearchDropdown - Input change:", e.target.value);
             onSearchChange(e.target.value);
-            setIsLoading(true);
+            setIsOpen(true);
           }}
-          className="flex h-10 w-full bg-transparent py-3 text-sm outline-none placeholder:text-gray-500 disabled:cursor-not-allowed disabled:opacity-50"
+          onFocus={() => setIsOpen(true)}
+          className="flex h-10 w-full bg-transparent py-3 text-sm outline-none placeholder:text-gray-500"
           placeholder={placeholder}
         />
       </div>
 
-      {searchTerm && (
-        <div className="absolute z-50 w-full mt-1 bg-background rounded-lg border shadow-lg">
+      {isOpen && searchTerm && (
+        <div className="absolute z-50 w-full mt-1 bg-white rounded-lg border shadow-lg">
           <div className="max-h-[300px] overflow-y-auto p-2">
-            {isLoading ? (
-              <div className="py-6 text-center text-sm text-gray-500">
-                Recherche en cours...
-              </div>
-            ) : filteredApps && filteredApps.length > 0 ? (
+            {filteredApps && filteredApps.length > 0 ? (
               filteredApps.map((app) => (
                 <button
                   key={app.id}
                   onClick={() => {
                     console.log("SearchDropdown - App selected:", app);
                     onSelectApp(app);
+                    setIsOpen(false);
                   }}
                   className="flex items-center gap-3 w-full rounded-md px-3 py-2 text-sm text-left hover:bg-primary/5 cursor-pointer transition-colors"
                 >
@@ -95,9 +84,7 @@ export const SearchDropdown = ({
                     </div>
                   )}
                   <div className="flex-1 min-w-0">
-                    <div className="font-medium">
-                      {getHighlightedText(app.name, searchTerm)}
-                    </div>
+                    <div className="font-medium">{app.name}</div>
                     <div className="text-xs text-gray-500 truncate">
                       {app.category || 'Non catégorisé'}
                     </div>

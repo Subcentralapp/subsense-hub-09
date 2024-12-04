@@ -5,17 +5,15 @@ import { motion } from "framer-motion";
 
 interface ComparisonSearchProps {
   searchTerms?: string[];
-  searchTerm?: string;
-  onSearchChange: (value: string, index?: number) => void;
+  onSearchChange: (value: string, index: number) => void;
   applications?: Application[];
-  onSelectApp: (app: Application, index?: number) => void;
+  onSelectApp: (app: Application, index: number) => void;
   selectedApps: Application[];
   isMobile?: boolean;
 }
 
 export const ComparisonSearch = ({
-  searchTerms,
-  searchTerm,
+  searchTerms = ['', '', ''],
   onSearchChange,
   applications,
   onSelectApp,
@@ -53,28 +51,20 @@ export const ComparisonSearch = ({
                   </div>
                 </div>
               ) : (
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center">
-                    <span className="text-sm font-medium text-gray-500">{index + 1}</span>
-                  </div>
-                  <div className="flex-1">
-                    <SearchDropdown
-                      searchTerm={searchTerm || ''}
-                      onSearchChange={(value) => onSearchChange(value)}
-                      filteredApps={applications?.filter(app => {
-                        const searchLower = (searchTerm || '').toLowerCase();
-                        return (
-                          app.name?.toLowerCase().includes(searchLower) ||
-                          app.category?.toLowerCase().includes(searchLower) ||
-                          app.description?.toLowerCase().includes(searchLower)
-                        );
-                      })}
-                      onSelectApp={(app) => onSelectApp(app)}
-                      placeholder="Rechercher une application"
-                      className="w-full"
-                    />
-                  </div>
-                </div>
+                <SearchDropdown
+                  searchTerm={searchTerms[index]}
+                  onSearchChange={(value) => onSearchChange(value, index)}
+                  filteredApps={applications?.filter(app => {
+                    const searchLower = searchTerms[index].toLowerCase();
+                    return (
+                      app.name?.toLowerCase().includes(searchLower) ||
+                      app.category?.toLowerCase().includes(searchLower) ||
+                      app.description?.toLowerCase().includes(searchLower)
+                    );
+                  })}
+                  onSelectApp={(app) => onSelectApp(app, index)}
+                  placeholder="Rechercher une application"
+                />
               )}
             </div>
           </div>
@@ -85,7 +75,7 @@ export const ComparisonSearch = ({
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {searchTerms && [0, 1, 2].map((index) => (
+      {[0, 1, 2].map((index) => (
         <motion.div 
           key={index}
           initial={{ opacity: 0, y: 20 }}
