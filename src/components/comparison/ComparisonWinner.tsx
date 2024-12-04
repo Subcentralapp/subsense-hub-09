@@ -43,21 +43,12 @@ export const ComparisonWinner = ({ winner, analysis }: ComparisonWinnerProps) =>
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
           <h4 className="font-medium text-gray-700">Points Forts</h4>
           <ul className="space-y-1">
             {topPros.map((pro: string, idx: number) => (
               <li key={idx} className="text-sm text-gray-600">• {pro}</li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="space-y-2">
-          <h4 className="font-medium text-gray-700">Meilleur Pour</h4>
-          <ul className="space-y-1">
-            {(winner.features || []).slice(0, 3).map((useCase: string, idx: number) => (
-              <li key={idx} className="text-sm text-gray-600">• {useCase}</li>
             ))}
           </ul>
         </div>
