@@ -1,6 +1,6 @@
 import { Application } from "@/types/application";
 import { SearchDropdown } from "../search/SearchDropdown";
-import { Plus, ChevronDown } from "lucide-react";
+import { Plus } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface ComparisonSearchProps {
@@ -77,11 +77,6 @@ export const ComparisonSearch = ({
                 </div>
               )}
             </div>
-            {index < 2 && (
-              <div className="flex justify-center py-2">
-                <ChevronDown className="w-5 h-5 text-gray-400" />
-              </div>
-            )}
           </div>
         ))}
       </div>
