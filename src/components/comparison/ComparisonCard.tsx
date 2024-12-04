@@ -27,16 +27,14 @@ const formatUserCount = (count: number | null): string => {
 };
 
 export const ComparisonCard = ({ app, isHighlighted, onSelect }: ComparisonCardProps) => {
-  // Convertir le prix en nombre et utiliser directement la valeur sans division
   const price = app.price ? parseFloat(app.price.toString()) : 0;
-  console.log("Prix original:", app.price, "Prix converti:", price); // Pour déboguer
 
   return (
     <motion.div
       initial={{ scale: 0.95, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ duration: 0.3 }}
-      className={`relative overflow-hidden rounded-2xl border-2 transition-all ${
+      className={`relative overflow-hidden rounded-2xl border-2 transition-all p-4 sm:p-0 ${
         isHighlighted 
           ? 'border-primary bg-gradient-to-b from-primary/5 to-primary/10 shadow-xl scale-105' 
           : 'border-gray-200 hover:border-primary/50 bg-white'

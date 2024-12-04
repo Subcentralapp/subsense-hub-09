@@ -37,8 +37,8 @@ export default function Profile() {
   return (
     <div className="min-h-screen bg-neutral-light">
       <ProfilePageHeader />
-      <div className="max-w-4xl mx-auto px-4 space-y-6 animate-fade-in pb-8">
-        <Card className="p-6 overflow-hidden">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 space-y-6 animate-fade-in pb-8">
+        <Card className="p-4 sm:p-6 overflow-hidden">
           <div className="max-w-full">
             <ProfileHeader
               profile={profile}
@@ -58,7 +58,7 @@ export default function Profile() {
           </TabsList>
           
           <TabsContent value="account" className="space-y-4">
-            <Card className="p-6 overflow-hidden">
+            <Card className="p-4 sm:p-6 overflow-hidden">
               <div className="max-w-full">
                 <AccountInfo user={user} />
               </div>
@@ -66,17 +66,17 @@ export default function Profile() {
           </TabsContent>
           
           <TabsContent value="security" className="space-y-4">
-            <Card className="p-6 overflow-hidden">
+            <Card className="p-4 sm:p-6 overflow-hidden">
               <div className="max-w-full">
                 <SecurityInfo user={user} />
               </div>
             </Card>
-            <Card className="p-6 overflow-hidden">
+            <Card className="p-4 sm:p-6 overflow-hidden">
               <div className="max-w-full">
                 <PasswordManagement />
               </div>
             </Card>
-            <Card className="p-6 overflow-hidden">
+            <Card className="p-4 sm:p-6 overflow-hidden">
               <div className="max-w-full">
                 <AccountDeletion />
               </div>

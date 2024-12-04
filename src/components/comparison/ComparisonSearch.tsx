@@ -19,7 +19,7 @@ export const ComparisonSearch = ({
   selectedApps,
 }: ComparisonSearchProps) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 px-4 sm:px-0">
       {[0, 1, 2].map((index) => (
         <motion.div 
           key={index}

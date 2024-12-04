@@ -6,7 +6,6 @@ import { CompareContent } from "@/components/dashboard/CompareContent";
 import { useState, useEffect, lazy, Suspense } from "react";
 import { useLocation } from "react-router-dom";
 
-// Lazy load the TechnicalStackSuggestion component
 const TechnicalStackSuggestion = lazy(() => 
   import("@/components/TechnicalStackSuggestion").then(module => ({
     default: module.TechnicalStackSuggestion
@@ -43,7 +42,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-8">
       <div className="space-y-4 sm:space-y-8">
         <DashboardNavigation />
         {renderContent()}
