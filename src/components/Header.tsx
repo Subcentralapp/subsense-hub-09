@@ -4,16 +4,25 @@ import { BackgroundLines } from "./header/BackgroundLines";
 import { Logo } from "./header/Logo";
 import { SupportMessage } from "./header/SupportMessage";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
 import { UserNav } from "./UserNav";
 import { PromoMessage } from "./header/PromoMessage";
 import { MobileMenu } from "./header/MobileMenu";
+import { AuthButtons } from "./header/AuthButtons";
 
 export const Header = () => {
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Check current session on mount
+    const checkUser = async () => {
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      console.log("Current user:", currentUser);
+      setUser(currentUser);
+    };
+    
+    checkUser();
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state changed:", event);
       if (event === "SIGNED_IN") {
@@ -22,11 +31,12 @@ export const Header = () => {
       } else if (event === "SIGNED_OUT") {
         console.log("User signed out");
         setUser(null);
+        navigate("/landing", { replace: true });
       }
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [navigate]);
 
   return (
     <header className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-sm z-50">
@@ -36,7 +46,7 @@ export const Header = () => {
           <div className="flex justify-between items-center h-16">
             {/* Mobile Layout */}
             <div className="flex items-center gap-4 sm:hidden">
-              <UserNav />
+              {user ? <UserNav /> : <AuthButtons user={user} />}
             </div>
             
             {/* Logo - Centered on mobile */}
@@ -57,7 +67,7 @@ export const Header = () => {
           {/* Navigation - Desktop */}
           <div className="hidden sm:flex items-center space-x-4">
             <SupportMessage />
-            <UserNav />
+            {user ? <UserNav /> : <AuthButtons user={user} />}
           </div>
         </div>
       </div>
