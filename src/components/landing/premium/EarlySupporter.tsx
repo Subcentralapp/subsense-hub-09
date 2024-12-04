@@ -9,9 +9,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { PricingComparison } from "./PricingComparison";
-import { FeatureGrid } from "./FeatureGrid";
-
 const benefits = [
   {
     icon: <Users className="w-5 h-5 text-primary flex-shrink-0 mt-1" />,
@@ -52,8 +49,6 @@ export const EarlySupporter = () => {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
-        <PricingComparison />
-        <FeatureGrid />
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
