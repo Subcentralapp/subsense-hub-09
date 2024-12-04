@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Users, Rocket, Crown, Lock, Gift } from "lucide-react";
+import { Users, Rocket, Crown, Lock, Gift, Globe, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -181,6 +181,79 @@ export const EarlySupporter = () => {
                 </Card>
               </motion.div>
             ))}
+          </div>
+        </motion.div>
+
+        {/* Security and Modernity Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.7 }}
+          className="mt-20"
+        >
+          <h3 className="text-2xl font-bold text-center text-primary mb-10">
+            Une application moderne et sécurisée
+          </h3>
+          <div className="grid gap-6 md:grid-cols-3">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              <Card className="h-full bg-white/80 backdrop-blur-sm border border-primary/10">
+                <CardContent className="pt-6">
+                  <div className="flex flex-col items-center text-center gap-4">
+                    <div className="p-3 rounded-full bg-primary/10">
+                      <Lock className="w-6 h-6 text-primary" />
+                    </div>
+                    <p className="text-gray-700">
+                      <span className="font-semibold">Protection des données :</span>
+                      <br />Standards de sécurité les plus élevés
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+            >
+              <Card className="h-full bg-white/80 backdrop-blur-sm border border-primary/10">
+                <CardContent className="pt-6">
+                  <div className="flex flex-col items-center text-center gap-4">
+                    <div className="p-3 rounded-full bg-primary/10">
+                      <Globe className="w-6 h-6 text-primary" />
+                    </div>
+                    <p className="text-gray-700">
+                      <span className="font-semibold">Accessibilité totale :</span>
+                      <br />Compatible mobile, tablette, et ordinateur
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+            >
+              <Card className="h-full bg-white/80 backdrop-blur-sm border border-primary/10">
+                <CardContent className="pt-6">
+                  <div className="flex flex-col items-center text-center gap-4">
+                    <div className="p-3 rounded-full bg-primary/10">
+                      <Zap className="w-6 h-6 text-primary" />
+                    </div>
+                    <p className="text-gray-700">
+                      <span className="font-semibold">Interface intuitive :</span>
+                      <br />Simple, rapide, et efficace
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
           </div>
         </motion.div>
       </div>
