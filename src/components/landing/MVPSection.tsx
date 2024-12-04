@@ -29,7 +29,7 @@ export const MVPSection = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="text-4xl font-bold text-gray-900 mb-6"
+            className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-6"
           >
             Votre gestion des abonnements simplifiée, gratuite et accessible !
           </motion.h2>
@@ -37,32 +37,32 @@ export const MVPSection = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="text-xl text-gray-600 max-w-3xl mx-auto"
+            className="text-lg sm:text-xl text-gray-600 max-w-3xl mx-auto px-4"
           >
             Avec notre application, vous pouvez dès aujourd'hui :
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
-            className="space-y-8"
+            className="space-y-6 sm:space-y-8"
           >
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {features.map((feature, index) => (
                 <motion.div
                   key={index}
                   initial={{ opacity: 0, x: -20 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="flex items-center gap-4 p-4 rounded-lg bg-neutral-50 border border-neutral-100"
+                  className="flex items-center gap-4 p-3 sm:p-4 rounded-lg bg-neutral-50 border border-neutral-100"
                 >
                   <div className="flex-shrink-0">
                     {feature.icon}
                   </div>
-                  <p className="text-gray-700">{feature.text}</p>
+                  <p className="text-sm sm:text-base text-gray-700">{feature.text}</p>
                 </motion.div>
               ))}
             </div>
@@ -70,7 +70,7 @@ export const MVPSection = () => {
             <Button
               size="lg"
               onClick={() => navigate("/auth")}
-              className="w-full md:w-auto"
+              className="w-full md:w-auto text-sm sm:text-base"
             >
               Commencez à gérer vos abonnements gratuitement
             </Button>
@@ -80,17 +80,17 @@ export const MVPSection = () => {
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
-            className="relative"
+            className="relative mt-8 md:mt-0"
           >
             <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-2xl blur-3xl" />
             <div className="relative">
               <img
                 src="https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=2940&auto=format&fit=crop"
                 alt="Interface de l'application"
-                className="rounded-2xl shadow-2xl"
+                className="rounded-2xl shadow-2xl w-full h-auto object-cover"
               />
               <div className="absolute inset-0 rounded-2xl bg-gradient-to-t from-black/50 to-transparent flex items-end">
-                <p className="text-white text-xl font-medium p-8">
+                <p className="text-white text-base sm:text-xl font-medium p-4 sm:p-8">
                   Conçu pour la simplicité et l'efficacité
                 </p>
               </div>
@@ -99,25 +99,25 @@ export const MVPSection = () => {
         </div>
 
         {/* Section unifiée Stack & Outils */}
-        <div className="mt-32">
+        <div className="mt-24 sm:mt-32">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-primary/5 via-secondary/5 to-primary/5 p-12"
+            className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-primary/5 via-secondary/5 to-primary/5 p-6 sm:p-12"
           >
-            <div className="space-y-16">
+            <div className="space-y-12 sm:space-y-16">
               {/* Stack Technique */}
-              <div className="grid md:grid-cols-2 gap-12 items-center">
-                <div className="space-y-6">
-                  <h2 className="text-3xl font-bold text-gray-900">
+              <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+                <div className="space-y-4 sm:space-y-6 text-center md:text-left">
+                  <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
                     Comparez, sélectionnez et créez une stack technique parfaitement adaptée à vos besoins
                   </h2>
                   <Button 
                     variant="default"
                     size="lg"
                     onClick={() => navigate("/stack")}
-                    className="group"
+                    className="group text-sm sm:text-base"
                   >
                     Créer ma stack
                     <motion.span
@@ -130,7 +130,7 @@ export const MVPSection = () => {
                   </Button>
                 </div>
                 <div className="relative">
-                  <div className="aspect-[16/9] p-4">
+                  <div className="aspect-[16/9] p-2 sm:p-4">
                     <img
                       src="/lovable-uploads/f15ce945-db4a-495c-b980-3f2c3864a989.png"
                       alt="Stack technique personnalisée"
@@ -144,9 +144,9 @@ export const MVPSection = () => {
               <div className="w-full h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent" />
 
               {/* Outils 2025 */}
-              <div className="grid md:grid-cols-2 gap-12 items-center">
+              <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
                 <div className="order-2 md:order-1 relative">
-                  <div className="aspect-[16/9] p-4">
+                  <div className="aspect-[16/9] p-2 sm:p-4">
                     <img
                       src="/lovable-uploads/a8bed031-f2ac-4896-9c0c-4cd34b719da5.png"
                       alt="Outils innovants 2025"
@@ -154,15 +154,15 @@ export const MVPSection = () => {
                     />
                   </div>
                 </div>
-                <div className="order-1 md:order-2 space-y-6">
-                  <h2 className="text-3xl font-bold text-gray-900">
+                <div className="order-1 md:order-2 space-y-4 sm:space-y-6 text-center md:text-left">
+                  <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900">
                     Découvrez les outils innovants qui transformeront votre quotidien et boosteront votre business en 2025
                   </h2>
                   <Button 
                     variant="default"
                     size="lg"
                     onClick={() => navigate("/tools")}
-                    className="group"
+                    className="group text-sm sm:text-base"
                   >
                     Explorer les outils
                     <motion.span
