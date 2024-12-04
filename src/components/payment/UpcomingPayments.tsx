@@ -81,18 +81,20 @@ const UpcomingPayments = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <Card className="border border-gray-200 p-4 flex justify-between items-center">
-            <div>
-              <h3 className="text-lg font-medium">{sub.name}</h3>
-              <p className="text-sm text-gray-500">
-                {format(parseISO(sub.next_billing), 'PPP', { locale: fr })}
-              </p>
-              <p className="text-sm text-gray-500">{sub.price} €</p>
+          <Card className="border border-gray-200 p-4">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+              <div className="min-w-0 flex-1">
+                <h3 className="text-lg font-medium truncate">{sub.name}</h3>
+                <p className="text-sm text-gray-500 truncate">
+                  {format(parseISO(sub.next_billing), 'PPP', { locale: fr })}
+                </p>
+                <p className="text-sm text-gray-500">{sub.price} €</p>
+              </div>
+              <Button variant="outline" className="w-full sm:w-auto whitespace-nowrap">
+                <Calendar className="h-4 w-4 mr-2" />
+                Payer
+              </Button>
             </div>
-            <Button variant="outline" className="ml-4">
-              <Calendar className="h-4 w-4 mr-2" />
-              Payer Maintenant
-            </Button>
           </Card>
         </motion.div>
       ))}
