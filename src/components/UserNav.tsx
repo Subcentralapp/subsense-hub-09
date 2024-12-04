@@ -1,22 +1,17 @@
-import {
-  Avatar,
-  AvatarFallback,
-} from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { UserRound } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { useEffect, useState } from "react";
+import { queryClient } from "@/lib/react-query";
 
 export function UserNav() {
   const navigate = useNavigate();
@@ -33,7 +28,7 @@ export function UserNav() {
           console.error("Erreur lors de la vérification de la session:", error);
           if (mounted) {
             setIsSessionValid(false);
-            navigate("/auth");
+            navigate("/auth", { replace: true });
           }
           return;
         }
@@ -63,13 +58,27 @@ export function UserNav() {
     };
   }, [navigate]);
 
+  const clearAppCache = async () => {
+    console.log("🧹 Nettoyage du cache de l'application...");
+    // Purge React Query cache
+    await queryClient.clear();
+    // Clear localStorage
+    localStorage.clear();
+    // Clear sessionStorage
+    sessionStorage.clear();
+    console.log("✨ Cache nettoyé avec succès");
+  };
+
   const handleSignOut = async () => {
+    console.log("🔄 Tentative de déconnexion...");
     try {
-      console.log("Tentative de déconnexion...");
+      // Clear cache before signing out
+      await clearAppCache();
+      
       const { error } = await supabase.auth.signOut();
       
       if (error) {
-        console.error("Erreur lors de la déconnexion:", error);
+        console.error("❌ Erreur lors de la déconnexion:", error);
         toast({
           title: "Erreur",
           description: "Une erreur est survenue lors de la déconnexion",
@@ -78,6 +87,7 @@ export function UserNav() {
         return;
       }
       
+      console.log("✅ Déconnexion réussie");
       toast({
         title: "Déconnexion réussie",
         description: "À bientôt !",
@@ -85,10 +95,10 @@ export function UserNav() {
       
       navigate("/landing", { replace: true });
     } catch (error) {
-      console.error("Erreur lors de la déconnexion:", error);
+      console.error("❌ Erreur inattendue lors de la déconnexion:", error);
       toast({
         title: "Erreur",
-        description: "Une erreur est survenue lors de la déconnexion",
+        description: "Une erreur inattendue est survenue",
         variant: "destructive",
       });
     }
@@ -101,13 +111,22 @@ export function UserNav() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-8 w-8 rounded-full">
-          <Avatar className="h-8 w-8 bg-primary">
-            <AvatarFallback className="bg-primary">
-              <UserRound className="h-5 w-5 text-white" />
-            </AvatarFallback>
-          </Avatar>
-        </Button>
+        <Avatar className="h-8 w-8 bg-primary">
+          <AvatarFallback className="text-white">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              className="w-4 h-4"
+            >
+              <path
+                fillRule="evenodd"
+                d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </AvatarFallback>
+        </Avatar>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
@@ -116,17 +135,11 @@ export function UserNav() {
           </div>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem onClick={() => navigate("/profile")}>
-            Profile
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate("/dashboard")}>
-            Dashboard
-          </DropdownMenuItem>
-        </DropdownMenuGroup>
-        <DropdownMenuSeparator />
+        <DropdownMenuItem onClick={() => navigate("/profile")}>
+          Profil
+        </DropdownMenuItem>
         <DropdownMenuItem onClick={handleSignOut}>
-          Se déconnecter
+          Déconnexion
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
