@@ -1,4 +1,4 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import ApplicationDialog from "./dialog/ApplicationDialog";
@@ -6,37 +6,8 @@ import { Application } from "@/types/application";
 import { useNavigate } from "react-router-dom";
 import SubscriptionCustomizeDialog from "./dialog/SubscriptionCustomizeDialog";
 import { useState } from "react";
-
-const fetchApplications = async () => {
-  console.log("Fetching applications from Supabase...");
-  try {
-    const { data, error } = await supabase
-      .from("applications")
-      .select("*")
-      .order("NOM");
-
-    if (error) throw error;
-
-    return data.map(app => ({
-      id: app.id,
-      name: app.NOM,
-      price: app.PRICE ? parseFloat(app.PRICE) : 0,
-      category: app.CATÉGORIE,
-      description: app.DESCRIPTION,
-      features: app.CARACTÉRISTIQUES as string[],
-      pros: app.AVANTAGES,
-      cons: app.INCONVÉNIENTS,
-      website_url: app["URL DU SITE WEB"],
-      logo_url: app["URL DU LOGO"],
-      rating: app.NOTE,
-      review: app.REVUE,
-      users_count: app["NOMBRE D'UTILISATEURS"]
-    }));
-  } catch (error) {
-    console.error("Error fetching applications:", error);
-    throw error;
-  }
-};
+import { useApplicationSearch } from "@/hooks/useApplicationSearch";
+import { useQuery } from "@tanstack/react-query";
 
 const ApplicationList = () => {
   const { toast } = useToast();
@@ -44,6 +15,7 @@ const ApplicationList = () => {
   const queryClient = useQueryClient();
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const { fetchApplications, isLoading: isFetching } = useApplicationSearch();
 
   const { data: applications, isLoading } = useQuery({
     queryKey: ["applications"],
@@ -59,14 +31,14 @@ const ApplicationList = () => {
   };
 
   const handleConfirmSubscription = async (
-    price: number, 
-    nextBilling: Date, 
-    isTrial: boolean, 
+    price: number,
+    nextBilling: Date,
+    isTrial: boolean,
     trialEndDate: Date | null
   ) => {
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      
+
       if (!user) {
         console.log("User not authenticated, redirecting to auth");
         navigate("/auth");
@@ -75,18 +47,16 @@ const ApplicationList = () => {
 
       if (!selectedApp) return;
 
-      const { error } = await supabase
-        .from("subscriptions")
-        .insert({
-          name: selectedApp.name,
-          price: price,
-          category: selectedApp.category,
-          next_billing: nextBilling.toISOString(),
-          description: selectedApp.description,
-          user_id: user.id,
-          is_trial: isTrial,
-          trial_end_date: trialEndDate?.toISOString() || null,
-        });
+      const { error } = await supabase.from("subscriptions").insert({
+        name: selectedApp.name,
+        price: price,
+        category: selectedApp.category,
+        next_billing: nextBilling.toISOString(),
+        description: selectedApp.description,
+        user_id: user.id,
+        is_trial: isTrial,
+        trial_end_date: trialEndDate?.toISOString() || null,
+      });
 
       if (error) throw error;
 
@@ -94,11 +64,14 @@ const ApplicationList = () => {
 
       toast({
         title: "Abonnement ajouté",
-        description: `L'abonnement à ${selectedApp.name} a été ajouté avec succès${isTrial ? ' avec une période d\'essai' : ''}.`,
+        description: `L'abonnement à ${selectedApp.name} a été ajouté avec succès${
+          isTrial ? " avec une période d'essai" : ""
+        }.`,
       });
 
       setSelectedApp(null);
       setIsDialogOpen(false);
+      navigate("/dashboard");
     } catch (error) {
       console.error("Error adding subscription:", error);
       toast({
@@ -111,9 +84,9 @@ const ApplicationList = () => {
 
   return (
     <>
-      <ApplicationDialog 
-        applications={applications || []} 
-        isLoading={isLoading} 
+      <ApplicationDialog
+        applications={applications}
+        isLoading={isLoading || isFetching}
         onAddSubscription={handleAddSubscription}
         isOpen={isDialogOpen}
         onOpenChange={setIsDialogOpen}

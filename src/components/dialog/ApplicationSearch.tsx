@@ -5,15 +5,15 @@ import { Application } from "@/types/application";
 
 interface ApplicationSearchProps {
   applications: Application[] | undefined;
-  onSearch: (searchTerm: string, category: string | null) => void;
+  onSearch: (searchTerm: string) => void;
 }
 
-const ApplicationSearch = ({ applications, onSearch }: ApplicationSearchProps) => {
+const ApplicationSearch = ({ onSearch }: ApplicationSearchProps) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleSearch = (newSearchTerm: string) => {
     setSearchTerm(newSearchTerm);
-    onSearch(newSearchTerm, null);
+    onSearch(newSearchTerm);
   };
 
   return (
@@ -24,7 +24,7 @@ const ApplicationSearch = ({ applications, onSearch }: ApplicationSearchProps) =
           placeholder="Rechercher une application..."
           value={searchTerm}
           onChange={(e) => handleSearch(e.target.value)}
-          className="pl-9"
+          className="pl-9 [text-size-adjust:none]"
         />
       </div>
     </div>
