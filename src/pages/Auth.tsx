@@ -96,8 +96,23 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-light to-white flex items-center justify-center p-4">
-      <div className="w-full max-w-4xl flex gap-8 items-center">
-        {/* Section de motivation */}
+      <div className="w-full max-w-4xl flex flex-col md:flex-row gap-8 items-center">
+        {/* Section de motivation - Version mobile */}
+        <div className="w-full md:hidden space-y-4 text-center px-4">
+          <h1 className="text-2xl font-bold tracking-tight">
+            Gérez vos abonnements intelligemment
+          </h1>
+          <div className="flex justify-center">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span className="text-sm font-medium">Économisez sur vos abonnements</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Section de motivation - Version desktop */}
         <div className="flex-1 hidden md:block">
           <div className="space-y-6">
             <h1 className="text-4xl font-bold tracking-tight">
