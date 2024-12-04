@@ -1,15 +1,9 @@
-import { motion } from "framer-motion";
-import { Gift } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Gift } from "lucide-react";
 
 export const HeaderSection = () => {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="text-center mb-12"
-    >
+    <div className="text-center mb-12">
       <h2 className="text-3xl font-bold text-primary mb-3">
         Construisez l'avenir avec SubaCentral !
       </h2>
@@ -29,6 +23,6 @@ export const HeaderSection = () => {
         Rejoignez notre campagne de crowdfunding et accédez aux fonctionnalités Premium 
         dès que l'objectif sera atteint.
       </p>
-    </motion.div>
+    </div>
   );
 };

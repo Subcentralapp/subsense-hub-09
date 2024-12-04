@@ -1,4 +1,3 @@
-import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 
 const testimonials = [
@@ -24,42 +23,30 @@ const testimonials = [
 
 export const TestimonialsSection = () => {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5, delay: 0.6 }}
-      className="mt-20"
-    >
+    <div className="mt-20">
       <h3 className="text-2xl font-bold text-center text-primary mb-10">
         Ils nous font confiance
       </h3>
       <div className="grid gap-8 md:grid-cols-3">
         {testimonials.map((testimonial, index) => (
-          <motion.div
-            key={index}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: index * 0.1 }}
-          >
-            <Card className="h-full bg-white/80 backdrop-blur-sm border border-primary/10">
-              <CardContent className="pt-6">
-                <div className="flex items-center gap-4 mb-4">
-                  <img
-                    src={testimonial.avatar}
-                    alt={testimonial.name}
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
-                  <div>
-                    <h4 className="font-semibold text-gray-900">{testimonial.name}</h4>
-                    <p className="text-sm text-primary">{testimonial.role}</p>
-                  </div>
+          <Card key={index} className="bg-white/80 backdrop-blur-sm border border-primary/10">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-4 mb-4">
+                <img
+                  src={testimonial.avatar}
+                  alt={testimonial.name}
+                  className="w-12 h-12 rounded-full object-cover"
+                />
+                <div>
+                  <h4 className="font-semibold text-gray-900">{testimonial.name}</h4>
+                  <p className="text-sm text-primary">{testimonial.role}</p>
                 </div>
-                <p className="text-gray-600 italic">{testimonial.content}</p>
-              </CardContent>
-            </Card>
-          </motion.div>
+              </div>
+              <p className="text-gray-600 italic">{testimonial.content}</p>
+            </CardContent>
+          </Card>
         ))}
       </div>
-    </motion.div>
+    </div>
   );
 };
