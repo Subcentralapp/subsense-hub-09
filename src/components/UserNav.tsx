@@ -85,7 +85,7 @@ export function UserNav() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8 bg-primary">
-            <AvatarFallback>
+            <AvatarFallback className="bg-primary">
               <UserRound className="h-5 w-5 text-white" />
             </AvatarFallback>
           </Avatar>
