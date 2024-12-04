@@ -24,17 +24,24 @@ export function UserNav() {
 
   const handleSignOut = async () => {
     try {
+      console.log("Tentative de déconnexion...");
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
       
+      if (error) {
+        console.error("Erreur lors de la déconnexion:", error);
+        throw error;
+      }
+      
+      console.log("Déconnexion réussie, redirection vers /landing");
       toast({
         title: "Déconnexion réussie",
         description: "À bientôt !",
       });
       
-      navigate("/landing");
+      // Force la navigation vers la page landing après la déconnexion
+      navigate("/landing", { replace: true });
     } catch (error) {
-      console.error("Error signing out:", error);
+      console.error("Erreur lors de la déconnexion:", error);
       toast({
         title: "Erreur",
         description: "Une erreur est survenue lors de la déconnexion",
