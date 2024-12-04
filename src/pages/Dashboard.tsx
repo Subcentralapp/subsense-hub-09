@@ -45,7 +45,7 @@ const Dashboard = () => {
   return (
     <div className="container mx-auto p-4">
       <div className="space-y-4 sm:space-y-8">
-        <DashboardNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
+        <DashboardNavigation />
         {renderContent()}
       </div>
     </div>

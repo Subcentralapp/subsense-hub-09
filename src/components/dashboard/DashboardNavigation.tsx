@@ -8,7 +8,7 @@ export const DashboardNavigation = () => {
   const activeTab = state?.activeTab || "dashboard";
 
   return (
-    <nav className="flex items-center justify-around sm:flex-col sm:items-start sm:space-y-1">
+    <nav className="flex items-center justify-around pt-8 sm:pt-0 sm:flex-col sm:items-start sm:space-y-1">
       {navigationItems.map((item) => {
         const Icon = item.icon;
         return (
