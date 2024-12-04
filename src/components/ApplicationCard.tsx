@@ -114,11 +114,11 @@ export const ApplicationCard = ({ app, onAdd }: ApplicationCardProps) => {
       <div className="mt-auto">
         <p className="font-medium text-primary mb-2">{formatPrice(app.price)}</p>
         <Button 
-          onClick={handleTryApp}
+          onClick={() => onAdd(app)}
           size="sm"
           className="w-full bg-primary text-white hover:bg-primary/90"
         >
-          Je veux essayer
+          Ajouter l'abonnement
         </Button>
       </div>
     </div>
