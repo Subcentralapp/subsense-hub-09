@@ -10,39 +10,33 @@ export default function Auth() {
   const { toast } = useToast();
 
   useEffect(() => {
-    // Check current session on mount
     const checkSession = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const { data: { session } } = await supabase.auth.getSession();
         
-        if (error) {
-          console.error("Error checking session:", error);
-          return;
-        }
-
         if (!session) {
-          console.log("No active session found");
+          console.log("No active session found in Auth page");
           return;
         }
 
-        console.log("Active session found, checking user preferences...");
+        console.log("Active session found in Auth page, checking preferences...");
         const { data: preferences, error: preferencesError } = await supabase
           .from('user_preferences')
           .select('*')
           .eq('id', session.user.id)
           .single();
 
-        if (preferencesError) {
+        if (preferencesError && preferencesError.code !== 'PGRST116') {
           console.error("Error checking preferences:", preferencesError);
           return;
         }
 
         if (preferences) {
           console.log("User preferences found, redirecting to dashboard");
-          navigate("/dashboard");
+          navigate("/dashboard", { replace: true });
         } else {
           console.log("No preferences found, redirecting to onboarding");
-          navigate("/onboarding");
+          navigate("/onboarding", { replace: true });
         }
       } catch (error) {
         console.error("Error in checkSession:", error);
@@ -51,9 +45,8 @@ export default function Auth() {
 
     checkSession();
 
-    // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state changed:", event, session);
+      console.log("Auth state changed in Auth page:", event);
       
       if (event === 'SIGNED_IN' && session) {
         toast({
@@ -74,28 +67,17 @@ export default function Auth() {
           }
 
           if (preferences) {
-            navigate("/dashboard");
+            navigate("/dashboard", { replace: true });
           } else {
-            navigate("/onboarding");
+            navigate("/onboarding", { replace: true });
           }
         } catch (error) {
           console.error("Error checking preferences after sign in:", error);
         }
       }
-
-      if (event === 'SIGNED_OUT') {
-        console.log("User signed out");
-        toast({
-          title: "Déconnexion réussie",
-          description: "À bientôt !",
-        });
-        navigate("/landing");
-      }
     });
 
-    return () => {
-      subscription.unsubscribe();
-    };
+    return () => subscription.unsubscribe();
   }, [navigate, toast]);
 
   return (

@@ -30,16 +30,26 @@ function Layout() {
 // Protected route component
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkAuth = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setIsAuthenticated(!!user);
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        console.log("Session check result:", !!session);
+        setIsAuthenticated(!!session);
+      } catch (error) {
+        console.error("Error checking auth:", error);
+        setIsAuthenticated(false);
+      } finally {
+        setIsLoading(false);
+      }
     };
     
     checkAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      console.log("Auth state changed, session exists:", !!session);
       setIsAuthenticated(!!session);
     });
 
@@ -47,12 +57,13 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }, []);
 
   // Show nothing while checking authentication
-  if (isAuthenticated === null) {
+  if (isLoading) {
     return null;
   }
 
   // Redirect to auth if not authenticated
   if (!isAuthenticated) {
+    console.log("User not authenticated, redirecting to /auth");
     return <Navigate to="/auth" replace />;
   }
 
