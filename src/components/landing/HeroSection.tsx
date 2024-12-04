@@ -1,14 +1,13 @@
-import { useNavigate } from "react-router-dom";
+import { ArrowRight, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Timer, Zap } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { SignupCounter } from "./SignupCounter";
 
 export const HeroSection = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+    <div className="relative min-h-[90vh] overflow-hidden bg-gradient-to-br from-primary/5 via-background to-secondary/5">
       {/* Background decoration */}
       <div className="absolute inset-0 bg-grid-white/10 bg-[size:30px_30px] [mask-image:radial-gradient(white,transparent_85%)]" />
       
@@ -19,25 +18,28 @@ export const HeroSection = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="space-y-4"
+              className="space-y-6"
             >
-              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary mb-4">
-                <Timer className="w-4 h-4" />
-                <span className="text-sm font-medium">L'application N°1 pour faire des économies</span>
-              </div>
-              
-              <h1 className="text-5xl sm:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
-                Reprenez le contrôle de vos abonnements
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary leading-tight">
+                Gérez vos abonnements en toute simplicité
               </h1>
-              <p className="text-xl text-muted-foreground max-w-2xl mx-auto lg:mx-0">
-                Gérez tous vos abonnements en un seul endroit, recevez des alertes intelligentes et découvrez des alternatives plus économiques pour optimiser vos dépenses.
+              
+              <p className="text-xl text-muted-foreground">
+                Centralisez, optimisez et économisez sur tous vos abonnements.
               </p>
+
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary">
+                <Gift className="w-5 h-5" />
+                <span className="text-sm font-medium">
+                  Offre spéciale : Gratuit à vie pour les 1000 premiers inscrits
+                </span>
+              </div>
             </motion.div>
 
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
             >
               <Button 
@@ -48,26 +50,18 @@ export const HeroSection = () => {
                 Commencer gratuitement
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
-              className="flex items-center justify-center lg:justify-start gap-8 text-sm text-muted-foreground"
-            >
-              <div className="flex items-center gap-2">
-                <Zap className="h-4 w-4 text-primary" />
-                <span>Gestion illimitée</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Zap className="h-4 w-4 text-primary" />
-                <span>Notifications</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Zap className="h-4 w-4 text-primary" />
-                <span>Recommandations</span>
-              </div>
+              
+              <Button 
+                size="lg"
+                variant="outline"
+                onClick={() => {
+                  const supportSection = document.getElementById('support-section');
+                  supportSection?.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="text-lg px-8 py-6 border-2 hover:bg-primary/5"
+              >
+                Devenir Early Supporter
+              </Button>
             </motion.div>
           </div>
 
@@ -77,9 +71,7 @@ export const HeroSection = () => {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="lg:w-1/2 mt-12 lg:mt-0"
           >
-            <SignupCounter />
-            
-            <div className="relative mt-8">
+            <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-2xl blur-3xl" />
               <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 shadow-2xl">
                 <div className="aspect-[16/9] rounded-lg overflow-hidden bg-gradient-to-br from-primary/5 to-secondary/5">
