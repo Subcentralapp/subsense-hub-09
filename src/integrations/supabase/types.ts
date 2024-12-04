@@ -84,6 +84,30 @@ export type Database = {
         }
         Relationships: []
       }
+      failed_login_attempts: {
+        Row: {
+          attempt_time: string | null
+          email: string
+          id: number
+          ip_address: string
+          is_blocked: boolean | null
+        }
+        Insert: {
+          attempt_time?: string | null
+          email: string
+          id?: number
+          ip_address: string
+          is_blocked?: boolean | null
+        }
+        Update: {
+          attempt_time?: string | null
+          email?: string
+          id?: number
+          ip_address?: string
+          is_blocked?: boolean | null
+        }
+        Relationships: []
+      }
       invoicedetails: {
         Row: {
           amount: number | null
@@ -133,7 +157,7 @@ export type Database = {
           merchant_name: string | null
           names: string | null
           url: string | null
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           created_at?: string | null
@@ -142,7 +166,7 @@ export type Database = {
           merchant_name?: string | null
           names?: string | null
           url?: string | null
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           created_at?: string | null
@@ -151,7 +175,7 @@ export type Database = {
           merchant_name?: string | null
           names?: string | null
           url?: string | null
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }

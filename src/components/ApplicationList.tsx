@@ -8,7 +8,7 @@ import SubscriptionCustomizeDialog from "./dialog/SubscriptionCustomizeDialog";
 import { useState } from "react";
 
 const fetchApplications = async () => {
-  console.log("Récupération des applications depuis Supabase...");
+  console.log("Fetching applications from Supabase...");
   try {
     const { data, error } = await supabase
       .from("applications")
@@ -16,7 +16,7 @@ const fetchApplications = async () => {
       .order("NOM");
 
     if (error) {
-      console.error("Erreur lors de la récupération:", error);
+      console.error("Error during fetch:", error);
       throw error;
     }
 
@@ -36,10 +36,10 @@ const fetchApplications = async () => {
       users_count: app["NOMBRE D'UTILISATEURS"]
     }));
 
-    console.log(`${mappedData.length} applications récupérées et mappées`);
+    console.log(`${mappedData.length} applications fetched and mapped`);
     return mappedData;
   } catch (error) {
-    console.error("Erreur lors de la récupération:", error);
+    console.error("Error during fetch:", error);
     throw error;
   }
 };
@@ -53,12 +53,13 @@ const ApplicationList = () => {
   const { data: applications, isLoading } = useQuery({
     queryKey: ["applications"],
     queryFn: fetchApplications,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
+    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes
+    gcTime: 30 * 60 * 1000,   // Keep unused data in cache for 30 minutes
+    refetchOnWindowFocus: false, // Disable automatic refetch on window focus
   });
 
   const handleAddSubscription = async (app: Application) => {
-    console.log("Ouverture du dialogue de personnalisation pour:", app.name);
+    console.log("Opening customization dialog for:", app.name);
     setSelectedApp(app);
   };
 
@@ -72,7 +73,7 @@ const ApplicationList = () => {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        console.log("Utilisateur non connecté, redirection vers l'authentification");
+        console.log("User not authenticated, redirecting to auth");
         navigate("/auth");
         return;
       }
@@ -90,17 +91,18 @@ const ApplicationList = () => {
         trial_end_date: trialEndDate?.toISOString() || null,
       };
 
-      console.log("Ajout de l'abonnement:", subscriptionData);
+      console.log("Adding subscription:", subscriptionData);
 
       const { error } = await supabase
         .from("subscriptions")
         .insert(subscriptionData);
 
       if (error) {
-        console.error("Erreur lors de l'insertion:", error);
+        console.error("Error during insertion:", error);
         throw error;
       }
 
+      // Optimistically update the cache
       await queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
 
       toast({

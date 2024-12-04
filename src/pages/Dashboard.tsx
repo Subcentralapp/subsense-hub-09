@@ -3,16 +3,21 @@ import { DashboardContent } from "@/components/dashboard/DashboardContent";
 import { AppsContent } from "@/components/dashboard/AppsContent";
 import { PaymentsContent } from "@/components/dashboard/PaymentsContent";
 import { CompareContent } from "@/components/dashboard/CompareContent";
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { useLocation } from "react-router-dom";
-import { TechnicalStackSuggestion } from "@/components/TechnicalStackSuggestion";
+
+// Lazy load the TechnicalStackSuggestion component
+const TechnicalStackSuggestion = lazy(() => 
+  import("@/components/TechnicalStackSuggestion").then(module => ({
+    default: module.TechnicalStackSuggestion
+  }))
+);
 
 const Dashboard = () => {
   const location = useLocation();
   const [activeTab, setActiveTab] = useState("dashboard");
 
   useEffect(() => {
-    // Update active tab based on location state
     if (location.state?.activeTab) {
       setActiveTab(location.state.activeTab);
     }
@@ -23,7 +28,11 @@ const Dashboard = () => {
       case "dashboard":
         return <DashboardContent />;
       case "apps":
-        return <TechnicalStackSuggestion />;
+        return (
+          <Suspense fallback={<div>Chargement...</div>}>
+            <TechnicalStackSuggestion />
+          </Suspense>
+        );
       case "payments":
         return <PaymentsContent />;
       case "compare":
