@@ -30,12 +30,19 @@
     @apply border-border;
   }
 
-  html, body {
-    @apply w-full min-h-screen overflow-x-hidden;
+  html {
+    -webkit-text-size-adjust: none;
+    text-size-adjust: none;
+    @apply overflow-x-hidden;
   }
 
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-background text-foreground antialiased overflow-x-hidden min-h-screen w-full;
+  }
+
+  input, textarea, select {
+    font-size: 16px !important;
+    @apply [text-size-adjust:none];
   }
 
   .glass-card {
