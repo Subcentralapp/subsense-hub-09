@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { BadgeCheck, Users, Rocket, Crown, Brain, Lock, Gift } from "lucide-react";
+import { Brain, Users, Rocket, Crown, Brain, Lock, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,47 +11,28 @@ import {
 
 const features = [
   {
-    icon: <Brain className="w-6 h-6 text-primary" />,
-    title: "Participez aux décisions stratégiques",
-    description: [
-      "Rejoignez le Conseil des Supporters",
-      "Influez sur l'évolution de l'application",
-      "Proposez et votez sur les prochaines fonctionnalités",
-    ],
-  },
-  {
     icon: <Rocket className="w-6 h-6 text-primary" />,
-    title: "Fonctionnalités Premium débloquées",
+    title: "Participez activement au développement",
     description: [
-      "Ajout automatique d'abonnements",
-      "Résiliation directe via l'application",
-      "Analyse intelligente des factures avec OCR",
-      "Gestion multi-comptes",
-      "Intégrations avancées (API, Slack, etc.)",
+      "Rejoignez le Conseil des Supporters et façonnez l'application",
+      "Proposez et votez sur les fonctionnalités futures qui comptent pour vous",
     ],
   },
   {
     icon: <Crown className="w-6 h-6 text-primary" />,
-    title: "Avantages exclusifs à vie",
+    title: "Débloquez des fonctionnalités exclusives",
     description: [
-      "Badge unique Early Supporter",
-      "Réductions permanentes sur vos abonnements préférés",
-    ],
-  },
-  {
-    icon: <Gift className="w-6 h-6 text-primary" />,
-    title: "Accès Premium pendant 1 an",
-    description: [
-      "Accès exclusif Premium pendant un an à 19,99€",
-      "Au lieu de 9,99€/mois",
+      "Ajout automatique d'abonnements et analyse des factures (OCR)",
+      "Résiliation directe depuis l'app et gestion multi-comptes",
+      "Réductions sur vos abonnements préférés et intégrations avancées",
     ],
   },
   {
     icon: <Lock className="w-6 h-6 text-primary" />,
-    title: "Aucun risque pour vous",
+    title: "Bénéficiez d'un avantage unique et sans risque",
     description: [
-      "Remboursement intégral si objectif non atteint",
-      "Accès gratuit aux fonctionnalités de base à vie",
+      "Un badge exclusif Early Supporter pour marquer votre engagement",
+      "Remboursement intégral garanti si l'objectif n'est pas atteint",
     ],
   },
 ];
@@ -65,26 +46,26 @@ export const EarlySupporter = () => {
         <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl" />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           className="text-center mb-12"
         >
-          <h2 className="text-4xl font-bold text-primary mb-4">
-            Offre Early Supporter : Participez à la Révolution SubaCentral !
+          <h2 className="text-3xl font-bold text-primary mb-3">
+            Construisez l'avenir avec SubaCentral !
           </h2>
-          <p className="text-2xl font-semibold text-gray-800 mb-4">
-            Contribuez aujourd'hui, profitez demain !
+          <p className="text-xl font-semibold text-gray-800 mb-3">
+            Soutenez aujourd'hui, profitez demain.
           </p>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Devenez un acteur clé du développement de SubCentral et accédez aux fonctionnalités Premium 
-            dès que notre campagne de crowdfunding atteindra son objectif.
+          <p className="text-base text-gray-600 max-w-2xl mx-auto">
+            Rejoignez notre campagne de crowdfunding et accédez aux fonctionnalités Premium 
+            dès que l'objectif sera atteint.
           </p>
         </motion.div>
 
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-3">
           {features.map((feature, index) => (
             <motion.div
               key={index}
@@ -92,23 +73,23 @@ export const EarlySupporter = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Card className="h-full bg-white/80 backdrop-blur-sm border-2 border-primary/10 hover:border-primary/20 transition-all duration-300">
-                <CardHeader>
-                  <div className="flex items-center gap-4 mb-2">
+              <Card className="h-full bg-white/80 backdrop-blur-sm border border-primary/10 hover:border-primary/20 transition-all duration-300 hover:shadow-lg">
+                <CardHeader className="space-y-1 pb-4">
+                  <div className="flex items-center gap-3">
                     <div className="p-2 rounded-lg bg-primary/10">
                       {feature.icon}
                     </div>
-                    <CardTitle className="text-xl text-primary">
+                    <CardTitle className="text-lg text-primary leading-tight">
                       {feature.title}
                     </CardTitle>
                   </div>
                 </CardHeader>
                 <CardContent>
-                  <ul className="space-y-2">
+                  <ul className="space-y-2 text-sm">
                     {feature.description.map((item, idx) => (
                       <li key={idx} className="flex items-start gap-2">
-                        <BadgeCheck className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                        <span className="text-gray-700">{item}</span>
+                        <div className="rounded-full w-1.5 h-1.5 bg-primary mt-2 flex-shrink-0" />
+                        <span className="text-gray-600">{item}</span>
                       </li>
                     ))}
                   </ul>
@@ -122,7 +103,7 @@ export const EarlySupporter = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.5 }}
-          className="mt-12 text-center"
+          className="mt-10 text-center"
         >
           <Button
             size="lg"
@@ -131,9 +112,6 @@ export const EarlySupporter = () => {
             <span>Devenez Early Supporter</span>
             <Rocket className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
           </Button>
-          <p className="mt-4 text-sm text-gray-600">
-            Rejoignez l'aventure et contribuez à la réussite de SubCentral dès aujourd'hui.
-          </p>
         </motion.div>
       </div>
     </div>
