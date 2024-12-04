@@ -8,6 +8,7 @@ import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import Index from "./pages/Index";
 
 const queryClient = new QueryClient();
 
@@ -15,7 +16,7 @@ function Layout() {
   return (
     <div className="min-h-screen bg-background font-sans antialiased flex flex-col">
       <Header />
-      <main className="pt-16 flex-grow"> {/* Add padding-top to account for fixed header */}
+      <main className="pt-16 flex-grow">
         <Outlet />
       </main>
       <Footer />
@@ -30,6 +31,10 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/",
+        element: <Index />,
+      },
+      {
+        path: "/home",
         element: <Landing />,
       },
       {

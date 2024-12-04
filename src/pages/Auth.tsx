@@ -85,7 +85,7 @@ export default function Auth() {
           title: "Déconnexion réussie",
           description: "À bientôt !",
         });
-        navigate("/landing");
+        navigate("/home");
       }
     });
 
