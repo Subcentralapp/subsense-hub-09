@@ -8,6 +8,7 @@ interface SearchDropdownProps {
   filteredApps?: Application[];
   onSelectApp: (app: Application) => void;
   placeholder?: string;
+  className?: string; // Ajout de la propriété className
 }
 
 export const SearchDropdown = ({
@@ -15,10 +16,11 @@ export const SearchDropdown = ({
   onSearchChange,
   filteredApps,
   onSelectApp,
-  placeholder = "Rechercher..."
+  placeholder = "Rechercher...",
+  className = ""
 }: SearchDropdownProps) => {
   return (
-    <Command className="rounded-lg border border-gray-200 overflow-hidden">
+    <Command className={`rounded-lg border border-gray-200 overflow-hidden ${className}`}>
       <div className="flex items-center border-b px-3">
         <Search className="h-4 w-4 shrink-0 text-gray-400" />
         <input

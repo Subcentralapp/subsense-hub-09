@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Application } from "@/types/application";
-import { Loader2, Sparkles, ChevronRight } from "lucide-react";
+import { Loader2, Sparkles } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { motion } from "framer-motion";
 import { ComparisonResult } from "./comparison/ComparisonResult";
@@ -114,60 +114,20 @@ const ComparisonSection = () => {
                 </h2>
               </div>
               
-              {/* Mobile View */}
-              <div className="block sm:hidden">
-                <div className="space-y-4">
-                  {[0, 1, 2].map((index) => (
-                    <div key={index} className="relative">
-                      <div className="flex items-center gap-2 mb-2">
-                        <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-primary font-medium">
-                          {index + 1}
-                        </div>
-                        <span className="text-sm text-gray-600">
-                          {selectedApps[index] ? selectedApps[index].name : `Application ${index + 1}`}
-                        </span>
-                      </div>
-                      <ComparisonSearch
-                        searchTerm={searchTerms[index]}
-                        onSearchChange={(value) => {
-                          setSearchTerms(prev => {
-                            const newTerms = [...prev];
-                            newTerms[index] = value;
-                            return newTerms;
-                          });
-                        }}
-                        applications={applications}
-                        onSelectApp={(app) => handleAppSelect(app, index)}
-                        selectedApps={selectedApps}
-                        isMobile={true}
-                      />
-                      {index < 2 && (
-                        <div className="flex items-center gap-2 my-2">
-                          <div className="flex-1 border-t border-dashed border-gray-200" />
-                          <ChevronRight className="w-4 h-4 text-gray-400" />
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Desktop View */}
-              <div className="hidden sm:block">
-                <ComparisonSearch 
-                  searchTerms={searchTerms}
-                  onSearchChange={(value, index) => {
-                    setSearchTerms(prev => {
-                      const newTerms = [...prev];
-                      newTerms[index] = value;
-                      return newTerms;
-                    });
-                  }}
-                  applications={applications}
-                  onSelectApp={handleAppSelect}
-                  selectedApps={selectedApps}
-                />
-              </div>
+              <ComparisonSearch 
+                searchTerms={searchTerms}
+                onSearchChange={(value, index) => {
+                  setSearchTerms(prev => {
+                    const newTerms = [...prev];
+                    newTerms[index] = value;
+                    return newTerms;
+                  });
+                }}
+                applications={applications}
+                onSelectApp={handleAppSelect}
+                selectedApps={selectedApps}
+                isMobile={window.innerWidth < 640}
+              />
 
               <div className="flex justify-center pt-4">
                 <Button
