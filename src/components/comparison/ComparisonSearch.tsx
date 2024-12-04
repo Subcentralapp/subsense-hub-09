@@ -22,33 +22,55 @@ export const ComparisonSearch = ({
 }: ComparisonSearchProps) => {
   if (isMobile) {
     return (
-      <div className="w-full space-y-4">
+      <div className="w-full space-y-3">
         {[0, 1, 2].map((index) => (
-          <div key={index} className="relative bg-white rounded-lg shadow-sm">
+          <div 
+            key={index} 
+            className={`relative rounded-xl shadow-sm ${
+              selectedApps[index] 
+                ? 'bg-gradient-to-r from-primary/10 to-primary/5' 
+                : 'bg-white'
+            }`}
+          >
             <div className="p-3">
               {selectedApps[index] ? (
-                <div className="flex items-center gap-3">
-                  {selectedApps[index].logo_url ? (
-                    <img 
-                      src={selectedApps[index].logo_url}
-                      alt={`Logo ${selectedApps[index].name}`}
-                      className="w-10 h-10 rounded-lg object-contain bg-white shadow-sm border border-gray-100"
-                    />
-                  ) : (
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <span className="text-lg font-bold text-primary">
-                        {selectedApps[index].name.charAt(0)}
-                      </span>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    {selectedApps[index].logo_url ? (
+                      <img 
+                        src={selectedApps[index].logo_url}
+                        alt={`Logo ${selectedApps[index].name}`}
+                        className="w-10 h-10 rounded-lg object-contain bg-white shadow-sm border border-gray-100"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <span className="text-lg font-bold text-primary">
+                          {selectedApps[index].name.charAt(0)}
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-gray-900 truncate">
+                        {selectedApps[index].name}
+                      </h3>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm text-gray-500">
+                          {selectedApps[index].category || 'Non catégorisé'}
+                        </p>
+                        {selectedApps[index].price && (
+                          <span className="text-sm font-medium text-primary">
+                            {selectedApps[index].price}€
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  )}
-                  <div>
-                    <h3 className="font-semibold text-gray-900">
-                      {selectedApps[index].name}
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      {selectedApps[index].category || 'Non catégorisé'}
-                    </p>
                   </div>
+                  <button 
+                    onClick={() => onSearchChange('', index)}
+                    className="text-sm text-primary hover:text-primary/80 underline px-2"
+                  >
+                    Changer
+                  </button>
                 </div>
               ) : (
                 <SearchDropdown
@@ -63,7 +85,7 @@ export const ComparisonSearch = ({
                     );
                   })}
                   onSelectApp={(app) => onSelectApp(app, index)}
-                  placeholder="Rechercher une application"
+                  placeholder={`Application ${index + 1}`}
                 />
               )}
             </div>

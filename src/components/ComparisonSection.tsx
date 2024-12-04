@@ -107,9 +107,9 @@ const ComparisonSection = () => {
             <ComparisonHero />
           </div>
 
-          <div className="rounded-xl sm:rounded-2xl p-3 sm:p-8 bg-gradient-to-br from-white to-primary/5 shadow-lg">
+          <div className="sm:rounded-2xl bg-transparent sm:bg-gradient-to-br from-white to-primary/5 sm:shadow-lg sm:p-8">
             <div className="space-y-3 sm:space-y-8">
-              <div className="flex items-center justify-center gap-2 sm:gap-4">
+              <div className="flex items-center justify-center gap-2 sm:gap-4 mb-4 sm:mb-0">
                 <Sparkles className="h-4 w-4 sm:h-6 sm:w-6 text-primary hidden sm:block" />
                 <h2 className="text-lg sm:text-2xl font-bold text-center text-primary">
                   Comparez jusqu'à 3 applications
@@ -131,22 +131,24 @@ const ComparisonSection = () => {
                 isMobile={window.innerWidth < 640}
               />
 
-              <div className="flex justify-center">
-                <Button
-                  onClick={handleCompare}
-                  disabled={selectedApps.length < 2 || appsLoading}
-                  className="w-full sm:w-auto px-4 py-2 sm:px-8 sm:py-6 text-base sm:text-lg shadow-lg hover:shadow-xl transition-all bg-primary hover:bg-primary/90"
-                >
-                  {appsLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Chargement...
-                    </>
-                  ) : (
-                    'Comparer maintenant'
-                  )}
-                </Button>
-              </div>
+              {selectedApps.length >= 2 && (
+                <div className="flex justify-center">
+                  <Button
+                    onClick={handleCompare}
+                    disabled={appsLoading}
+                    className="w-full sm:w-auto px-4 py-2 sm:px-8 sm:py-6 text-base sm:text-lg shadow-lg hover:shadow-xl transition-all bg-primary hover:bg-primary/90"
+                  >
+                    {appsLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Chargement...
+                      </>
+                    ) : (
+                      'Comparer maintenant'
+                    )}
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
 
