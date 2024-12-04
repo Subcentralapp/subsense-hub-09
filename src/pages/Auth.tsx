@@ -15,11 +15,11 @@ const Auth = () => {
       try {
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
-          console.log("User already authenticated, redirecting to dashboard");
+          console.log("Utilisateur déjà authentifié, redirection vers le tableau de bord");
           navigate("/dashboard");
         }
       } catch (error) {
-        console.error("Error checking authentication status:", error);
+        console.error("Erreur lors de la vérification de l'authentification:", error);
       } finally {
         setIsLoading(false);
       }
@@ -37,7 +37,7 @@ const Auth = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-neutral-light to-white flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-b from-neutral-light to-white flex items-center justify-center p-4 pt-24 md:pt-4">
       <div className="w-full max-w-4xl flex flex-col md:flex-row gap-6 items-center">
         {/* Section de motivation - Version mobile */}
         <div className="w-full md:hidden space-y-3 text-center mb-4">
@@ -52,7 +52,7 @@ const Auth = () => {
               <span className="text-sm font-medium">Offre de lancement</span>
             </div>
             <h1 className="text-xl font-bold text-gray-900 px-4">
-              Simplifiez la gestion de vos abonnements
+              Gérez vos abonnements en toute simplicité
             </h1>
           </motion.div>
         </div>
@@ -116,6 +116,35 @@ const Auth = () => {
                     brand: '#1a237e',
                     brandAccent: '#1a237e',
                   },
+                },
+              },
+              className: {
+                container: 'auth-container',
+                label: 'auth-label text-gray-700',
+                button: 'auth-button',
+                divider: 'auth-divider',
+              },
+            }}
+            localization={{
+              variables: {
+                sign_in: {
+                  email_label: 'Adresse email',
+                  password_label: 'Mot de passe',
+                  button_label: 'Se connecter',
+                },
+                sign_up: {
+                  email_label: 'Adresse email',
+                  password_label: 'Mot de passe',
+                  button_label: 'Créer mon compte',
+                },
+                magic_link: {
+                  button_label: 'Connexion avec un lien magique',
+                },
+                forgotten_password: {
+                  button_label: 'Mot de passe oublié ?',
+                },
+                confirmation: {
+                  button_label: 'Renvoyer le lien',
                 },
               },
             }}
