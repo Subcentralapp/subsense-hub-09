@@ -1,4 +1,4 @@
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, CheckSquare, Lightbulb, Gift, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 
@@ -7,58 +7,43 @@ export const WhyChooseSection = () => {
 
   const features = [
     {
-      icon: "🎯",
-      title: "Simplifiez votre quotidien",
-      description: "Gérez tous vos abonnements en un seul endroit."
+      icon: <CheckSquare className="w-5 h-5 text-primary" />,
+      text: "Gérez tout au même endroit : Abonnements centralisés et dépenses suivies"
     },
     {
-      icon: "💳",
-      title: "Gratuit à vie",
-      description: "Pour les 1000 premiers inscrits (sans carte bancaire)."
+      icon: <Lightbulb className="w-5 h-5 text-primary" />,
+      text: "Simplifiez votre quotidien : Alertes, recommandations et analyses détaillées"
     },
     {
-      icon: "📊",
-      title: "Prenez le contrôle",
-      description: "Suivez vos dépenses, définissez un budget et économisez."
+      icon: <Gift className="w-5 h-5 text-primary" />,
+      text: "Gratuit à vie pour les 1000 premiers inscrits"
     },
     {
-      icon: "🛠",
-      title: "Personnalisation",
-      description: "Créez votre liste parfaite d'abonnements selon votre profil."
-    },
-    {
-      icon: "🔒",
-      title: "Sécurité optimale",
-      description: "Données 100% protégées."
+      icon: <Shield className="w-5 h-5 text-primary" />,
+      text: "Ultra sécurisé : Vos données protégées avec les standards les plus élevés"
     }
   ];
 
   return (
-    <section className="py-16 bg-gradient-to-b from-white to-neutral-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary">
-            Pourquoi choisir SubaCentral ?
+    <section className="py-12 bg-white">
+      <div className="max-w-4xl mx-auto px-4">
+        <div className="text-center mb-6">
+          <h2 className="text-2xl font-bold text-primary mb-2">
+            Pourquoi SubaCentral ?
           </h2>
+          <p className="text-lg text-gray-600">
+            La seule application dont vous avez vraiment besoin pour vos abonnements.
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+        <div className="space-y-4 mb-8">
           {features.map((feature, index) => (
             <div
               key={index}
-              className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 border border-neutral-100"
+              className="flex items-center gap-3 bg-neutral-50 p-3 rounded-lg"
             >
-              <div className="flex items-start gap-4">
-                <span className="text-2xl">{feature.icon}</span>
-                <div>
-                  <h3 className="font-semibold text-lg text-primary mb-2">
-                    {feature.title}
-                  </h3>
-                  <p className="text-neutral-600">
-                    {feature.description}
-                  </p>
-                </div>
-              </div>
+              {feature.icon}
+              <p className="text-gray-700">{feature.text}</p>
             </div>
           ))}
         </div>
@@ -66,10 +51,10 @@ export const WhyChooseSection = () => {
         <div className="text-center">
           <Button
             onClick={() => navigate("/auth")}
-            className="bg-primary hover:bg-primary/90 text-white px-8 py-6 text-lg group h-auto"
+            className="bg-primary hover:bg-primary/90 text-white px-6 py-2 text-base group"
           >
-            Essayez gratuitement dès maintenant
-            <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+            Reprenez le contrôle
+            <ArrowRight className="ml-2 h-4 w-4 inline-block transition-transform group-hover:translate-x-1" />
           </Button>
         </div>
       </div>
