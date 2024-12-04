@@ -84,9 +84,9 @@ export const HeroSection = () => {
               <div className="relative bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 shadow-2xl">
                 <div className="aspect-[16/9] rounded-lg overflow-hidden bg-gradient-to-br from-primary/5 to-secondary/5">
                   <img
-                    src="/lovable-uploads/dd2572e4-8d74-4efc-bbd0-a2d9e911be06.png"
+                    src="/lovable-uploads/56ae0633-4189-4130-8f2c-64c4c5fe4459.png"
                     alt="Dashboard Preview"
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain"
                   />
                 </div>
               </div>
