@@ -25,6 +25,7 @@ const Index = () => {
 
         if (error) {
           console.error("❌ Error checking user preferences:", error);
+          navigate("/landing");
           return;
         }
 

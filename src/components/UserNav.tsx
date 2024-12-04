@@ -32,7 +32,7 @@ export function UserNav() {
         description: "À bientôt !",
       });
       
-      navigate("/home");
+      navigate("/landing");
     } catch (error) {
       console.error("Error signing out:", error);
       toast({
