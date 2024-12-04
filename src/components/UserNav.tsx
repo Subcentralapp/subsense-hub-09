@@ -38,7 +38,6 @@ export function UserNav() {
         description: "À bientôt !",
       });
       
-      // Force la navigation vers la page landing après la déconnexion
       navigate("/landing", { replace: true });
     } catch (error) {
       console.error("Erreur lors de la déconnexion:", error);
@@ -53,10 +52,10 @@ export function UserNav() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" className="relative h-8 w-8 rounded-full bg-primary p-0">
+        <Button variant="ghost" className="relative h-8 w-8 rounded-full bg-blue-500 p-0">
           <Avatar className="h-8 w-8">
-            <AvatarImage src="/placeholder.svg" alt="User avatar" className="bg-primary" />
-            <AvatarFallback className="bg-primary">
+            <AvatarImage src="/placeholder.svg" alt="User avatar" className="bg-blue-500" />
+            <AvatarFallback className="bg-blue-500">
               <User className="h-4 w-4 text-white" />
             </AvatarFallback>
           </Avatar>
