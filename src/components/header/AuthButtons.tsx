@@ -21,7 +21,7 @@ export const AuthButtons = ({ user }: AuthButtonsProps) => {
             onClick={() => navigate("/dashboard")}
             className="bg-gradient-to-r from-primary to-secondary hover:opacity-90 transition-opacity"
           >
-            Dashboard
+            Tableau de bord
           </Button>
         </motion.div>
       ) : (
@@ -35,7 +35,7 @@ export const AuthButtons = ({ user }: AuthButtonsProps) => {
             onClick={() => navigate("/auth")}
           >
             <LogIn className="h-4 w-4 text-primary" />
-            <span className="text-primary hidden md:inline">Sign in</span>
+            <span className="text-primary hidden md:inline">Connexion</span>
           </Button>
         </motion.div>
       )}
