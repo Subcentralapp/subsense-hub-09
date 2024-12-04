@@ -15,13 +15,22 @@ export const TrialBadge = ({ isTrial, trialEndDate }: TrialBadgeProps) => {
   const formattedDate = format(new Date(trialEndDate), 'd MMMM yyyy', { locale: fr });
 
   return (
-    <Badge variant="secondary" className="flex items-center gap-1">
-      <Clock className="h-3 w-3" />
-      {daysLeft > 0 ? (
-        <span>Essai gratuit - {daysLeft} jours restants</span>
-      ) : (
-        <span>Essai terminé le {formattedDate}</span>
-      )}
-    </Badge>
+    <div className="mt-2">
+      <Badge 
+        variant="secondary" 
+        className="flex items-center gap-2 text-xs font-normal bg-primary/5 text-primary hover:bg-primary/10"
+      >
+        <Clock className="h-3 w-3" />
+        {daysLeft > 0 ? (
+          <span>
+            Essai gratuit • {daysLeft} jours restants
+          </span>
+        ) : (
+          <span>
+            Essai terminé le {formattedDate}
+          </span>
+        )}
+      </Badge>
+    </div>
   );
 };
