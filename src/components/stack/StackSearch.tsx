@@ -13,6 +13,8 @@ export const StackSearch = ({ onAddTool }: StackSearchProps) => {
   const [filteredApps, setFilteredApps] = useState<Application[]>([]);
 
   const searchApplications = async (term: string) => {
+    console.log("StackSearch - Searching for:", term);
+    
     if (term.length < 2) {
       setFilteredApps([]);
       return;
@@ -22,10 +24,13 @@ export const StackSearch = ({ onAddTool }: StackSearchProps) => {
       const { data, error } = await supabase
         .from('applications')
         .select('*')
-        .ilike('NOM', `%${term}%`)
-        .limit(5);
+        .or(`NOM.ilike.%${term}%,DESCRIPTION.ilike.%${term}%`)
+        .order('NOM', { ascending: true })
+        .limit(10);
 
       if (error) throw error;
+
+      console.log("StackSearch - Search results:", data);
 
       const mappedApps: Application[] = data.map(app => ({
         id: app.id,
@@ -49,7 +54,7 @@ export const StackSearch = ({ onAddTool }: StackSearchProps) => {
 
       setFilteredApps(mappedApps);
     } catch (error) {
-      console.error('Error in searchApplications:', error);
+      console.error('StackSearch - Error:', error);
       toast({
         title: "Erreur lors de la recherche",
         description: "Impossible de charger les applications",
@@ -59,11 +64,13 @@ export const StackSearch = ({ onAddTool }: StackSearchProps) => {
   };
 
   const handleSearchChange = (value: string) => {
+    console.log("StackSearch - Search term changed:", value);
     setSearchTerm(value);
     searchApplications(value);
   };
 
   const handleSelectApp = (app: Application) => {
+    console.log("StackSearch - App selected:", app);
     onAddTool(app);
     setSearchTerm('');
     setFilteredApps([]);
@@ -81,6 +88,7 @@ export const StackSearch = ({ onAddTool }: StackSearchProps) => {
         filteredApps={filteredApps}
         onSelectApp={handleSelectApp}
         placeholder="Rechercher une application..."
+        className="w-full"
       />
     </div>
   );
