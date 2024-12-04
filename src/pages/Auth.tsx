@@ -16,7 +16,7 @@ const Auth = () => {
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
           console.log("Utilisateur déjà authentifié, redirection vers le tableau de bord");
-          navigate("/dashboard");
+          navigate("/dashboard", { replace: true });
         }
       } catch (error) {
         console.error("Erreur lors de la vérification du statut d'authentification:", error);
@@ -26,6 +26,19 @@ const Auth = () => {
     };
 
     checkUser();
+
+    // Écouter les changements d'état d'authentification
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Changement d'état d'authentification:", event, session);
+      if (event === 'SIGNED_IN' && session) {
+        console.log("Utilisateur connecté, redirection vers le tableau de bord");
+        navigate("/dashboard", { replace: true });
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   if (isLoading) {
