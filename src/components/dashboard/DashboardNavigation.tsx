@@ -1,5 +1,5 @@
 import { useLocation } from "react-router-dom";
-import { navigationItems } from "./DashboardContent";
+import { navigationItems } from "./navigationConfig";
 import { cn } from "@/lib/utils";
 
 export const DashboardNavigation = () => {
