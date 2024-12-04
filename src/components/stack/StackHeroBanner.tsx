@@ -49,15 +49,15 @@ export const StackHeroBanner = () => {
 
         <motion.div 
           variants={container}
-          className="grid grid-cols-3 gap-3 mt-4"
+          className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4"
         >
           <motion.div 
             variants={item} 
             className="bg-gray-800/50 p-3 rounded-lg border border-gray-700/50 hover:border-purple-500/50 transition-colors"
           >
-            <div className="flex items-center gap-2 text-gray-100">
-              <span className="text-lg">🎯</span>
-              <p className="text-xs">
+            <div className="flex items-center justify-center sm:justify-start gap-3 text-gray-100">
+              <span className="text-lg flex-shrink-0">🎯</span>
+              <p className="text-xs whitespace-nowrap">
                 Optimisez votre workflow
               </p>
             </div>
@@ -67,9 +67,9 @@ export const StackHeroBanner = () => {
             variants={item}
             className="bg-gray-800/50 p-3 rounded-lg border border-gray-700/50 hover:border-purple-500/50 transition-colors"
           >
-            <div className="flex items-center gap-2 text-gray-100">
-              <span className="text-lg">💡</span>
-              <p className="text-xs">
+            <div className="flex items-center justify-center sm:justify-start gap-3 text-gray-100">
+              <span className="text-lg flex-shrink-0">💡</span>
+              <p className="text-xs whitespace-nowrap">
                 Trouvez les bons outils
               </p>
             </div>
@@ -79,9 +79,9 @@ export const StackHeroBanner = () => {
             variants={item}
             className="bg-gray-800/50 p-3 rounded-lg border border-gray-700/50 hover:border-purple-500/50 transition-colors"
           >
-            <div className="flex items-center gap-2 text-gray-100">
-              <span className="text-lg">💳</span>
-              <p className="text-xs">
+            <div className="flex items-center justify-center sm:justify-start gap-3 text-gray-100">
+              <span className="text-lg flex-shrink-0">💳</span>
+              <p className="text-xs whitespace-nowrap">
                 Réduisez vos dépenses
               </p>
             </div>
