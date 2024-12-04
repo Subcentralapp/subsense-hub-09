@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Brain, Users, Rocket, Crown, Brain, Lock, Gift } from "lucide-react";
+import { Users, Rocket, Crown, Lock, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
