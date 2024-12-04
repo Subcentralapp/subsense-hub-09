@@ -24,29 +24,43 @@ export function UserNav() {
   const [isSessionValid, setIsSessionValid] = useState(false);
 
   useEffect(() => {
+    let mounted = true;
+
     const checkSession = async () => {
       try {
         const { data: { session }, error } = await supabase.auth.getSession();
         if (error) {
           console.error("Erreur lors de la vérification de la session:", error);
-          navigate("/auth");
+          if (mounted) {
+            setIsSessionValid(false);
+            navigate("/auth");
+          }
           return;
         }
-        setIsSessionValid(!!session);
+        if (mounted) {
+          setIsSessionValid(!!session);
+        }
       } catch (error) {
         console.error("Erreur lors de la vérification de la session:", error);
-        setIsSessionValid(false);
+        if (mounted) {
+          setIsSessionValid(false);
+        }
       }
     };
 
     checkSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("État de l'authentification changé:", event);
-      setIsSessionValid(!!session);
+      if (mounted) {
+        console.log("État de l'authentification changé:", event);
+        setIsSessionValid(!!session);
+      }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
   }, [navigate]);
 
   const handleSignOut = async () => {
@@ -56,10 +70,14 @@ export function UserNav() {
       
       if (error) {
         console.error("Erreur lors de la déconnexion:", error);
-        throw error;
+        toast({
+          title: "Erreur",
+          description: "Une erreur est survenue lors de la déconnexion",
+          variant: "destructive",
+        });
+        return;
       }
       
-      console.log("Déconnexion réussie, redirection vers /landing");
       toast({
         title: "Déconnexion réussie",
         description: "À bientôt !",
