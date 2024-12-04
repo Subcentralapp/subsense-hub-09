@@ -123,7 +123,7 @@ export const FeaturesSection = () => {
                     <span>{section.icon}</span>
                     <span>{section.category}</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-gray-700 group-hover:text-primary opacity-0 group-hover:opacity-100 transition-all duration-200">
+                  <div className="flex items-center gap-2 text-sm text-primary">
                     <span className="hidden group-data-[state=closed]:inline-flex">
                       Découvrir les fonctionnalités
                     </span>
