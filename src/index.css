@@ -30,6 +30,10 @@
     @apply border-border;
   }
 
+  html, body {
+    @apply w-full min-h-screen overflow-x-hidden;
+  }
+
   body {
     @apply bg-background text-foreground antialiased;
   }

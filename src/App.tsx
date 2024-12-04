@@ -17,10 +17,12 @@ const queryClient = new QueryClient();
 
 function Layout() {
   return (
-    <div className="min-h-screen bg-background font-sans antialiased flex flex-col">
+    <div className="min-h-screen w-full bg-background font-sans antialiased flex flex-col">
       <Header />
-      <main className="pt-16 flex-grow">
-        <Outlet />
+      <main className="flex-grow w-full">
+        <div className="w-full max-w-[2000px] mx-auto px-4 sm:px-6 lg:px-8 pt-16">
+          <Outlet />
+        </div>
       </main>
       <Footer />
     </div>
@@ -138,8 +140,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider defaultTheme="light" storageKey="vite-ui-theme">
-        <RouterProvider router={router} />
-        <Toaster />
+        <div className="w-full min-h-screen">
+          <RouterProvider router={router} />
+          <Toaster />
+        </div>
       </ThemeProvider>
     </QueryClientProvider>
   );
