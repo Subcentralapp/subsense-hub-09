@@ -2,6 +2,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Menu, BarChart, Receipt, ArrowRightLeft, AppWindow } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { SupportMessage } from "./SupportMessage";
+import { useState } from "react";
 
 const navigationItems = [
   { icon: BarChart, label: "Tableau de bord", path: "/dashboard", tab: "dashboard" },
@@ -12,13 +13,15 @@ const navigationItems = [
 
 export const MobileMenu = () => {
   const navigate = useNavigate();
+  const [open, setOpen] = useState(false);
 
   const handleNavigation = (path: string, tab: string) => {
     navigate(path, { state: { activeTab: tab } });
+    setOpen(false); // Ferme le menu après la navigation
   };
 
   return (
-    <Sheet>
+    <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
         <button className="p-2">
           <Menu className="h-6 w-6" />
