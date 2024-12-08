@@ -1,23 +1,24 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { Star, ThumbsUp, Heart } from "lucide-react";
 
 const testimonials = [
   {
     name: "Marie L.",
     role: "Early Supporter",
     content: "J'apprécie particulièrement la transparence et l'approche communautaire. C'est rafraîchissant de voir une startup qui implique réellement ses utilisateurs.",
-    avatar: "/lovable-uploads/816a1ebc-09b0-4dd0-903d-bf0b89cf7ba8.png"
+    icon: <Star className="w-8 h-8 text-primary" />
   },
   {
     name: "Thomas D.",
     role: "Early Supporter",
     content: "Le concept est génial et le fait de pouvoir participer au développement est vraiment motivant. J'ai hâte de voir l'évolution !",
-    avatar: "/lovable-uploads/8e3958b8-cb49-4a9f-8d56-4c994cc8c3f0.png"
+    icon: <ThumbsUp className="w-8 h-8 text-primary" />
   },
   {
     name: "Sophie M.",
     role: "Early Supporter",
     content: "Une approche innovante qui répond vraiment à un besoin. Le prix est très raisonnable pour toutes les fonctionnalités promises.",
-    avatar: "/lovable-uploads/bfe15ec1-9826-45c2-9fe8-449d17115639.png"
+    icon: <Heart className="w-8 h-8 text-primary" />
   }
 ];
 
@@ -32,11 +33,9 @@ export const TestimonialsSection = () => {
           <Card key={index} className="bg-white/80 backdrop-blur-sm border border-primary/10">
             <CardContent className="pt-6">
               <div className="flex items-center gap-4 mb-4">
-                <img
-                  src={testimonial.avatar}
-                  alt={testimonial.name}
-                  className="w-12 h-12 rounded-full object-cover"
-                />
+                <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/5">
+                  {testimonial.icon}
+                </div>
                 <div>
                   <h4 className="font-semibold text-gray-900">{testimonial.name}</h4>
                   <p className="text-sm text-primary">{testimonial.role}</p>
