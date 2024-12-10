@@ -17,7 +17,7 @@ const Auth = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
       console.log("Auth state changed:", event, session?.user?.email);
       
-      if (event === "SIGNED_UP") {
+      if (event === "SIGNED_UP" as AuthChangeEvent) {
         if (session?.user?.email) {
           setUserEmail(session.user.email);
           setShowEmailConfirmation(true);
