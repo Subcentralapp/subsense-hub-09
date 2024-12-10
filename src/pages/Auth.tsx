@@ -5,7 +5,7 @@ import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 import { MotivationSection } from "@/components/auth/MotivationSection";
 import { EmailConfirmation } from "@/components/auth/EmailConfirmation";
 import { useState, useEffect } from "react";
-import { AuthChangeEvent, AuthError } from "@supabase/supabase-js";
+import { AuthChangeEvent, AuthError, AuthResponse } from "@supabase/supabase-js";
 import { toast } from "@/hooks/use-toast";
 
 const Auth = () => {
@@ -17,7 +17,7 @@ const Auth = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
       console.log("Auth state changed:", event, session?.user?.email);
       
-      if (event === "SIGNED_UP" as AuthChangeEvent) {
+      if (event === "SIGNED_UP") {
         if (session?.user?.email) {
           setUserEmail(session.user.email);
           setShowEmailConfirmation(true);
@@ -122,7 +122,6 @@ const Auth = () => {
             providers={["google"]}
             redirectTo={`${window.location.origin}/auth/callback`}
             onlyThirdPartyProviders={false}
-            onError={handleAuthError}
           />
         </div>
       </div>
