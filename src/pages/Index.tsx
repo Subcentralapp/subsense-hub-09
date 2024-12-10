@@ -21,7 +21,8 @@ const Index = () => {
         const { data: preferences, error } = await supabase
           .from('user_preferences')
           .select('*')
-          .eq('id', user.id);
+          .eq('id', user.id)
+          .single();
 
         if (error) {
           console.error("❌ Error checking user preferences:", error);
@@ -29,7 +30,7 @@ const Index = () => {
           return;
         }
 
-        if (!preferences || preferences.length === 0) {
+        if (!preferences) {
           console.log("🆕 No preferences found, redirecting to onboarding");
           navigate("/onboarding");
         } else {
