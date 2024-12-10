@@ -15,10 +15,10 @@ const Auth = () => {
 
   useEffect(() => {
     console.log("Setting up auth state change listener");
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state changed:", event, session?.user?.email);
       
-      if (event === 'SIGNED_UP' && session?.user?.email) {
+      if (event === "SIGNED_UP" && session?.user?.email) {
         console.log("User signed up successfully:", session.user.email);
         setUserEmail(session.user.email);
         setShowEmailConfirmation(true);
