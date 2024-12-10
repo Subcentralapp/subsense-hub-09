@@ -6,6 +6,7 @@ import { MotivationSection } from "@/components/auth/MotivationSection";
 import { EmailConfirmation } from "@/components/auth/EmailConfirmation";
 import { useState, useEffect } from "react";
 import { AuthChangeEvent, Session } from "@supabase/supabase-js";
+import { toast } from "@/hooks/use-toast";
 
 const Auth = () => {
   const { isLoading } = useAuthRedirect();
@@ -14,13 +15,44 @@ const Auth = () => {
 
   useEffect(() => {
     console.log("Setting up auth state change listener");
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session | null) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event, session?.user?.email);
       
       if (event === "SIGNED_UP" && session?.user?.email) {
         console.log("User signed up successfully:", session.user.email);
         setUserEmail(session.user.email);
         setShowEmailConfirmation(true);
+
+        try {
+          const response = await fetch('https://qhidxbdxcymhuyquyqgk.supabase.co/functions/v1/send-email', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${process.env.SUPABASE_ANON_KEY}`,
+            },
+            body: JSON.stringify({
+              to: session.user.email,
+              subject: "Confirmez votre inscription à SubCentral",
+              text: `Bienvenue sur SubCentral ! \n\nPour confirmer votre email, cliquez sur ce lien : ${session.user.confirmation_sent_at}\n\nÀ bientôt !`,
+            }),
+          });
+
+          if (!response.ok) {
+            throw new Error('Failed to send confirmation email');
+          }
+
+          toast({
+            title: "Email de confirmation envoyé",
+            description: "Vérifiez votre boîte de réception pour confirmer votre compte.",
+          });
+        } catch (error) {
+          console.error("Error sending confirmation email:", error);
+          toast({
+            title: "Erreur",
+            description: "Impossible d'envoyer l'email de confirmation. Veuillez réessayer.",
+            variant: "destructive",
+          });
+        }
       }
     });
 
