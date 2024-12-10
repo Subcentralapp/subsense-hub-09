@@ -1,24 +1,20 @@
 import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
-import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 import { MotivationSection } from "@/components/auth/MotivationSection";
 import { EmailConfirmation } from "@/components/auth/EmailConfirmation";
 import { useState, useEffect } from "react";
-import { AuthChangeEvent } from "@supabase/supabase-js";
-import { useToast } from "@/hooks/use-toast";
 
 const Auth = () => {
   const { isLoading } = useAuthRedirect();
   const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
   const [userEmail, setUserEmail] = useState("");
-  const { toast } = useToast();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state changed:", event, session?.user?.email);
-      if (event === "SIGNED_UP" as AuthChangeEvent) {
+      if (event === 'SIGNED_UP') {
         setUserEmail(session?.user?.email || "");
         setShowEmailConfirmation(true);
       }
@@ -28,19 +24,6 @@ const Auth = () => {
       subscription.unsubscribe();
     };
   }, []);
-
-  const handleAuthError = (error: any) => {
-    console.error("Auth error:", error);
-    if (error.error_description === "Email rate limit exceeded" || 
-        error.message?.includes("rate limit") ||
-        error?.body?.includes("rate limit")) {
-      toast({
-        title: "Erreur",
-        description: "Trop de tentatives. Veuillez patienter quelques minutes avant de réessayer.",
-        variant: "destructive",
-      });
-    }
-  };
 
   if (isLoading) {
     return (
@@ -116,7 +99,6 @@ const Auth = () => {
             providers={["google"]}
             redirectTo={`${window.location.origin}/auth/callback`}
             onlyThirdPartyProviders={false}
-            onError={handleAuthError}
           />
         </div>
       </div>
