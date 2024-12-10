@@ -27,7 +27,6 @@ const Auth = () => {
 
     checkUser();
 
-    // Écouter les changements d'état d'authentification
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Changement d'état d'authentification:", event, session);
       if (event === 'SIGNED_IN' && session) {
@@ -150,10 +149,10 @@ const Auth = () => {
                 },
                 sign_up: {
                   email_label: 'Adresse email',
-                  password_label: 'Mot de passe',
+                  password_label: 'Mot de passe (min. 8 caractères avec 1 caractère spécial)',
                   button_label: 'Créer un compte',
                   email_input_placeholder: 'Votre adresse email',
-                  password_input_placeholder: 'Choisissez un mot de passe',
+                  password_input_placeholder: 'Choisissez un mot de passe sécurisé',
                   link_text: 'Pas encore de compte ? Inscrivez-vous',
                 },
                 magic_link: {
@@ -168,6 +167,9 @@ const Auth = () => {
             }}
             providers={["google"]}
             redirectTo={`${window.location.origin}/auth/callback`}
+            requireEmailConfirmation={true}
+            passwordMinLength={8}
+            passwordValidation={/^(?=.*[!@#$%^&*])/}
           />
         </div>
       </div>
