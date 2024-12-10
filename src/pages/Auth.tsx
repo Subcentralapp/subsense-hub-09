@@ -14,14 +14,13 @@ const Auth = () => {
   const [userEmail, setUserEmail] = useState("");
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event, session?.user?.email);
       
-      if (event === 'SIGNED_UP') {
-        if (session?.user?.email) {
-          setUserEmail(session.user.email);
-          setShowEmailConfirmation(true);
-        }
+      if (event === 'SIGNED_UP' && session?.user?.email) {
+        console.log("User signed up successfully:", session.user.email);
+        setUserEmail(session.user.email);
+        setShowEmailConfirmation(true);
       }
     });
 
@@ -127,7 +126,6 @@ const Auth = () => {
             }}
             providers={["google"]}
             redirectTo={`${window.location.origin}/auth/callback`}
-            onError={handleAuthError}
           />
         </div>
       </div>
