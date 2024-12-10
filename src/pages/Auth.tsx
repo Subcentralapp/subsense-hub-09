@@ -5,6 +5,7 @@ import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 import { MotivationSection } from "@/components/auth/MotivationSection";
 import { EmailConfirmation } from "@/components/auth/EmailConfirmation";
 import { useState, useEffect } from "react";
+import { AuthChangeEvent } from "@supabase/supabase-js";
 
 const Auth = () => {
   const { isLoading } = useAuthRedirect();
@@ -12,9 +13,9 @@ const Auth = () => {
   const [userEmail, setUserEmail] = useState("");
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
       console.log("Auth state changed:", event, session?.user?.email);
-      if (event === 'SIGNED_UP') {
+      if (event === "SIGNED_UP") {
         setUserEmail(session?.user?.email || "");
         setShowEmailConfirmation(true);
       }
