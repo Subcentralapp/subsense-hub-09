@@ -167,9 +167,6 @@ const Auth = () => {
             }}
             providers={["google"]}
             redirectTo={`${window.location.origin}/auth/callback`}
-            requireEmailConfirmation={true}
-            passwordMinLength={8}
-            passwordValidation={/^(?=.*[!@#$%^&*])/}
           />
         </div>
       </div>
