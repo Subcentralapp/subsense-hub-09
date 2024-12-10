@@ -24,7 +24,7 @@ export function Footer() {
           <div className="text-center">
             <h3 className="font-bold text-lg mb-4">Économisez plus</h3>
             <Link 
-              to="/dashboard"
+              to="/auth"
               className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-6 py-2 rounded-full transition-colors inline-block"
             >
               Analyser mes dépenses
@@ -47,7 +47,7 @@ export function Footer() {
 
         {/* Copyright */}
         <div className="border-t border-gray-200 py-4 text-center text-sm">
-          <p>&copy; {new Date().getFullYear()} SubaCentral - Simplifiez la gestion de vos abonnements</p>
+          <p>&copy; {new Date().getFullYear()} Subcentral - Simplifiez la gestion de vos abonnements</p>
         </div>
       </div>
     </footer>
