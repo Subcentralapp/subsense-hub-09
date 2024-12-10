@@ -5,7 +5,7 @@ import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 import { MotivationSection } from "@/components/auth/MotivationSection";
 import { EmailConfirmation } from "@/components/auth/EmailConfirmation";
 import { useState, useEffect } from "react";
-import { AuthError } from "@supabase/supabase-js";
+import { AuthError, AuthChangeEvent } from "@supabase/supabase-js";
 import { toast } from "@/hooks/use-toast";
 
 const Auth = () => {
@@ -15,10 +15,10 @@ const Auth = () => {
 
   useEffect(() => {
     console.log("Setting up auth state change listener");
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
       console.log("Auth state changed:", event, session?.user?.email);
       
-      if (event === 'SIGNED_UP' && session?.user?.email) {
+      if (event === "SIGNED_UP" && session?.user?.email) {
         console.log("User signed up successfully:", session.user.email);
         setUserEmail(session.user.email);
         setShowEmailConfirmation(true);
@@ -45,6 +45,24 @@ const Auth = () => {
       </div>
     );
   }
+
+  const handleAuthError = (error: AuthError) => {
+    console.error("Erreur d'authentification:", error);
+    
+    if (error.message.includes('User already registered')) {
+      toast({
+        title: "Compte existant",
+        description: "Un compte existe déjà avec cet email. Veuillez vous connecter.",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue. Veuillez réessayer.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-light to-white flex items-center justify-center p-4 pt-24 md:pt-4">
@@ -95,21 +113,9 @@ const Auth = () => {
             }}
             providers={[]}
             redirectTo={`${window.location.origin}/auth/callback`}
-            onError={(error: AuthError) => {
-              console.error("Erreur d'authentification:", error);
-              
-              if (error.message.includes('User already registered')) {
-                toast({
-                  title: "Compte existant",
-                  description: "Un compte existe déjà avec cet email. Veuillez vous connecter.",
-                  variant: "destructive",
-                });
-              } else {
-                toast({
-                  title: "Erreur",
-                  description: "Une erreur est survenue. Veuillez réessayer.",
-                  variant: "destructive",
-                });
+            onAuthStateChange={(event) => {
+              if (event.error) {
+                handleAuthError(event.error);
               }
             }}
           />
