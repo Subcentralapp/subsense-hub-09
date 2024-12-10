@@ -6,6 +6,7 @@ import { MotivationSection } from "@/components/auth/MotivationSection";
 import { EmailConfirmation } from "@/components/auth/EmailConfirmation";
 import { useState, useEffect } from "react";
 import { AuthChangeEvent } from "@supabase/supabase-js";
+import { toast } from "@/hooks/use-toast";
 
 const Auth = () => {
   const { isLoading } = useAuthRedirect();
@@ -13,11 +14,29 @@ const Auth = () => {
   const [userEmail, setUserEmail] = useState("");
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session) => {
       console.log("Auth state changed:", event, session?.user?.email);
-      if (event === "SIGNED_UP") {
-        setUserEmail(session?.user?.email || "");
-        setShowEmailConfirmation(true);
+      
+      if (event === "SIGNED_UP" as AuthChangeEvent) {
+        try {
+          setUserEmail(session?.user?.email || "");
+          setShowEmailConfirmation(true);
+        } catch (error: any) {
+          if (error?.message?.includes('rate limit exceeded')) {
+            toast({
+              title: "Erreur",
+              description: "Trop de tentatives. Veuillez patienter quelques minutes avant de réessayer.",
+              variant: "destructive",
+            });
+          } else {
+            console.error("Erreur lors de l'inscription:", error);
+            toast({
+              title: "Erreur",
+              description: "Une erreur est survenue lors de l'inscription. Veuillez réessayer.",
+              variant: "destructive",
+            });
+          }
+        }
       }
     });
 
