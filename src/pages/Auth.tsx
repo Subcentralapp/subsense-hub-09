@@ -5,7 +5,7 @@ import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 import { MotivationSection } from "@/components/auth/MotivationSection";
 import { EmailConfirmation } from "@/components/auth/EmailConfirmation";
 import { useState, useEffect } from "react";
-import { AuthError } from "@supabase/supabase-js";
+import { AuthError, Session } from "@supabase/supabase-js";
 import { toast } from "@/hooks/use-toast";
 
 const Auth = () => {
@@ -18,7 +18,7 @@ const Auth = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state changed:", event, session?.user?.email);
       
-      if (event === "SIGNED_UP" && session?.user?.email) {
+      if (event === 'SIGNED_UP' && session?.user?.email) {
         console.log("User signed up successfully:", session.user.email);
         setUserEmail(session.user.email);
         setShowEmailConfirmation(true);
@@ -46,7 +46,7 @@ const Auth = () => {
     );
   }
 
-  const handleError = (error: AuthError) => {
+  const handleAuthError = (error: AuthError) => {
     console.error("Erreur d'authentification:", error);
     
     if (error.message.includes('User already registered')) {
@@ -113,7 +113,11 @@ const Auth = () => {
             }}
             providers={[]}
             redirectTo={`${window.location.origin}/auth/callback`}
-            onError={handleError}
+            onAuthStateChange={(event) => {
+              if (event.error) {
+                handleAuthError(event.error);
+              }
+            }}
           />
         </div>
       </div>
