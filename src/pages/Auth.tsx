@@ -59,6 +59,7 @@ const Auth = () => {
                   email_input_placeholder: 'Votre adresse email',
                   password_input_placeholder: 'Choisissez un mot de passe sécurisé',
                   link_text: 'Pas encore de compte ? Inscrivez-vous',
+                  confirmation_text: 'Vérifiez votre email pour confirmer votre inscription',
                 },
                 magic_link: {
                   button_label: 'Connexion avec un lien magique',
