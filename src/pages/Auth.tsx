@@ -15,11 +15,12 @@ const Auth = () => {
 
   useEffect(() => {
     console.log("Setting up auth state change listener");
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session: Session | null) => {
       console.log("Auth state changed:", event, session?.user?.email);
       
-      if (event === "SIGNED_UP" && session?.user?.email) {
-        console.log("User signed up successfully:", session.user.email);
+      // On vérifie si c'est une nouvelle inscription en regardant si l'email n'est pas confirmé
+      if (event === "SIGNED_IN" && session?.user?.email && !session.user.email_confirmed_at) {
+        console.log("New user signed up:", session.user.email);
         setUserEmail(session.user.email);
         setShowEmailConfirmation(true);
 
