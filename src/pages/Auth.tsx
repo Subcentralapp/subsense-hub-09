@@ -6,7 +6,6 @@ import { MotivationSection } from "@/components/auth/MotivationSection";
 import { EmailConfirmation } from "@/components/auth/EmailConfirmation";
 import { useState, useEffect } from "react";
 import { AuthChangeEvent, Session } from "@supabase/supabase-js";
-import { toast } from "@/hooks/use-toast";
 
 const Auth = () => {
   const { isLoading } = useAuthRedirect();
