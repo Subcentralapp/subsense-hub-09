@@ -5,7 +5,7 @@ import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 import { MotivationSection } from "@/components/auth/MotivationSection";
 import { EmailConfirmation } from "@/components/auth/EmailConfirmation";
 import { useState, useEffect } from "react";
-import { AuthError, AuthChangeEvent } from "@supabase/supabase-js";
+import { AuthError } from "@supabase/supabase-js";
 import { toast } from "@/hooks/use-toast";
 
 const Auth = () => {
@@ -15,7 +15,7 @@ const Auth = () => {
 
   useEffect(() => {
     console.log("Setting up auth state change listener");
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state changed:", event, session?.user?.email);
       
       if (event === 'SIGNED_UP' && session?.user?.email) {
@@ -29,30 +29,6 @@ const Auth = () => {
       subscription.unsubscribe();
     };
   }, []);
-
-  const handleAuthError = (error: AuthError) => {
-    console.error("Erreur d'authentification:", error);
-    
-    if (error.message.includes('User already registered')) {
-      toast({
-        title: "Compte existant",
-        description: "Un compte existe déjà avec cet email. Veuillez vous connecter.",
-        variant: "destructive",
-      });
-    } else if (error.message.includes('rate limit exceeded')) {
-      toast({
-        title: "Limite atteinte",
-        description: "Trop de tentatives. Veuillez patienter quelques minutes avant de réessayer.",
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Erreur",
-        description: "Une erreur est survenue. Veuillez réessayer.",
-        variant: "destructive",
-      });
-    }
-  };
 
   if (isLoading) {
     return (
@@ -115,18 +91,27 @@ const Auth = () => {
                   link_text: 'Pas encore de compte ? Inscrivez-vous',
                   confirmation_text: 'Vérifiez votre email pour confirmer votre inscription',
                 },
-                magic_link: {
-                  button_label: 'Connexion avec un lien magique',
-                  link_text: 'Envoyer un lien magique',
-                },
-                forgotten_password: {
-                  button_label: 'Mot de passe oublié ?',
-                  link_text: 'Mot de passe oublié ?',
-                },
               },
             }}
-            providers={["google"]}
+            providers={[]}
             redirectTo={`${window.location.origin}/auth/callback`}
+            onError={(error: AuthError) => {
+              console.error("Erreur d'authentification:", error);
+              
+              if (error.message.includes('User already registered')) {
+                toast({
+                  title: "Compte existant",
+                  description: "Un compte existe déjà avec cet email. Veuillez vous connecter.",
+                  variant: "destructive",
+                });
+              } else {
+                toast({
+                  title: "Erreur",
+                  description: "Une erreur est survenue. Veuillez réessayer.",
+                  variant: "destructive",
+                });
+              }
+            }}
           />
         </div>
       </div>
