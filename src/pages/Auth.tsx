@@ -4,14 +4,26 @@ import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuthRedirect } from "@/hooks/useAuthRedirect";
 import { MotivationSection } from "@/components/auth/MotivationSection";
+import { EmailConfirmation } from "@/components/auth/EmailConfirmation";
+import { useState } from "react";
 
 const Auth = () => {
   const { isLoading } = useAuthRedirect();
+  const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
 
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  if (showEmailConfirmation) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-neutral-light to-white flex items-center justify-center">
+        <EmailConfirmation email={userEmail} />
       </div>
     );
   }
@@ -73,6 +85,11 @@ const Auth = () => {
             }}
             providers={["google"]}
             redirectTo={`${window.location.origin}/auth/callback`}
+            onlyThirdPartyProviders={false}
+            onSignUp={({ email }) => {
+              setUserEmail(email || "");
+              setShowEmailConfirmation(true);
+            }}
           />
         </div>
       </div>
