@@ -48,7 +48,7 @@ const AuthForm = () => {
     });
 
     const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === 'SIGNED_UP' && session) {
+      if (event === "SIGNED_UP" && session) {
         console.log("New sign up, showing email confirmation screen");
         setEmail(session.user.email || "");
         setShowEmailConfirmation(true);
@@ -68,7 +68,6 @@ const AuthForm = () => {
     };
   }, [navigate, toast]);
 
-  // Intercepter les erreurs d'authentification avant l'envoi d'email
   const handleError = (error: AuthError) => {
     console.error("Auth error:", error);
     
@@ -153,11 +152,7 @@ const AuthForm = () => {
             },
           },
         }}
-        onAuthStateChange={(event) => {
-          if (event.error) {
-            handleError(event.error);
-          }
-        }}
+        onError={handleError}
       />
     </div>
   );
