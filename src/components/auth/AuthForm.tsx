@@ -48,6 +48,16 @@ const AuthForm = () => {
           navigate("/dashboard");
         }
       }
+
+      // Gestion des erreurs d'authentification
+      if (event === "USER_REGISTRATION_ERROR") {
+        console.log("Registration error");
+        toast({
+          title: "Compte existant",
+          description: "Un compte existe déjà avec cet email. Veuillez vous connecter.",
+          variant: "destructive",
+        });
+      }
     });
 
     return () => {
