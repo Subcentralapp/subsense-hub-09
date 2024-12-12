@@ -20,6 +20,9 @@ const AuthForm = () => {
 
       if (event === "SIGNED_UP") {
         console.log("User signed up, showing email confirmation");
+        if (session?.user?.email) {
+          setEmail(session.user.email);
+        }
         setShowEmailConfirmation(true);
       }
 
