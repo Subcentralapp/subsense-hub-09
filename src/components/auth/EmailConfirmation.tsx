@@ -29,6 +29,15 @@ const EmailConfirmation = ({ email, onBack }: EmailConfirmationProps) => {
   }, []);
 
   const handleResendEmail = async () => {
+    if (!canResend) {
+      toast({
+        title: "Patientez",
+        description: "Veuillez attendre avant de renvoyer un nouvel email.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       const { error } = await supabase.auth.resend({
         type: 'signup',

@@ -31,10 +31,6 @@ const AuthForm = () => {
         if (session?.user.email_confirmed_at) {
           console.log("User signed in and email confirmed, redirecting to dashboard");
           navigate("/dashboard");
-        } else {
-          console.log("Email not confirmed, showing confirmation screen");
-          setEmail(session?.user.email || "");
-          setShowEmailConfirmation(true);
         }
       }
 
@@ -49,6 +45,14 @@ const AuthForm = () => {
           navigate("/dashboard");
         }
       }
+    });
+
+    const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      if (event === "SIGNED_UP" && session) {
+        console.log("New sign up, showing email confirmation screen");
+        setEmail(session.user.email || "");
+        setShowEmailConfirmation(true);
+      }
 
       if (event === "PASSWORD_RECOVERY") {
         toast({
@@ -58,45 +62,45 @@ const AuthForm = () => {
       }
     });
 
-    const { data: { subscription: errorSubscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      const error = (session as unknown as { error?: AuthError })?.error;
-      
-      if (error) {
-        console.error("Auth error event received:", error);
-        
-        // Gestion des erreurs de limitation de taux
-        if (error.status === 429) {
-          toast({
-            title: "Action limitée",
-            description: "Pour des raisons de sécurité, veuillez patienter quelques secondes avant de réessayer.",
-            variant: "destructive",
-          });
-          return;
-        }
-
-        // Gestion des erreurs courantes
-        const errorMessage = error.message;
-        if (errorMessage?.includes("User already registered")) {
-          toast({
-            title: "Compte existant",
-            description: "Attention, vous possédez déjà un compte !",
-            variant: "destructive",
-          });
-        } else if (errorMessage?.includes("Invalid login credentials")) {
-          toast({
-            title: "Erreur de connexion",
-            description: "Email ou mot de passe incorrect.",
-            variant: "destructive",
-          });
-        }
-      }
-    });
-
     return () => {
       subscription.unsubscribe();
-      errorSubscription.unsubscribe();
+      authSubscription.unsubscribe();
     };
   }, [navigate, toast]);
+
+  // Intercepter les erreurs d'authentification avant l'envoi d'email
+  const handleAuthError = (error: AuthError) => {
+    console.error("Auth error:", error);
+    
+    if (error.message?.includes("User already registered")) {
+      toast({
+        title: "Compte existant",
+        description: "Attention, vous possédez déjà un compte !",
+        variant: "destructive",
+      });
+      return true;
+    }
+    
+    if (error.message?.includes("Invalid login credentials")) {
+      toast({
+        title: "Erreur de connexion",
+        description: "Email ou mot de passe incorrect.",
+        variant: "destructive",
+      });
+      return true;
+    }
+
+    if (error.status === 429) {
+      toast({
+        title: "Action limitée",
+        description: "Pour des raisons de sécurité, veuillez patienter quelques secondes avant de réessayer.",
+        variant: "destructive",
+      });
+      return true;
+    }
+
+    return false;
+  };
 
   if (showEmailConfirmation) {
     return <EmailConfirmation email={email} onBack={() => setShowEmailConfirmation(false)} />;
@@ -151,6 +155,7 @@ const AuthForm = () => {
             },
           },
         }}
+        onError={handleAuthError}
       />
     </div>
   );
