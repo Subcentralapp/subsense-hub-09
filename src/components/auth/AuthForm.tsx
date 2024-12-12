@@ -14,23 +14,22 @@ const AuthForm = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state change event:", event);
       
-      if (event === "USER_UPDATED" && session?.user?.email) {
+      if (event === 'USER_UPDATED' && session?.user?.email) {
         setEmail(session.user.email);
       }
 
-      if (event === "SIGNED_UP") {
-        console.log("User signed up, showing email confirmation");
-        if (session?.user?.email) {
-          setEmail(session.user.email);
-        }
+      if (event === 'SIGNED_IN' && session?.user?.email && !session.user.email_confirmed_at) {
+        console.log("New user signed in, showing email confirmation");
+        setEmail(session.user.email);
         setShowEmailConfirmation(true);
       }
 
-      if (event === "SIGNED_OUT") {
+      if (event === 'SIGNED_OUT') {
         console.log("User signed out");
+        setShowEmailConfirmation(false);
       }
 
-      if (event === "USER_DELETED") {
+      if (event === 'USER_DELETED') {
         console.log("User deleted");
         toast({
           title: "Compte supprimé",
