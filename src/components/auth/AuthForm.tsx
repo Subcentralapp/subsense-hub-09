@@ -40,9 +40,15 @@ const AuthForm = () => {
       }
 
       if (event === "USER_UPDATED") {
-        console.log("User updated");
+        console.log("User updated - email confirmation status:", session?.user.email_confirmed_at);
         if (session?.user.email_confirmed_at) {
-          navigate("/dashboard");
+          // Redirection vers /auth au lieu du dashboard
+          console.log("Email confirmed, redirecting to auth page");
+          navigate("/auth");
+          toast({
+            title: "Email confirmé",
+            description: "Votre email a été confirmé. Vous pouvez maintenant vous connecter.",
+          });
         }
       }
     });
