@@ -56,44 +56,39 @@ const AuthForm = () => {
           description: "Vérifiez vos emails pour réinitialiser votre mot de passe.",
         });
       }
+
+      // Gestion des erreurs courantes
+      const error = session?.error;
+      if (error) {
+        console.error("Auth error:", error);
+        
+        if (error.status === 429) {
+          toast({
+            title: "Action limitée",
+            description: "Pour des raisons de sécurité, veuillez patienter quelques secondes avant de réessayer.",
+            variant: "destructive",
+          });
+          return;
+        }
+
+        if (error.message?.includes("User already registered")) {
+          toast({
+            title: "Compte existant",
+            description: "Un compte existe déjà avec cet email. Veuillez vous connecter.",
+            variant: "destructive",
+          });
+        } else if (error.message?.includes("Invalid login credentials")) {
+          toast({
+            title: "Erreur de connexion",
+            description: "Email ou mot de passe incorrect.",
+            variant: "destructive",
+          });
+        }
+      }
     });
-
-    // Ajout de l'écouteur d'erreur global pour Supabase
-    const errorHandler = (error: any) => {
-      console.error("Supabase error:", error);
-      
-      if (error.error?.status === 429) {
-        toast({
-          title: "Action limitée",
-          description: "Pour des raisons de sécurité, veuillez patienter quelques secondes avant de réessayer.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Gestion des autres erreurs courantes
-      if (error.message?.includes("User already registered")) {
-        toast({
-          title: "Compte existant",
-          description: "Un compte existe déjà avec cet email. Veuillez vous connecter.",
-          variant: "destructive",
-        });
-      } else if (error.message?.includes("Invalid login credentials")) {
-        toast({
-          title: "Erreur de connexion",
-          description: "Email ou mot de passe incorrect.",
-          variant: "destructive",
-        });
-      }
-    };
-
-    // Ajout de l'écouteur d'erreur
-    supabase.auth.onError(errorHandler);
 
     return () => {
       subscription.unsubscribe();
-      // Retrait de l'écouteur d'erreur
-      supabase.auth.onError(() => {});
     };
   }, [navigate, toast]);
 
