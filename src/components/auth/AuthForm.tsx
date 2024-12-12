@@ -83,7 +83,6 @@ export const AuthForm = () => {
                 },
               }}
               providers={["google"]}
-              onError={handleError}
             />
           </TabsContent>
 
@@ -123,7 +122,6 @@ export const AuthForm = () => {
                 },
               }}
               providers={["google"]}
-              onError={handleError}
             />
           </TabsContent>
         </Tabs>
