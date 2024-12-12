@@ -4,7 +4,6 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { EmailConfirmation } from "@/components/auth/EmailConfirmation";
-import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { motion } from "framer-motion";
@@ -34,7 +33,7 @@ const Auth = () => {
         if (event === "SIGNED_IN" && session) {
           console.log("Utilisateur connecté, redirection vers le tableau de bord");
           navigate("/dashboard");
-        } else if (event === "SIGNED_UP") {
+        } else if (event === "SIGNED_UP" && session) {
           console.log("Nouvel utilisateur inscrit, vérification du compte existant");
           const email = session?.user?.email;
           if (email) {
@@ -56,7 +55,7 @@ const Auth = () => {
               setShowConfirmation(true);
             }
           }
-        } else if (event === "USER_UPDATED") {
+        } else if (event === "USER_UPDATED" && session) {
           console.log("Utilisateur mis à jour, vérification de l'email");
           if (session?.user?.email_confirmed_at) {
             toast({
@@ -81,28 +80,6 @@ const Auth = () => {
       subscription.unsubscribe();
     };
   }, [navigate, searchParams, toast]);
-
-  const handleEmailCheck = async (email: string) => {
-    try {
-      console.log("Vérification de l'existence du compte pour:", email);
-      const { data } = await supabase
-        .from('profiles')
-        .select('id')
-        .eq('id', email)
-        .single();
-
-      if (data) {
-        setExistingAccount(true);
-        toast({
-          title: "Compte existant",
-          description: "Un compte existe déjà avec cette adresse email. Veuillez vous connecter.",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      console.error("Erreur lors de la vérification de l'email:", error);
-    }
-  };
 
   if (showConfirmation && email) {
     return (
@@ -190,11 +167,6 @@ const Auth = () => {
             }}
             providers={["google"]}
             redirectTo={`${window.location.origin}/auth?email_confirmed=true`}
-            onSubmit={async (formData) => {
-              if (formData.email) {
-                await handleEmailCheck(formData.email);
-              }
-            }}
           />
         </div>
 
