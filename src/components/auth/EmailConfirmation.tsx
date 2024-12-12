@@ -8,7 +8,7 @@ import { Loader2 } from "lucide-react";
 export const EmailConfirmation = ({ email }: { email: string }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [canResend, setCanResend] = useState(true);
-  const [countdown, setCountdown] = useState(30);
+  const [countdown, setCountdown] = useState(300); // 5 minutes en secondes
   const { toast } = useToast();
 
   const handleResendEmail = async () => {
@@ -29,7 +29,7 @@ export const EmailConfirmation = ({ email }: { email: string }) => {
       }
 
       setCanResend(false);
-      let timeLeft = 30;
+      let timeLeft = 300; // 5 minutes en secondes
       setCountdown(timeLeft);
 
       const timer = setInterval(() => {
@@ -57,6 +57,12 @@ export const EmailConfirmation = ({ email }: { email: string }) => {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
   return (
@@ -89,7 +95,7 @@ export const EmailConfirmation = ({ email }: { email: string }) => {
               Envoi en cours...
             </>
           ) : !canResend ? (
-            `Réessayer dans ${countdown}s`
+            `Réessayer dans ${formatTime(countdown)}`
           ) : (
             "Renvoyer l'email de confirmation"
           )}
