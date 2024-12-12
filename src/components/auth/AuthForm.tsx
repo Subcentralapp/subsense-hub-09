@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
@@ -10,36 +10,32 @@ const AuthForm = () => {
   const [email, setEmail] = useState("");
   const { toast } = useToast();
 
-  const handleAuthError = (error: Error) => {
-    console.error("Auth error:", error);
-    
-    if (error.message.includes("User already registered")) {
-      toast({
-        title: "Compte existant",
-        description: "Un compte existe déjà avec cet email. Veuillez vous connecter.",
-        variant: "destructive",
-      });
-      // Force le mode connexion
-      const signInTab = document.querySelector('[role="tab"][data-state="inactive"]');
-      if (signInTab instanceof HTMLElement) {
-        signInTab.click();
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'USER_UPDATED' && session?.user?.email) {
+        setEmail(session.user.email);
       }
-    } else if (error.message.includes("Email not confirmed")) {
-      setShowEmailConfirmation(true);
-    } else if (error.message.includes("Invalid login credentials")) {
-      toast({
-        title: "Erreur de connexion",
-        description: "Email ou mot de passe incorrect",
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Erreur",
-        description: "Une erreur est survenue. Veuillez réessayer.",
-        variant: "destructive",
-      });
-    }
-  };
+
+      if (event === 'SIGNED_UP') {
+        setShowEmailConfirmation(true);
+      }
+
+      // Handle specific error cases
+      if (event === 'USER_DELETED' || event === 'SIGNED_OUT') {
+        console.log("Auth event:", event);
+        if (event === 'USER_DELETED') {
+          toast({
+            title: "Compte supprimé",
+            description: "Votre compte a été supprimé avec succès.",
+          });
+        }
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [toast]);
 
   if (showEmailConfirmation) {
     return <EmailConfirmation email={email} onBack={() => setShowEmailConfirmation(false)} />;
@@ -92,7 +88,6 @@ const AuthForm = () => {
             },
           },
         }}
-        onError={handleAuthError}
       />
     </div>
   );
