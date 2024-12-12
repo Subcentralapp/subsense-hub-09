@@ -48,7 +48,7 @@ const AuthForm = () => {
     });
 
     const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (event === "SIGNED_UP" && session) {
+      if (event === 'SIGNED_UP' && session) {
         console.log("New sign up, showing email confirmation screen");
         setEmail(session.user.email || "");
         setShowEmailConfirmation(true);
@@ -69,7 +69,7 @@ const AuthForm = () => {
   }, [navigate, toast]);
 
   // Intercepter les erreurs d'authentification avant l'envoi d'email
-  const handleAuthError = (error: AuthError) => {
+  const handleError = (error: AuthError) => {
     console.error("Auth error:", error);
     
     if (error.message?.includes("User already registered")) {
@@ -78,7 +78,7 @@ const AuthForm = () => {
         description: "Attention, vous possédez déjà un compte !",
         variant: "destructive",
       });
-      return true;
+      return;
     }
     
     if (error.message?.includes("Invalid login credentials")) {
@@ -87,7 +87,7 @@ const AuthForm = () => {
         description: "Email ou mot de passe incorrect.",
         variant: "destructive",
       });
-      return true;
+      return;
     }
 
     if (error.status === 429) {
@@ -96,10 +96,8 @@ const AuthForm = () => {
         description: "Pour des raisons de sécurité, veuillez patienter quelques secondes avant de réessayer.",
         variant: "destructive",
       });
-      return true;
+      return;
     }
-
-    return false;
   };
 
   if (showEmailConfirmation) {
@@ -155,7 +153,11 @@ const AuthForm = () => {
             },
           },
         }}
-        onError={handleAuthError}
+        onAuthStateChange={(event) => {
+          if (event.error) {
+            handleError(event.error);
+          }
+        }}
       />
     </div>
   );
