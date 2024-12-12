@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
+import { Loader2 } from "lucide-react";
 
 export const EmailConfirmation = ({ email }: { email: string }) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -11,18 +12,22 @@ export const EmailConfirmation = ({ email }: { email: string }) => {
   const handleResendEmail = async () => {
     try {
       setIsLoading(true);
+      console.log("Tentative de renvoi de l'email de confirmation à:", email);
+      
       const { error } = await supabase.auth.resend({
         type: 'signup',
         email: email,
       });
 
       if (error) {
+        console.error("Erreur lors du renvoi de l'email:", error);
         throw error;
       }
 
+      console.log("Email de confirmation renvoyé avec succès");
       toast({
         title: "Email envoyé !",
-        description: "Vérifiez votre boîte de réception.",
+        description: "Vérifiez votre boîte de réception et vos spams.",
       });
     } catch (error) {
       console.error("Erreur lors de l'envoi de l'email:", error);
@@ -40,23 +45,43 @@ export const EmailConfirmation = ({ email }: { email: string }) => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="text-center space-y-4 p-6 bg-white rounded-lg shadow-sm"
+      className="w-full max-w-md text-center space-y-6 p-8 bg-white rounded-lg shadow-sm border"
     >
-      <h2 className="text-xl font-semibold text-gray-900">Vérifiez votre email</h2>
-      <p className="text-gray-600">
-        Un email de confirmation a été envoyé à <span className="font-medium">{email}</span>
-      </p>
+      <div className="space-y-2">
+        <h2 className="text-2xl font-semibold text-gray-900">Vérifiez votre email</h2>
+        <p className="text-gray-600">
+          Un email de confirmation a été envoyé à{" "}
+          <span className="font-medium">{email}</span>
+        </p>
+      </div>
+
+      <div className="space-y-4">
+        <p className="text-sm text-gray-500">
+          Vous n'avez pas reçu l'email ? Vérifiez vos spams ou cliquez ci-dessous pour recevoir un nouvel email.
+        </p>
+        
+        <Button
+          onClick={handleResendEmail}
+          disabled={isLoading}
+          className="w-full"
+        >
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Envoi en cours...
+            </>
+          ) : (
+            "Renvoyer l'email de confirmation"
+          )}
+        </Button>
+      </div>
+
       <p className="text-sm text-gray-500">
-        Vous n'avez pas reçu l'email ?
+        Si vous ne recevez toujours pas l'email, contactez notre{" "}
+        <a href="/support" className="text-primary hover:text-primary/80 font-medium">
+          support client
+        </a>
       </p>
-      <Button
-        onClick={handleResendEmail}
-        disabled={isLoading}
-        variant="outline"
-        className="mt-2"
-      >
-        {isLoading ? "Envoi en cours..." : "Renvoyer l'email"}
-      </Button>
     </motion.div>
   );
 };
