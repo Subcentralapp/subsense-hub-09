@@ -3,7 +3,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Landing from "./pages/Landing";
-import Auth from "./pages/Auth";
+import Identification from "./pages/Identification";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import { Header } from "@/components/Header";
@@ -106,7 +106,11 @@ const router = createBrowserRouter([
       },
       {
         path: "/auth",
-        element: <Auth />,
+        element: <Navigate to="/identification" replace />,
+      },
+      {
+        path: "/identification",
+        element: <Identification />,
       },
       {
         path: "/onboarding",
