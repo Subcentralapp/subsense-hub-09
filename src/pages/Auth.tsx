@@ -6,12 +6,15 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { EmailConfirmation } from "@/components/auth/EmailConfirmation";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { motion } from "framer-motion";
 
 const Auth = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [email, setEmail] = useState<string | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [existingAccount, setExistingAccount] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -27,6 +30,7 @@ const Auth = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log("Changement d'état d'authentification:", event);
+        
         if (event === "SIGNED_IN" && session) {
           console.log("Utilisateur connecté, redirection vers le tableau de bord");
           navigate("/dashboard");
@@ -34,6 +38,15 @@ const Auth = () => {
           console.log("Nouvel utilisateur inscrit, affichage de la confirmation d'email");
           setEmail(session?.user?.email || null);
           setShowConfirmation(true);
+        } else if (event === "USER_UPDATED") {
+          console.log("Utilisateur mis à jour, vérification de l'email");
+          if (session?.user?.email_confirmed_at) {
+            toast({
+              title: "Email confirmé !",
+              description: "Vous pouvez maintenant vous connecter à votre compte.",
+            });
+            setShowConfirmation(false);
+          }
         }
       }
     );
@@ -52,6 +65,27 @@ const Auth = () => {
     };
   }, [navigate, searchParams, toast]);
 
+  const handleEmailCheck = async (email: string) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', email)
+        .single();
+
+      if (data) {
+        setExistingAccount(true);
+        toast({
+          title: "Compte existant",
+          description: "Un compte existe déjà avec cette adresse email. Veuillez vous connecter.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error("Erreur lors de la vérification de l'email:", error);
+    }
+  };
+
   if (showConfirmation && email) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4 bg-gray-50">
@@ -62,7 +96,11 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 bg-gray-50">
-      <div className="w-full max-w-md space-y-8">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="w-full max-w-md space-y-8"
+      >
         <div className="text-center">
           <h2 className="text-3xl font-bold tracking-tight text-gray-900">
             Bienvenue
@@ -71,6 +109,14 @@ const Auth = () => {
             Connectez-vous ou créez un compte pour commencer
           </p>
         </div>
+
+        {existingAccount && (
+          <Alert variant="destructive">
+            <AlertDescription>
+              Un compte existe déjà avec cette adresse email. Veuillez vous connecter.
+            </AlertDescription>
+          </Alert>
+        )}
 
         <div className="bg-white p-8 rounded-lg shadow-sm border">
           <SupabaseAuth
@@ -141,7 +187,7 @@ const Auth = () => {
             </a>
           </p>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 };
