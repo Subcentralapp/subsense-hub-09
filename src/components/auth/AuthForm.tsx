@@ -4,45 +4,50 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import EmailConfirmation from "./EmailConfirmation";
-import { AuthChangeEvent } from "@supabase/supabase-js";
+import { useNavigate } from "react-router-dom";
 
 const AuthForm = () => {
   const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
   const [email, setEmail] = useState("");
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
-      console.log("Auth state change event:", event);
-      
-      if (event === 'USER_UPDATED' && session?.user?.email) {
-        setEmail(session.user.email);
+    // Vérifier si l'utilisateur est déjà connecté
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        console.log("User already logged in, redirecting to dashboard");
+        navigate("/dashboard");
+      }
+    };
+    
+    checkUser();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth state change:", event, session);
+
+      if (event === "SIGNED_IN") {
+        if (session?.user.email_confirmed_at) {
+          console.log("User signed in and email confirmed, redirecting to dashboard");
+          navigate("/dashboard");
+        } else {
+          console.log("Email not confirmed, showing confirmation screen");
+          setEmail(session?.user.email || "");
+          setShowEmailConfirmation(true);
+        }
       }
 
-      if (event === 'SIGNED_IN' && session?.user?.email && !session.user.email_confirmed_at) {
-        console.log("New user signed in, showing email confirmation");
-        setEmail(session.user.email);
-        setShowEmailConfirmation(true);
-      }
-
-      if (event === 'SIGNED_OUT') {
+      if (event === "SIGNED_OUT") {
         console.log("User signed out");
         setShowEmailConfirmation(false);
-      }
-
-      if (event === 'USER_DELETED') {
-        console.log("User deleted");
-        toast({
-          title: "Compte supprimé",
-          description: "Votre compte a été supprimé avec succès.",
-        });
       }
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [toast]);
+  }, [navigate, toast]);
 
   if (showEmailConfirmation) {
     return <EmailConfirmation email={email} onBack={() => setShowEmailConfirmation(false)} />;
@@ -61,11 +66,6 @@ const AuthForm = () => {
                 brandAccent: '#1d4ed8',
               },
             },
-          },
-          className: {
-            container: 'auth-container',
-            button: 'auth-button',
-            input: 'auth-input',
           },
         }}
         providers={["google"]}
