@@ -4,7 +4,7 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import EmailConfirmation from "./EmailConfirmation";
-import { AuthChangeEvent } from "@supabase/supabase-js";
+import type { AuthChangeEvent } from "@supabase/supabase-js";
 
 const AuthForm = () => {
   const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
@@ -15,20 +15,20 @@ const AuthForm = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
       console.log("Auth state change event:", event);
       
-      if (event === AuthChangeEvent.USER_UPDATED && session?.user?.email) {
+      if (event === "USER_UPDATED" && session?.user?.email) {
         setEmail(session.user.email);
       }
 
-      if (event === AuthChangeEvent.SIGNED_UP) {
+      if (event === "SIGNED_UP") {
         console.log("User signed up, showing email confirmation");
         setShowEmailConfirmation(true);
       }
 
-      if (event === AuthChangeEvent.SIGNED_OUT) {
+      if (event === "SIGNED_OUT") {
         console.log("User signed out");
       }
 
-      if (event === AuthChangeEvent.USER_DELETED) {
+      if (event === "USER_DELETED") {
         console.log("User deleted");
         toast({
           title: "Compte supprimé",
