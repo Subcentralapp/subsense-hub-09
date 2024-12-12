@@ -13,7 +13,6 @@ const AuthForm = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Vérifier si l'utilisateur est déjà connecté
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
@@ -42,12 +41,37 @@ const AuthForm = () => {
         console.log("User signed out");
         setShowEmailConfirmation(false);
       }
+
+      // Gestion des erreurs d'authentification
+      if (event === "USER_UPDATED") {
+        console.log("User updated");
+        if (session?.user.email_confirmed_at) {
+          navigate("/dashboard");
+        }
+      }
     });
 
     return () => {
       subscription.unsubscribe();
     };
   }, [navigate, toast]);
+
+  const handleAuthError = (error: Error) => {
+    console.error("Auth error:", error);
+    if (error.message.includes("Email already registered")) {
+      toast({
+        title: "Email déjà utilisé",
+        description: "Cet email est déjà associé à un compte. Veuillez vous connecter.",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue. Veuillez réessayer.",
+        variant: "destructive",
+      });
+    }
+  };
 
   if (showEmailConfirmation) {
     return <EmailConfirmation email={email} onBack={() => setShowEmailConfirmation(false)} />;
@@ -69,29 +93,37 @@ const AuthForm = () => {
           },
         }}
         providers={["google"]}
+        onError={handleAuthError}
         localization={{
           variables: {
+            sign_up: {
+              email_label: "Email",
+              password_label: "Mot de passe",
+              email_input_placeholder: "Votre email",
+              password_input_placeholder: "Votre mot de passe",
+              button_label: "S'inscrire",
+              loading_button_label: "Inscription en cours...",
+              social_provider_text: "Continuer avec {{provider}}",
+              link_text: "Vous n'avez pas de compte ? Inscrivez-vous",
+              confirmation_text: "Vérifiez vos emails pour confirmer votre inscription",
+            },
             sign_in: {
               email_label: "Email",
               password_label: "Mot de passe",
+              email_input_placeholder: "Votre email",
+              password_input_placeholder: "Votre mot de passe",
               button_label: "Se connecter",
               loading_button_label: "Connexion en cours...",
               social_provider_text: "Continuer avec {{provider}}",
               link_text: "Vous avez déjà un compte ? Connectez-vous",
             },
-            sign_up: {
-              email_label: "Email",
-              password_label: "Mot de passe",
-              button_label: "S'inscrire",
-              loading_button_label: "Inscription en cours...",
-              social_provider_text: "Continuer avec {{provider}}",
-              link_text: "Vous n'avez pas de compte ? Inscrivez-vous",
-            },
             forgotten_password: {
               email_label: "Email",
+              password_label: "Mot de passe",
               button_label: "Réinitialiser le mot de passe",
               loading_button_label: "Envoi en cours...",
               link_text: "Mot de passe oublié ?",
+              confirmation_text: "Vérifiez vos emails pour réinitialiser votre mot de passe",
             },
           },
         }}
