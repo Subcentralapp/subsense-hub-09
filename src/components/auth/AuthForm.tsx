@@ -48,22 +48,32 @@ const AuthForm = () => {
           navigate("/dashboard");
         }
       }
-
-      // Gestion des erreurs d'authentification
-      if (event === "USER_REGISTRATION_ERROR") {
-        console.log("Registration error");
-        toast({
-          title: "Compte existant",
-          description: "Un compte existe déjà avec cet email. Veuillez vous connecter.",
-          variant: "destructive",
-        });
-      }
     });
 
     return () => {
       subscription.unsubscribe();
     };
   }, [navigate, toast]);
+
+  // Gestionnaire d'erreur personnalisé pour Auth UI
+  const handleError = (error: Error) => {
+    console.log("Auth error:", error);
+    
+    // Vérification si l'email existe déjà
+    if (error.message.includes("User already registered")) {
+      toast({
+        title: "Compte existant",
+        description: "Un compte existe déjà avec cet email. Veuillez vous connecter.",
+        variant: "destructive",
+      });
+    } else if (error.message.includes("Invalid login credentials")) {
+      toast({
+        title: "Erreur de connexion",
+        description: "Email ou mot de passe incorrect.",
+        variant: "destructive",
+      });
+    }
+  };
 
   if (showEmailConfirmation) {
     return <EmailConfirmation email={email} onBack={() => setShowEmailConfirmation(false)} />;
@@ -85,6 +95,7 @@ const AuthForm = () => {
           },
         }}
         providers={["google"]}
+        onError={handleError}
         localization={{
           variables: {
             sign_up: {
