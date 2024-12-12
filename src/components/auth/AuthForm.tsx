@@ -49,20 +49,21 @@ const AuthForm = () => {
         }
       }
 
-      // Gestion des erreurs via les événements d'authentification
       if (event === "PASSWORD_RECOVERY") {
         toast({
           title: "Réinitialisation du mot de passe",
           description: "Vérifiez vos emails pour réinitialiser votre mot de passe.",
         });
       }
+    });
 
-      // Gestion des erreurs courantes
-      const error = session?.error;
-      if (error) {
-        console.error("Auth error:", error);
+    // Gestion des erreurs via un autre écouteur d'événements
+    const { data: { subscription: errorSubscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "USER_ERROR") {
+        console.error("Auth error event received");
         
-        if (error.status === 429) {
+        // Gestion des erreurs de limitation de taux
+        if (session?.error?.status === 429) {
           toast({
             title: "Action limitée",
             description: "Pour des raisons de sécurité, veuillez patienter quelques secondes avant de réessayer.",
@@ -71,13 +72,15 @@ const AuthForm = () => {
           return;
         }
 
-        if (error.message?.includes("User already registered")) {
+        // Gestion des erreurs courantes
+        const errorMessage = session?.error?.message;
+        if (errorMessage?.includes("User already registered")) {
           toast({
             title: "Compte existant",
             description: "Un compte existe déjà avec cet email. Veuillez vous connecter.",
             variant: "destructive",
           });
-        } else if (error.message?.includes("Invalid login credentials")) {
+        } else if (errorMessage?.includes("Invalid login credentials")) {
           toast({
             title: "Erreur de connexion",
             description: "Email ou mot de passe incorrect.",
@@ -89,6 +92,7 @@ const AuthForm = () => {
 
     return () => {
       subscription.unsubscribe();
+      errorSubscription.unsubscribe();
     };
   }, [navigate, toast]);
 
