@@ -7,6 +7,7 @@ import { EmailConfirmation } from "@/components/auth/EmailConfirmation";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AuthChangeEvent } from "@supabase/supabase-js";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ const Auth = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session) => {
       console.log("Événement d'authentification:", event, "Session:", session);
 
       if (event === "SIGNED_IN" && session) {
