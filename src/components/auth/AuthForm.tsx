@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import EmailConfirmation from "./EmailConfirmation";
 import { useNavigate } from "react-router-dom";
-import { AuthError } from "@supabase/supabase-js";
+import { AuthError, AuthResponse } from "@supabase/supabase-js";
 
 const AuthForm = () => {
   const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
@@ -42,7 +42,6 @@ const AuthForm = () => {
       if (event === "USER_UPDATED") {
         console.log("User updated - email confirmation status:", session?.user.email_confirmed_at);
         if (session?.user.email_confirmed_at) {
-          // Redirection vers /auth au lieu du dashboard
           console.log("Email confirmed, redirecting to auth page");
           navigate("/auth");
           toast({
@@ -103,6 +102,13 @@ const AuthForm = () => {
       });
       return;
     }
+
+    // Erreur par défaut
+    toast({
+      title: "Erreur",
+      description: error.message || "Une erreur est survenue",
+      variant: "destructive",
+    });
   };
 
   if (showEmailConfirmation) {
