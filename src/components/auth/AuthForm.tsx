@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import EmailConfirmation from "./EmailConfirmation";
 import { useNavigate } from "react-router-dom";
+import { AuthError } from "@supabase/supabase-js";
 
 const AuthForm = () => {
   const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
@@ -59,11 +60,13 @@ const AuthForm = () => {
 
     // Gestion des erreurs via un autre écouteur d'événements
     const { data: { subscription: errorSubscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === "USER_ERROR") {
-        console.error("Auth error event received");
+      const error = (session as unknown as { error?: AuthError })?.error;
+      
+      if (error) {
+        console.error("Auth error event received:", error);
         
         // Gestion des erreurs de limitation de taux
-        if (session?.error?.status === 429) {
+        if (error.status === 429) {
           toast({
             title: "Action limitée",
             description: "Pour des raisons de sécurité, veuillez patienter quelques secondes avant de réessayer.",
@@ -73,7 +76,7 @@ const AuthForm = () => {
         }
 
         // Gestion des erreurs courantes
-        const errorMessage = session?.error?.message;
+        const errorMessage = error.message;
         if (errorMessage?.includes("User already registered")) {
           toast({
             title: "Compte existant",
