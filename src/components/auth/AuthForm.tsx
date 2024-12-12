@@ -12,23 +12,26 @@ const AuthForm = () => {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'USER_UPDATED' && session?.user?.email) {
+      console.log("Auth state change event:", event);
+      
+      if (event === "USER_UPDATED" && session?.user?.email) {
         setEmail(session.user.email);
       }
 
-      if (event === 'SIGNED_UP') {
+      if (event === "SIGNED_UP") {
         setShowEmailConfirmation(true);
       }
 
-      // Handle specific error cases
-      if (event === 'USER_DELETED' || event === 'SIGNED_OUT') {
-        console.log("Auth event:", event);
-        if (event === 'USER_DELETED') {
-          toast({
-            title: "Compte supprimé",
-            description: "Votre compte a été supprimé avec succès.",
-          });
-        }
+      if (event === "SIGNED_OUT") {
+        console.log("User signed out");
+      }
+
+      if (event === "USER_DELETED") {
+        console.log("User deleted");
+        toast({
+          title: "Compte supprimé",
+          description: "Votre compte a été supprimé avec succès.",
+        });
       }
     });
 
