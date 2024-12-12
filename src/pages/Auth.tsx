@@ -7,52 +7,102 @@ import { EmailConfirmation } from "@/components/auth/EmailConfirmation";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { AuthChangeEvent } from "@supabase/supabase-js";
+import { AuthError } from "@supabase/supabase-js";
 
 const Auth = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState<string | null>(null);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const { toast } = useToast();
+  const [activeTab, setActiveTab] = useState("signin");
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session) => {
+    const checkExistingSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        console.log("Session existante détectée, redirection...");
+        handleAuthenticatedUser(session);
+      }
+    };
+
+    checkExistingSession();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Événement d'authentification:", event, "Session:", session);
 
       if (event === "SIGNED_IN" && session) {
         console.log("Utilisateur connecté, vérification du compte...");
-        
-        if (!session.user.email_confirmed_at) {
-          console.log("Email non confirmé");
-          setEmail(session.user.email);
-          setShowConfirmation(true);
-          return;
-        }
-
-        const { data: preferences } = await supabase
-          .from('user_preferences')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
-
-        if (!preferences) {
-          console.log("Redirection vers onboarding");
-          navigate("/onboarding");
-        } else {
-          console.log("Redirection vers dashboard");
-          navigate("/dashboard");
-        }
+        handleAuthenticatedUser(session);
       } else if (event === "SIGNED_UP" && session) {
         console.log("Nouvel utilisateur inscrit");
         setEmail(session.user.email);
         setShowConfirmation(true);
+        toast({
+          title: "Inscription réussie !",
+          description: "Veuillez vérifier votre email pour confirmer votre compte.",
+        });
+      } else if (event === "USER_UPDATED" && session?.user.email_confirmed_at) {
+        console.log("Email confirmé, redirection...");
+        handleAuthenticatedUser(session);
       }
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, [navigate, toast]);
+
+  const handleAuthenticatedUser = async (session: any) => {
+    if (!session.user.email_confirmed_at) {
+      console.log("Email non confirmé");
+      setEmail(session.user.email);
+      setShowConfirmation(true);
+      return;
+    }
+
+    try {
+      const { data: preferences } = await supabase
+        .from('user_preferences')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
+
+      if (!preferences) {
+        console.log("Redirection vers onboarding");
+        navigate("/onboarding");
+      } else {
+        console.log("Redirection vers dashboard");
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      console.error("Erreur lors de la vérification des préférences:", error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la vérification de votre compte.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleAuthError = (error: AuthError) => {
+    console.error("Erreur d'authentification:", error);
+    let errorMessage = "Une erreur est survenue lors de l'authentification.";
+
+    if (error.message.includes("Email not confirmed")) {
+      errorMessage = "Veuillez confirmer votre email avant de vous connecter.";
+    } else if (error.message.includes("Invalid login credentials")) {
+      errorMessage = "Email ou mot de passe incorrect.";
+    } else if (error.message.includes("User already registered")) {
+      errorMessage = "Un compte existe déjà avec cet email.";
+      setActiveTab("signin");
+    }
+
+    toast({
+      title: "Erreur",
+      description: errorMessage,
+      variant: "destructive",
+    });
+  };
 
   if (showConfirmation && email) {
     return (
@@ -79,7 +129,7 @@ const Auth = () => {
         </div>
 
         <div className="bg-white p-8 rounded-lg shadow-sm border">
-          <Tabs defaultValue="signin" className="space-y-6">
+          <Tabs defaultValue={activeTab} className="space-y-6" onValueChange={setActiveTab}>
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="signin">Connexion</TabsTrigger>
               <TabsTrigger value="signup">Inscription</TabsTrigger>
