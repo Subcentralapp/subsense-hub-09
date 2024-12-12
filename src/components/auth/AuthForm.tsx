@@ -53,7 +53,7 @@ const AuthForm = () => {
       }
     });
 
-    const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_UP" && session) {
         console.log("New sign up, showing email confirmation screen");
         setEmail(session.user.email || "");
