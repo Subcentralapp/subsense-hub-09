@@ -34,7 +34,7 @@ const Auth = () => {
         if (event === "SIGNED_IN" && session) {
           console.log("Utilisateur connecté, redirection vers le tableau de bord");
           navigate("/dashboard");
-        } else if (event === "SIGNED_UP" && session) {
+        } else if (event === AuthChangeEvent.SIGNED_UP && session) {
           console.log("Nouvel utilisateur inscrit, vérification du compte existant");
           const email = session?.user?.email;
           if (email) {
