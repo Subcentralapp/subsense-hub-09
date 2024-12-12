@@ -12,14 +12,14 @@ const Identification = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state changed:", event, session);
       
-      if (event === "SIGNED_IN") {
+      if (session) {
         console.log("User signed in, redirecting to dashboard");
         navigate("/dashboard");
-      } else if (event === "SIGNED_UP") {
-        console.log("User signed up, showing confirmation message");
+      } else if (event === 'SIGNED_OUT') {
+        console.log("User signed out");
         toast({
-          title: "Vérification requise",
-          description: "Un email de confirmation vous a été envoyé. Veuillez vérifier votre boîte de réception.",
+          title: "Déconnexion réussie",
+          description: "Vous avez été déconnecté avec succès.",
         });
       }
     });
