@@ -92,7 +92,7 @@ const AuthForm = () => {
             },
           },
         }}
-        onError={handleAuthError}
+        onAuthError={handleAuthError}
       />
     </div>
   );
