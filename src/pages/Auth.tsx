@@ -1,11 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { EmailConfirmation } from "@/components/auth/EmailConfirmation";
 import { useToast } from "@/hooks/use-toast";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -15,38 +14,44 @@ const Auth = () => {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const { toast } = useToast();
 
-  const handleAuthChange = async (event: any, session: any) => {
-    console.log("Événement d'authentification:", event, "Session:", session);
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Événement d'authentification:", event, "Session:", session);
 
-    if (event === "SIGNED_IN" && session) {
-      console.log("Utilisateur connecté, vérification du compte...");
-      
-      if (!session.user.email_confirmed_at) {
-        console.log("Email non confirmé");
+      if (event === "SIGNED_IN" && session) {
+        console.log("Utilisateur connecté, vérification du compte...");
+        
+        if (!session.user.email_confirmed_at) {
+          console.log("Email non confirmé");
+          setEmail(session.user.email);
+          setShowConfirmation(true);
+          return;
+        }
+
+        const { data: preferences } = await supabase
+          .from('user_preferences')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+
+        if (!preferences) {
+          console.log("Redirection vers onboarding");
+          navigate("/onboarding");
+        } else {
+          console.log("Redirection vers dashboard");
+          navigate("/dashboard");
+        }
+      } else if (event === "SIGNED_UP" && session) {
+        console.log("Nouvel utilisateur inscrit");
         setEmail(session.user.email);
         setShowConfirmation(true);
-        return;
       }
+    });
 
-      const { data: preferences } = await supabase
-        .from('user_preferences')
-        .select('*')
-        .eq('id', session.user.id)
-        .single();
-
-      if (!preferences) {
-        console.log("Redirection vers onboarding");
-        navigate("/onboarding");
-      } else {
-        console.log("Redirection vers dashboard");
-        navigate("/dashboard");
-      }
-    } else if (event === "SIGNED_UP" && session) {
-      console.log("Nouvel utilisateur inscrit");
-      setEmail(session.user.email);
-      setShowConfirmation(true);
-    }
-  };
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   if (showConfirmation && email) {
     return (
@@ -123,7 +128,6 @@ const Auth = () => {
                   },
                 }}
                 providers={["google"]}
-                onAuthStateChange={handleAuthChange}
               />
             </TabsContent>
 
@@ -163,7 +167,6 @@ const Auth = () => {
                   },
                 }}
                 providers={["google"]}
-                onAuthStateChange={handleAuthChange}
               />
             </TabsContent>
           </Tabs>
