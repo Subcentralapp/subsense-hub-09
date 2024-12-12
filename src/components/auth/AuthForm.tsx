@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import EmailConfirmation from "./EmailConfirmation";
 import { useNavigate } from "react-router-dom";
-import { AuthError, AuthChangeEvent } from "@supabase/supabase-js";
+import { AuthError } from "@supabase/supabase-js";
 
 const AuthForm = () => {
   const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
@@ -24,22 +24,22 @@ const AuthForm = () => {
     
     checkUser();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("Auth state change:", event, session);
 
-      if (event === "SIGNED_IN") {
+      if (event === 'SIGNED_IN') {
         if (session?.user.email_confirmed_at) {
           console.log("User signed in and email confirmed, redirecting to dashboard");
           navigate("/dashboard");
         }
       }
 
-      if (event === "SIGNED_OUT") {
+      if (event === 'SIGNED_OUT') {
         console.log("User signed out");
         setShowEmailConfirmation(false);
       }
 
-      if (event === "USER_UPDATED") {
+      if (event === 'USER_UPDATED') {
         console.log("User updated - email confirmation status:", session?.user.email_confirmed_at);
         if (session?.user.email_confirmed_at) {
           console.log("Email confirmed, redirecting to identification");
@@ -52,14 +52,14 @@ const AuthForm = () => {
       }
     });
 
-    const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
-      if (event === "SIGNED_UP") {
+    const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_UP') {
         console.log("New sign up, showing email confirmation screen");
-        setEmail(session?.user.email || "");
+        setEmail(session?.user?.email || "");
         setShowEmailConfirmation(true);
       }
 
-      if (event === "PASSWORD_RECOVERY") {
+      if (event === 'PASSWORD_RECOVERY') {
         toast({
           title: "Réinitialisation du mot de passe",
           description: "Vérifiez vos emails pour réinitialiser votre mot de passe.",
