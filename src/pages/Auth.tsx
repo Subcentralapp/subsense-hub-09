@@ -7,7 +7,6 @@ import { EmailConfirmation } from "@/components/auth/EmailConfirmation";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { motion } from "framer-motion";
-import { AuthChangeEvent } from "@supabase/supabase-js";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -28,13 +27,13 @@ const Auth = () => {
     checkSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event: AuthChangeEvent, session) => {
+      async (event, session) => {
         console.log("Changement d'état d'authentification:", event);
         
         if (event === "SIGNED_IN" && session) {
           console.log("Utilisateur connecté, redirection vers le tableau de bord");
           navigate("/dashboard");
-        } else if (event === AuthChangeEvent.SIGNED_UP && session) {
+        } else if (event === "SIGNED_UP" && session) {
           console.log("Nouvel utilisateur inscrit, vérification du compte existant");
           const email = session?.user?.email;
           if (email) {
