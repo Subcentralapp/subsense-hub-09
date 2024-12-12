@@ -7,18 +7,30 @@ import { EmailConfirmation } from "@/components/auth/EmailConfirmation";
 import { useState, useEffect } from "react";
 import { AuthChangeEvent, Session } from "@supabase/supabase-js";
 import { toast } from "@/hooks/use-toast";
+import { useSearchParams } from "react-router-dom";
 
 const Auth = () => {
   const { isLoading } = useAuthRedirect();
   const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
   const [userEmail, setUserEmail] = useState("");
+  const [searchParams] = useSearchParams();
+
+  useEffect(() => {
+    // Vérifie si l'utilisateur arrive après avoir confirmé son email
+    const confirmationStatus = searchParams.get("email_confirmed");
+    if (confirmationStatus === "true") {
+      toast({
+        title: "Email confirmé !",
+        description: "Votre email a été confirmé avec succès. Vous pouvez maintenant vous connecter.",
+      });
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     console.log("Setting up auth state change listener");
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session: Session | null) => {
       console.log("Auth state changed:", event, session?.user?.email);
       
-      // On vérifie si c'est une nouvelle inscription en regardant si l'email n'est pas confirmé
       if (event === "SIGNED_IN" && session?.user?.email && !session.user.email_confirmed_at) {
         console.log("New user signed up:", session.user.email);
         setUserEmail(session.user.email);
@@ -126,7 +138,7 @@ const Auth = () => {
               },
             }}
             providers={[]}
-            redirectTo={`${window.location.origin}/auth/callback`}
+            redirectTo={`${window.location.origin}/auth?email_confirmed=true`}
           />
         </div>
       </div>
