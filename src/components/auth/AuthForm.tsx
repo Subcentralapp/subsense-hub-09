@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import EmailConfirmation from "./EmailConfirmation";
 import { useNavigate } from "react-router-dom";
-import { AuthError, AuthResponse } from "@supabase/supabase-js";
+import { AuthError, AuthResponse, AuthChangeEvent } from "@supabase/supabase-js";
 
 const AuthForm = () => {
   const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
@@ -24,7 +24,7 @@ const AuthForm = () => {
     
     checkUser();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, session) => {
       console.log("Auth state change:", event, session);
 
       if (event === "SIGNED_IN") {
@@ -42,8 +42,8 @@ const AuthForm = () => {
       if (event === "USER_UPDATED") {
         console.log("User updated - email confirmation status:", session?.user.email_confirmed_at);
         if (session?.user.email_confirmed_at) {
-          console.log("Email confirmed, redirecting to auth page");
-          navigate("/auth");
+          console.log("Email confirmed, redirecting to identification");
+          navigate("/identification");
           toast({
             title: "Email confirmé",
             description: "Votre email a été confirmé. Vous pouvez maintenant vous connecter.",
@@ -52,7 +52,7 @@ const AuthForm = () => {
       }
     });
 
-    const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
       if (event === "SIGNED_UP" && session) {
         console.log("New sign up, showing email confirmation screen");
         setEmail(session.user.email || "");
@@ -103,7 +103,6 @@ const AuthForm = () => {
       return;
     }
 
-    // Erreur par défaut
     toast({
       title: "Erreur",
       description: error.message || "Une erreur est survenue",
@@ -164,7 +163,6 @@ const AuthForm = () => {
             },
           },
         }}
-        onError={handleError}
       />
     </div>
   );

@@ -84,8 +84,8 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (!isAuthenticated) {
-    console.log("User not authenticated, redirecting to /auth");
-    return <Navigate to="/auth" replace />;
+    console.log("User not authenticated, redirecting to /identification");
+    return <Navigate to="/identification" replace />;
   }
 
   return <>{children}</>;
