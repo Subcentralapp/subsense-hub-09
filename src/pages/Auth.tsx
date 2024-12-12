@@ -7,6 +7,7 @@ import { EmailConfirmation } from "@/components/auth/EmailConfirmation";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { motion } from "framer-motion";
+import { AuthChangeEvent } from "@supabase/supabase-js";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ const Auth = () => {
     checkSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      async (event: AuthChangeEvent, session) => {
         console.log("Changement d'état d'authentification:", event);
         
         if (event === "SIGNED_IN" && session) {
