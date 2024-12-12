@@ -58,7 +58,6 @@ const AuthForm = () => {
       }
     });
 
-    // Gestion des erreurs via un autre écouteur d'événements
     const { data: { subscription: errorSubscription } } = supabase.auth.onAuthStateChange((event, session) => {
       const error = (session as unknown as { error?: AuthError })?.error;
       
@@ -80,7 +79,7 @@ const AuthForm = () => {
         if (errorMessage?.includes("User already registered")) {
           toast({
             title: "Compte existant",
-            description: "Un compte existe déjà avec cet email. Veuillez vous connecter.",
+            description: "Attention, vous possédez déjà un compte !",
             variant: "destructive",
           });
         } else if (errorMessage?.includes("Invalid login credentials")) {
