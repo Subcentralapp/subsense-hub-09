@@ -7,9 +7,13 @@ import { Loader2 } from "lucide-react";
 
 export const EmailConfirmation = ({ email }: { email: string }) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [canResend, setCanResend] = useState(true);
+  const [countdown, setCountdown] = useState(30);
   const { toast } = useToast();
 
   const handleResendEmail = async () => {
+    if (!canResend) return;
+    
     try {
       setIsLoading(true);
       console.log("Tentative de renvoi de l'email de confirmation à:", email);
@@ -23,6 +27,20 @@ export const EmailConfirmation = ({ email }: { email: string }) => {
         console.error("Erreur lors du renvoi de l'email:", error);
         throw error;
       }
+
+      setCanResend(false);
+      let timeLeft = 30;
+      setCountdown(timeLeft);
+
+      const timer = setInterval(() => {
+        timeLeft -= 1;
+        setCountdown(timeLeft);
+        
+        if (timeLeft === 0) {
+          clearInterval(timer);
+          setCanResend(true);
+        }
+      }, 1000);
 
       console.log("Email de confirmation renvoyé avec succès");
       toast({
@@ -62,7 +80,7 @@ export const EmailConfirmation = ({ email }: { email: string }) => {
         
         <Button
           onClick={handleResendEmail}
-          disabled={isLoading}
+          disabled={isLoading || !canResend}
           className="w-full"
         >
           {isLoading ? (
@@ -70,6 +88,8 @@ export const EmailConfirmation = ({ email }: { email: string }) => {
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Envoi en cours...
             </>
+          ) : !canResend ? (
+            `Réessayer dans ${countdown}s`
           ) : (
             "Renvoyer l'email de confirmation"
           )}
