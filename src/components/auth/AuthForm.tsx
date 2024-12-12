@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import EmailConfirmation from "./EmailConfirmation";
 import { useNavigate } from "react-router-dom";
-import { AuthError, AuthResponse, AuthChangeEvent } from "@supabase/supabase-js";
+import { AuthError, AuthChangeEvent } from "@supabase/supabase-js";
 
 const AuthForm = () => {
   const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
@@ -53,9 +53,9 @@ const AuthForm = () => {
     });
 
     const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
-      if (event === "SIGNED_UP" && session) {
+      if (event === "SIGNED_UP") {
         console.log("New sign up, showing email confirmation screen");
-        setEmail(session.user.email || "");
+        setEmail(session?.user.email || "");
         setShowEmailConfirmation(true);
       }
 
