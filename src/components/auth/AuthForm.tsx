@@ -13,18 +13,23 @@ const AuthForm = () => {
   const handleAuthError = (error: Error) => {
     console.error("Auth error:", error);
     
-    if (error.message.includes("Email not confirmed")) {
+    if (error.message.includes("User already registered")) {
+      toast({
+        title: "Compte existant",
+        description: "Un compte existe déjà avec cet email. Veuillez vous connecter.",
+        variant: "destructive",
+      });
+      // Force le mode connexion
+      const signInTab = document.querySelector('[role="tab"][data-state="inactive"]');
+      if (signInTab instanceof HTMLElement) {
+        signInTab.click();
+      }
+    } else if (error.message.includes("Email not confirmed")) {
       setShowEmailConfirmation(true);
     } else if (error.message.includes("Invalid login credentials")) {
       toast({
         title: "Erreur de connexion",
         description: "Email ou mot de passe incorrect",
-        variant: "destructive",
-      });
-    } else if (error.message.includes("already exists")) {
-      toast({
-        title: "Compte existant",
-        description: "Ce compte existe déjà. Veuillez vous connecter.",
         variant: "destructive",
       });
     } else {
@@ -87,6 +92,7 @@ const AuthForm = () => {
             },
           },
         }}
+        onError={handleAuthError}
       />
     </div>
   );
