@@ -42,7 +42,6 @@ const AuthForm = () => {
         setShowEmailConfirmation(false);
       }
 
-      // Gestion des erreurs d'authentification
       if (event === "USER_UPDATED") {
         console.log("User updated");
         if (session?.user.email_confirmed_at) {
@@ -55,23 +54,6 @@ const AuthForm = () => {
       subscription.unsubscribe();
     };
   }, [navigate, toast]);
-
-  const handleAuthError = (error: Error) => {
-    console.error("Auth error:", error);
-    if (error.message.includes("Email already registered")) {
-      toast({
-        title: "Email déjà utilisé",
-        description: "Cet email est déjà associé à un compte. Veuillez vous connecter.",
-        variant: "destructive",
-      });
-    } else {
-      toast({
-        title: "Erreur",
-        description: "Une erreur est survenue. Veuillez réessayer.",
-        variant: "destructive",
-      });
-    }
-  };
 
   if (showEmailConfirmation) {
     return <EmailConfirmation email={email} onBack={() => setShowEmailConfirmation(false)} />;
@@ -93,7 +75,6 @@ const AuthForm = () => {
           },
         }}
         providers={["google"]}
-        onError={handleAuthError}
         localization={{
           variables: {
             sign_up: {
