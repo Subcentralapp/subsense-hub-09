@@ -35,9 +35,27 @@ const Auth = () => {
           console.log("Utilisateur connecté, redirection vers le tableau de bord");
           navigate("/dashboard");
         } else if (event === "SIGNED_UP") {
-          console.log("Nouvel utilisateur inscrit, affichage de la confirmation d'email");
-          setEmail(session?.user?.email || null);
-          setShowConfirmation(true);
+          console.log("Nouvel utilisateur inscrit, vérification du compte existant");
+          const email = session?.user?.email;
+          if (email) {
+            const { data } = await supabase
+              .from('profiles')
+              .select('id')
+              .eq('id', session.user.id)
+              .single();
+
+            if (data) {
+              setExistingAccount(true);
+              toast({
+                title: "Compte existant",
+                description: "Un compte existe déjà avec cette adresse email. Veuillez vous connecter.",
+                variant: "destructive",
+              });
+            } else {
+              setEmail(email);
+              setShowConfirmation(true);
+            }
+          }
         } else if (event === "USER_UPDATED") {
           console.log("Utilisateur mis à jour, vérification de l'email");
           if (session?.user?.email_confirmed_at) {
@@ -51,7 +69,6 @@ const Auth = () => {
       }
     );
 
-    // Vérifier si l'utilisateur vient de confirmer son email
     const emailConfirmed = searchParams.get("email_confirmed");
     if (emailConfirmed === "true") {
       toast({
@@ -67,7 +84,8 @@ const Auth = () => {
 
   const handleEmailCheck = async (email: string) => {
     try {
-      const { data, error } = await supabase
+      console.log("Vérification de l'existence du compte pour:", email);
+      const { data } = await supabase
         .from('profiles')
         .select('id')
         .eq('id', email)
@@ -172,6 +190,11 @@ const Auth = () => {
             }}
             providers={["google"]}
             redirectTo={`${window.location.origin}/auth?email_confirmed=true`}
+            onSubmit={async (formData) => {
+              if (formData.email) {
+                await handleEmailCheck(formData.email);
+              }
+            }}
           />
         </div>
 
