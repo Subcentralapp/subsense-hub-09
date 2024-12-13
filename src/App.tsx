@@ -54,6 +54,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [shouldRedirectToOnboarding, setShouldRedirectToOnboarding] = useState<boolean | null>(null);
 
   useEffect(() => {
+    console.log("ProtectedRoute - Checking authentication...");
     let mounted = true;
 
     const checkAuth = async () => {
@@ -70,6 +71,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
         }
 
         if (!session) {
+          console.log("No session found, redirecting to identification");
           if (mounted) {
             setIsAuthenticated(false);
             setIsLoading(false);
@@ -77,7 +79,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        // Vérifier si l'utilisateur a déjà des préférences
+        console.log("Session found, checking preferences");
         const { data: preferences, error: preferencesError } = await supabase
           .from('user_preferences')
           .select('*')
@@ -90,9 +92,12 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
         if (mounted) {
           setIsAuthenticated(true);
-          // Rediriger vers l'onboarding uniquement si aucune préférence n'existe
           setShouldRedirectToOnboarding(!preferences);
           setIsLoading(false);
+          console.log("Authentication check complete", {
+            isAuthenticated: true,
+            shouldRedirectToOnboarding: !preferences
+          });
         }
       } catch (error) {
         console.error("Error in checkAuth:", error);
@@ -106,6 +111,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      console.log("Auth state changed:", _event, session?.user?.id);
       if (mounted) {
         if (!session) {
           setIsAuthenticated(false);
@@ -114,7 +120,6 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        // Vérifier les préférences lors du changement d'état d'authentification
         const { data: preferences, error: preferencesError } = await supabase
           .from('user_preferences')
           .select('*')
@@ -146,16 +151,17 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (!isAuthenticated) {
+    console.log("Not authenticated, redirecting to identification");
     return <Navigate to="/identification" replace />;
   }
 
-  // Si shouldRedirectToOnboarding est true et que nous ne sommes pas déjà sur la page d'onboarding
   if (shouldRedirectToOnboarding && window.location.pathname !== '/onboarding') {
+    console.log("Redirecting to onboarding");
     return <Navigate to="/onboarding" replace />;
   }
 
-  // Si shouldRedirectToOnboarding est false et que nous sommes sur la page d'onboarding
   if (shouldRedirectToOnboarding === false && window.location.pathname === '/onboarding') {
+    console.log("Redirecting to dashboard from onboarding");
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -184,10 +190,6 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/auth",
-        element: <Navigate to="/identification" replace />,
-      },
-      {
         path: "/identification",
         element: (
           <Suspense fallback={
@@ -214,7 +216,7 @@ const router = createBrowserRouter([
         ),
       },
       {
-        path: "/dashboard",
+        path: "/dashboard/*",
         element: (
           <ProtectedRoute>
             <Suspense fallback={

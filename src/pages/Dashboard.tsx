@@ -3,14 +3,8 @@ import { DashboardContent } from "@/components/dashboard/DashboardContent";
 import { AppsContent } from "@/components/dashboard/AppsContent";
 import { PaymentsContent } from "@/components/dashboard/PaymentsContent";
 import { CompareContent } from "@/components/dashboard/CompareContent";
-import { useState, useEffect, lazy, Suspense } from "react";
-import { useLocation } from "react-router-dom";
-
-const TechnicalStackSuggestion = lazy(() => 
-  import("@/components/TechnicalStackSuggestion").then(module => ({
-    default: module.TechnicalStackSuggestion
-  }))
-);
+import { useState, useEffect } from "react";
+import { useLocation, Routes, Route } from "react-router-dom";
 
 const Dashboard = () => {
   const location = useLocation();
@@ -22,30 +16,16 @@ const Dashboard = () => {
     }
   }, [location.state]);
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case "dashboard":
-        return <DashboardContent />;
-      case "apps":
-        return (
-          <Suspense fallback={<div>Chargement...</div>}>
-            <TechnicalStackSuggestion />
-          </Suspense>
-        );
-      case "payments":
-        return <PaymentsContent />;
-      case "compare":
-        return <CompareContent />;
-      default:
-        return <DashboardContent />;
-    }
-  };
-
   return (
     <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-8">
       <div className="space-y-4 sm:space-y-8">
         <DashboardNavigation />
-        {renderContent()}
+        <Routes>
+          <Route path="/" element={<DashboardContent />} />
+          <Route path="apps" element={<AppsContent />} />
+          <Route path="payments" element={<PaymentsContent />} />
+          <Route path="compare" element={<CompareContent />} />
+        </Routes>
       </div>
     </div>
   );
