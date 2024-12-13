@@ -4,8 +4,6 @@ import AdCarousel from "@/components/AdCarousel";
 import AdSpace from "@/components/AdSpace";
 
 export const AppsContent = () => {
-  console.log("Rendering AppsContent component");
-  
   return (
     <div className="space-y-8">
       <FeaturedApps />
