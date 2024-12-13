@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { SupportMessage } from "./SupportMessage";
 import { useState } from "react";
 
+// Ensure this matches exactly with the navigationItems from DashboardNavigation
 const navigationItems = [
   { icon: BarChart, label: "Tableau de bord", path: "/dashboard", tab: "dashboard" },
   { icon: Receipt, label: "Paiements", path: "/dashboard", tab: "payments" },
@@ -16,18 +17,19 @@ export const MobileMenu = () => {
   const [open, setOpen] = useState(false);
 
   const handleNavigation = (path: string, tab: string) => {
+    console.log(`Navigating to ${path} with tab ${tab}`);
     navigate(path, { state: { activeTab: tab } });
-    setOpen(false); // Ferme le menu après la navigation
+    setOpen(false);
   };
 
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger asChild>
-        <button className="p-2">
+        <button className="p-2" aria-label="Menu principal">
           <Menu className="h-6 w-6" />
         </button>
       </SheetTrigger>
-      <SheetContent>
+      <SheetContent side="left">
         <nav className="flex flex-col gap-4 mt-8">
           {navigationItems.map((item) => (
             <button 
