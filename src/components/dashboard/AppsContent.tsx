@@ -1,15 +1,12 @@
-import FeaturedApps from "@/components/FeaturedApps";
-import RandomAd from "@/components/RandomAd";
-import AdCarousel from "@/components/AdCarousel";
-import AdSpace from "@/components/AdSpace";
+import { TechnicalStackSuggestion } from "@/components/TechnicalStackSuggestion";
+import { Card } from "@/components/ui/card";
 
 export const AppsContent = () => {
   return (
     <div className="space-y-8">
-      <FeaturedApps />
-      <AdCarousel />
-      <AdSpace />
-      <RandomAd />
+      <Card className="p-6">
+        <TechnicalStackSuggestion />
+      </Card>
     </div>
   );
 };
