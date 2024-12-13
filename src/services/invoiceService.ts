@@ -34,7 +34,7 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
             .eq('invoice_id', inv.id)
             .order('created_at', { ascending: false })
             .limit(1)
-            .single();
+            .maybeSingle(); // Changed from single() to maybeSingle()
           
           return {
             id: inv.id.toString(),
