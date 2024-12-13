@@ -14,6 +14,7 @@ import { useOnboardingSubmit } from "@/hooks/useOnboardingSubmit";
 import { useOnboardingSteps } from "./hooks/useOnboardingSteps";
 import { OnboardingHeader } from "./components/OnboardingHeader";
 import confetti from "canvas-confetti";
+import { supabase } from "@/integrations/supabase/client";
 
 export const OnboardingForm = () => {
   const [showSkipDialog, setShowSkipDialog] = useState(false);
