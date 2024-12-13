@@ -8,13 +8,11 @@ export const supabase = createClient(
       persistSession: true,
       detectSessionInUrl: true,
       autoRefreshToken: true,
-      flowType: 'pkce',
       storage: window?.localStorage,
-      storageKey: 'supabase.auth.token',
     },
     global: {
       headers: {
-        'X-Client-Info': `subcentral@${window.location.hostname}`,
+        'X-Client-Info': `subacentral@${window.location.hostname}`,
       },
     },
   }
