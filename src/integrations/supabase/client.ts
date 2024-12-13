@@ -1,18 +1,9 @@
 import { createClient } from '@supabase/supabase-js'
 
-// Vérification de la présence des variables d'environnement
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
-
-if (!supabaseUrl || !supabaseAnonKey) {
-  console.error('Missing Supabase environment variables')
-  throw new Error('Missing Supabase environment variables. Please check your .env file.')
-}
-
 // Configuration de base de Supabase avec des options de sécurité renforcées
 export const supabase = createClient(
-  supabaseUrl,
-  supabaseAnonKey,
+  'https://qhidxbdxcymhuyquyqgk.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFoaWR4YmR4Y3ltaHV5cXV5cWdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MDk2NTk1MzAsImV4cCI6MjAyNTIzNTUzMH0.qDjvLxBHm_JQVN--7smYTHKvx-vHCWkYqXY0Dh-ebQs',
   {
     auth: {
       autoRefreshToken: true,
