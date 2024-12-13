@@ -85,6 +85,7 @@ const AuthForm = () => {
             },
           },
         }}
+        providers={["google"]}
         localization={{
           variables: {
             sign_up: {
