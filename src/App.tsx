@@ -9,7 +9,7 @@ import Index from "./pages/Index";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-// Lazy load components that aren't needed immediately
+// Lazy load components
 const Landing = lazy(() => import("./pages/Landing"));
 const Identification = lazy(() => import("./pages/Identification"));
 const Dashboard = lazy(() => import("./pages/Dashboard"));
@@ -21,7 +21,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 1000 * 60 * 5, // Data remains fresh for 5 minutes
-      cacheTime: 1000 * 60 * 30, // Keep unused data in cache for 30 minutes
+      gcTime: 1000 * 60 * 30, // Keep unused data in cache for 30 minutes
       retry: 1, // Only retry failed requests once
       refetchOnWindowFocus: false, // Don't refetch on window focus
     },
