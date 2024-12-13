@@ -19,6 +19,8 @@ const ComparisonSearch = ({ onSelect }: ComparisonSearchProps) => {
   const { toast } = useToast();
 
   useEffect(() => {
+    let isSubscribed = true;
+
     const fetchApplications = async () => {
       try {
         console.log("🔍 ComparisonSearch - Chargement des applications...");
@@ -31,6 +33,8 @@ const ComparisonSearch = ({ onSelect }: ComparisonSearchProps) => {
           console.error("❌ ComparisonSearch - Erreur lors du chargement:", error);
           throw error;
         }
+
+        if (!isSubscribed) return;
 
         const formattedData: Application[] = data.map(app => ({
           id: app.id,
@@ -49,8 +53,11 @@ const ComparisonSearch = ({ onSelect }: ComparisonSearchProps) => {
         }));
 
         console.log(`✅ ComparisonSearch - ${formattedData.length} applications chargées`);
-        setApplications(formattedData);
+        if (isSubscribed) {
+          setApplications(formattedData);
+        }
       } catch (error) {
+        if (!isSubscribed) return;
         console.error("❌ ComparisonSearch - Erreur inattendue:", error);
         toast({
           title: "Erreur",
@@ -58,11 +65,17 @@ const ComparisonSearch = ({ onSelect }: ComparisonSearchProps) => {
           variant: "destructive",
         });
       } finally {
-        setIsLoading(false);
+        if (isSubscribed) {
+          setIsLoading(false);
+        }
       }
     };
 
     fetchApplications();
+
+    return () => {
+      isSubscribed = false;
+    };
   }, [toast]);
 
   const filteredApps = applications.filter(app => 
@@ -80,7 +93,9 @@ const ComparisonSearch = ({ onSelect }: ComparisonSearchProps) => {
     }
 
     if (selectedApps.find(a => a.id === app.id)) {
-      setSelectedApps(prev => prev.filter(a => a.id !== app.id));
+      const newSelectedApps = selectedApps.filter(a => a.id !== app.id);
+      setSelectedApps(newSelectedApps);
+      onSelect(newSelectedApps);
     } else {
       const newSelectedApps = [...selectedApps, app];
       setSelectedApps(newSelectedApps);

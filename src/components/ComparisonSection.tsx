@@ -13,11 +13,16 @@ const ComparisonSection = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    let isSubscribed = true;
+
     const checkSession = async () => {
       try {
         console.log("🔍 ComparisonSection - Vérification de la session...");
         const { data: { session }, error } = await supabase.auth.getSession();
         
+        // Vérifier si le composant est toujours monté
+        if (!isSubscribed) return;
+
         if (error) {
           console.error("❌ ComparisonSection - Erreur lors de la vérification de la session:", error);
           toast({
@@ -37,18 +42,23 @@ const ComparisonSection = () => {
 
         console.log("✅ ComparisonSection - Session active trouvée:", session.user.email);
       } catch (error) {
+        if (!isSubscribed) return;
         console.error("❌ ComparisonSection - Erreur inattendue:", error);
         navigate("/identification", { replace: true });
       } finally {
-        setIsLoading(false);
+        if (isSubscribed) {
+          setIsLoading(false);
+        }
       }
     };
 
     // Vérifier la session immédiatement
     checkSession();
 
-    // Écouter les changements d'état d'authentification
+    // Écouter les changements d'état d'authentification avec un timeout de sécurité
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!isSubscribed) return;
+      
       console.log("🔄 ComparisonSection - État de l'authentification changé:", event);
       
       if (event === 'SIGNED_OUT' || !session) {
@@ -57,7 +67,9 @@ const ComparisonSection = () => {
       }
     });
 
+    // Cleanup function
     return () => {
+      isSubscribed = false;
       subscription.unsubscribe();
     };
   }, [navigate, toast]);
