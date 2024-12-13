@@ -1,4 +1,4 @@
-import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import Index from "@/pages/Index";
 import Landing from "@/pages/Landing";
@@ -11,7 +11,7 @@ import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />,
+    element: <Layout><Outlet /></Layout>,
     errorElement: <ErrorBoundary />,
     children: [
       { path: "/", element: <Index /> },

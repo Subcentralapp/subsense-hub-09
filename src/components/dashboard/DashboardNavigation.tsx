@@ -9,7 +9,8 @@ export const DashboardNavigation = () => {
   const activeTab = state?.activeTab || "dashboard";
 
   const handleNavigation = (tab: string) => {
-    navigate("/dashboard", { state: { activeTab: tab } });
+    const path = tab === "dashboard" ? "/dashboard" : `/dashboard/${tab}`;
+    navigate(path, { state: { activeTab: tab } });
   };
 
   return (
