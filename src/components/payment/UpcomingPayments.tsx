@@ -13,7 +13,7 @@ const UpcomingPayments = () => {
   const { toast } = useToast();
   const [expandedId, setExpandedId] = useState<number | null>(null);
 
-  const { data: subscriptions, isLoading, error } = useQuery({
+  const { data: subscriptions, isLoading, error, refetch } = useQuery({
     queryKey: ['upcoming-payments'],
     queryFn: async () => {
       console.log("Fetching upcoming payments...");
@@ -34,22 +34,38 @@ const UpcomingPayments = () => {
 
       if (fetchError) {
         console.error("Error fetching upcoming payments:", fetchError);
-        toast({
-          title: "Erreur",
-          description: "Erreur lors de la récupération des paiements à venir.",
-          variant: "destructive",
-        });
-        return [];
+        throw fetchError;
       }
 
       console.log("Fetched upcoming payments:", data);
       return data || [];
     },
+    staleTime: 30000, // Consider data fresh for 30 seconds
+    retry: 2, // Retry failed requests twice
+    refetchOnWindowFocus: false, // Don't refetch on window focus
+    refetchOnMount: true, // Always refetch on mount
   });
 
   const toggleDetails = (id: number) => {
     setExpandedId(expandedId === id ? null : id);
   };
+
+  if (error) {
+    return (
+      <Card className="p-6">
+        <div className="text-center space-y-4">
+          <p className="text-red-500">Une erreur est survenue lors de la récupération des paiements à venir.</p>
+          <Button 
+            onClick={() => refetch()} 
+            variant="outline"
+            className="mx-auto"
+          >
+            Réessayer
+          </Button>
+        </div>
+      </Card>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -61,18 +77,10 @@ const UpcomingPayments = () => {
     );
   }
 
-  if (error) {
-    return (
-      <Card className="p-6">
-        <p className="text-red-500">Une erreur est survenue lors de la récupération des paiements à venir.</p>
-      </Card>
-    );
-  }
-
   if (!subscriptions || subscriptions.length === 0) {
     return (
       <Card className="p-6">
-        <p className="text-gray-500">Aucun paiement à venir pour le moment.</p>
+        <p className="text-gray-500 text-center">Aucun paiement à venir pour le moment.</p>
       </Card>
     );
   }
