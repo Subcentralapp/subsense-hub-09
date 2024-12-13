@@ -18,16 +18,17 @@ export const Header = () => {
     // Check current session on mount
     const checkUser = async () => {
       try {
+        console.log("🔍 Vérification de la session au montage...");
         const { data: { session }, error } = await supabase.auth.getSession();
         if (error) {
-          console.error("Erreur lors de la vérification de la session:", error);
+          console.error("❌ Erreur lors de la vérification de la session:", error);
           setUser(null);
           return;
         }
-        console.log("Session actuelle:", session);
+        console.log("✅ Session actuelle:", session);
         setUser(session?.user || null);
       } catch (error) {
-        console.error("Erreur lors de la vérification de la session:", error);
+        console.error("❌ Erreur lors de la vérification de la session:", error);
         setUser(null);
       } finally {
         setIsLoading(false);
@@ -37,12 +38,12 @@ export const Header = () => {
     checkUser();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state changed:", event);
+      console.log("🔄 État de l'authentification changé:", event);
       if (event === "SIGNED_IN") {
-        console.log("User signed in:", session?.user);
+        console.log("✅ Utilisateur connecté:", session?.user);
         setUser(session?.user);
       } else if (event === "SIGNED_OUT") {
-        console.log("User signed out");
+        console.log("👋 Utilisateur déconnecté");
         setUser(null);
         navigate("/landing", { replace: true });
       }
