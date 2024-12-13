@@ -5,6 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CustomSignUpForm } from "@/components/auth/CustomSignUpForm";
 
 const Identification = () => {
   const navigate = useNavigate();
@@ -93,38 +94,7 @@ const Identification = () => {
             </TabsContent>
             
             <TabsContent value="signup">
-              <Auth
-                supabaseClient={supabase}
-                view="sign_up"
-                appearance={{
-                  theme: ThemeSupa,
-                  variables: {
-                    default: {
-                      colors: {
-                        brand: '#2563eb',
-                        brandAccent: '#1d4ed8',
-                      },
-                    },
-                  },
-                }}
-                providers={["google"]}
-                redirectTo={`${window.location.origin}/auth/callback`}
-                localization={{
-                  variables: {
-                    sign_up: {
-                      email_label: "Email",
-                      password_label: "Mot de passe",
-                      email_input_placeholder: "Votre email",
-                      password_input_placeholder: "Votre mot de passe (min. 8 caractères, 1 majuscule, 1 chiffre)",
-                      button_label: "S'inscrire",
-                      loading_button_label: "Inscription en cours...",
-                      social_provider_text: "Continuer avec {{provider}}",
-                      link_text: "Vous n'avez pas de compte ? Inscrivez-vous",
-                      confirmation_text: "Vérifiez vos emails pour confirmer votre inscription",
-                    },
-                  },
-                }}
-              />
+              <CustomSignUpForm />
             </TabsContent>
           </Tabs>
         </div>
