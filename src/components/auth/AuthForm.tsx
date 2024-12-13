@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import EmailConfirmation from "./EmailConfirmation";
 import { useNavigate } from "react-router-dom";
 import { EmailConfirmationHandler } from "./EmailConfirmationHandler";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const AuthForm = () => {
   const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
@@ -72,54 +73,89 @@ const AuthForm = () => {
   return (
     <div className="bg-background rounded-lg border p-8">
       <EmailConfirmationHandler />
-      <Auth
-        supabaseClient={supabase}
-        appearance={{
-          theme: ThemeSupa,
-          variables: {
-            default: {
-              colors: {
-                brand: '#2563eb',
-                brandAccent: '#1d4ed8',
+      <Tabs defaultValue="signin" className="w-full">
+        <TabsList className="grid w-full grid-cols-2 mb-8">
+          <TabsTrigger value="signin">Connexion</TabsTrigger>
+          <TabsTrigger value="signup">Inscription</TabsTrigger>
+        </TabsList>
+        
+        <TabsContent value="signin">
+          <Auth
+            supabaseClient={supabase}
+            view="sign_in"
+            appearance={{
+              theme: ThemeSupa,
+              variables: {
+                default: {
+                  colors: {
+                    brand: '#2563eb',
+                    brandAccent: '#1d4ed8',
+                  },
+                },
               },
-            },
-          },
-        }}
-        providers={["google"]}
-        localization={{
-          variables: {
-            sign_up: {
-              email_label: "Email",
-              password_label: "Mot de passe",
-              email_input_placeholder: "Votre email",
-              password_input_placeholder: "Votre mot de passe",
-              button_label: "S'inscrire",
-              loading_button_label: "Inscription en cours...",
-              social_provider_text: "Continuer avec {{provider}}",
-              link_text: "Vous n'avez pas de compte ? Inscrivez-vous",
-              confirmation_text: "Vérifiez vos emails pour confirmer votre inscription",
-            },
-            sign_in: {
-              email_label: "Email",
-              password_label: "Mot de passe",
-              email_input_placeholder: "Votre email",
-              password_input_placeholder: "Votre mot de passe",
-              button_label: "Se connecter",
-              loading_button_label: "Connexion en cours...",
-              social_provider_text: "Continuer avec {{provider}}",
-              link_text: "Vous avez déjà un compte ? Connectez-vous",
-            },
-            forgotten_password: {
-              email_label: "Email",
-              password_label: "Mot de passe",
-              button_label: "Réinitialiser le mot de passe",
-              loading_button_label: "Envoi en cours...",
-              link_text: "Mot de passe oublié ?",
-              confirmation_text: "Vérifiez vos emails pour réinitialiser votre mot de passe",
-            },
-          },
-        }}
-      />
+            }}
+            providers={["google"]}
+            localization={{
+              variables: {
+                sign_in: {
+                  email_label: "Email",
+                  password_label: "Mot de passe",
+                  email_input_placeholder: "Votre email",
+                  password_input_placeholder: "Votre mot de passe",
+                  button_label: "Se connecter",
+                  loading_button_label: "Connexion en cours...",
+                  social_provider_text: "Continuer avec {{provider}}",
+                  link_text: "Vous avez déjà un compte ? Connectez-vous",
+                },
+                forgotten_password: {
+                  email_label: "Email",
+                  password_label: "Mot de passe",
+                  button_label: "Réinitialiser le mot de passe",
+                  loading_button_label: "Envoi en cours...",
+                  link_text: "Mot de passe oublié ?",
+                  confirmation_text: "Vérifiez vos emails pour réinitialiser votre mot de passe",
+                },
+              },
+            }}
+          />
+        </TabsContent>
+        
+        <TabsContent value="signup">
+          <Auth
+            supabaseClient={supabase}
+            view="sign_up"
+            appearance={{
+              theme: ThemeSupa,
+              variables: {
+                default: {
+                  colors: {
+                    brand: '#2563eb',
+                    brandAccent: '#1d4ed8',
+                  },
+                },
+              },
+            }}
+            providers={["google"]}
+            localization={{
+              variables: {
+                sign_up: {
+                  email_label: "Email",
+                  password_label: "Mot de passe",
+                  email_input_placeholder: "Votre email",
+                  password_input_placeholder: "Votre mot de passe (min. 8 caractères, 1 majuscule, 1 chiffre)",
+                  phone_label: "Téléphone",
+                  phone_input_placeholder: "Votre numéro de téléphone",
+                  button_label: "S'inscrire",
+                  loading_button_label: "Inscription en cours...",
+                  social_provider_text: "Continuer avec {{provider}}",
+                  link_text: "Vous n'avez pas de compte ? Inscrivez-vous",
+                  confirmation_text: "Vérifiez vos emails pour confirmer votre inscription",
+                },
+              },
+            }}
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };
