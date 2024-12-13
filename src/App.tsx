@@ -16,14 +16,14 @@ const Dashboard = lazy(() => import("./pages/Dashboard"));
 const Profile = lazy(() => import("./pages/Profile"));
 const Onboarding = lazy(() => import("./pages/Onboarding"));
 
-// Configure QueryClient with performance optimizations
+// Configure QueryClient
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 5, // Data remains fresh for 5 minutes
-      gcTime: 1000 * 60 * 30, // Keep unused data in cache for 30 minutes
-      retry: 1, // Only retry failed requests once
-      refetchOnWindowFocus: false, // Don't refetch on window focus
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 30,
+      retry: 1,
+      refetchOnWindowFocus: false,
     },
   },
 });
@@ -51,16 +51,17 @@ function Layout() {
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [shouldRedirectToOnboarding, setShouldRedirectToOnboarding] = useState<boolean | null>(null);
 
   useEffect(() => {
     let mounted = true;
 
     const checkAuth = async () => {
       try {
-        const { data: { session }, error } = await supabase.auth.getSession();
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
-        if (error) {
-          console.error("Session check error:", error);
+        if (sessionError) {
+          console.error("Session check error:", sessionError);
           if (mounted) {
             setIsAuthenticated(false);
             setIsLoading(false);
@@ -68,8 +69,29 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
           return;
         }
 
+        if (!session) {
+          if (mounted) {
+            setIsAuthenticated(false);
+            setIsLoading(false);
+          }
+          return;
+        }
+
+        // Vérifier si l'utilisateur a déjà des préférences
+        const { data: preferences, error: preferencesError } = await supabase
+          .from('user_preferences')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+
+        if (preferencesError && preferencesError.code !== 'PGRST116') {
+          console.error("Error checking preferences:", preferencesError);
+        }
+
         if (mounted) {
-          setIsAuthenticated(!!session);
+          setIsAuthenticated(true);
+          // Rediriger vers l'onboarding uniquement si aucune préférence n'existe
+          setShouldRedirectToOnboarding(!preferences);
           setIsLoading(false);
         }
       } catch (error) {
@@ -83,9 +105,28 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
     checkAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (mounted) {
-        setIsAuthenticated(!!session);
+        if (!session) {
+          setIsAuthenticated(false);
+          setShouldRedirectToOnboarding(null);
+          setIsLoading(false);
+          return;
+        }
+
+        // Vérifier les préférences lors du changement d'état d'authentification
+        const { data: preferences, error: preferencesError } = await supabase
+          .from('user_preferences')
+          .select('*')
+          .eq('id', session.user.id)
+          .single();
+
+        if (preferencesError && preferencesError.code !== 'PGRST116') {
+          console.error("Error checking preferences:", preferencesError);
+        }
+
+        setIsAuthenticated(true);
+        setShouldRedirectToOnboarding(!preferences);
         setIsLoading(false);
       }
     });
@@ -106,6 +147,16 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
   if (!isAuthenticated) {
     return <Navigate to="/identification" replace />;
+  }
+
+  // Si shouldRedirectToOnboarding est true et que nous ne sommes pas déjà sur la page d'onboarding
+  if (shouldRedirectToOnboarding && window.location.pathname !== '/onboarding') {
+    return <Navigate to="/onboarding" replace />;
+  }
+
+  // Si shouldRedirectToOnboarding est false et que nous sommes sur la page d'onboarding
+  if (shouldRedirectToOnboarding === false && window.location.pathname === '/onboarding') {
+    return <Navigate to="/dashboard" replace />;
   }
 
   return <>{children}</>;
