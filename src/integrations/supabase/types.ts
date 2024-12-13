@@ -263,6 +263,42 @@ export type Database = {
         }
         Relationships: []
       }
+      performance_logs: {
+        Row: {
+          endpoint: string
+          error_message: string | null
+          id: number
+          memory_usage: number | null
+          metadata: Json | null
+          response_time: number
+          status_code: number | null
+          timestamp: string | null
+          user_id: string | null
+        }
+        Insert: {
+          endpoint: string
+          error_message?: string | null
+          id?: number
+          memory_usage?: number | null
+          metadata?: Json | null
+          response_time: number
+          status_code?: number | null
+          timestamp?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          endpoint?: string
+          error_message?: string | null
+          id?: number
+          memory_usage?: number | null
+          metadata?: Json | null
+          response_time?: number
+          status_code?: number | null
+          timestamp?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           account_locked: boolean | null
@@ -479,6 +515,10 @@ export type Database = {
         Returns: undefined
       }
       clean_old_login_attempts: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      clean_old_performance_logs: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }

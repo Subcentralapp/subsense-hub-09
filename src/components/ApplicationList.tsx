@@ -8,6 +8,7 @@ import SubscriptionCustomizeDialog from "./dialog/SubscriptionCustomizeDialog";
 import { useState } from "react";
 import { useApplicationSearch } from "@/hooks/useApplicationSearch";
 import { useQuery } from "@tanstack/react-query";
+import { usePerformanceMonitoring } from "@/hooks/usePerformanceMonitoring";
 
 const ApplicationList = () => {
   const { toast } = useToast();
@@ -16,10 +17,31 @@ const ApplicationList = () => {
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const { fetchApplications, isLoading: isFetching } = useApplicationSearch();
+  const { logPerformance } = usePerformanceMonitoring();
 
   const { data: applications, isLoading } = useQuery({
     queryKey: ["applications"],
-    queryFn: fetchApplications,
+    queryFn: async () => {
+      const startTime = performance.now();
+      try {
+        const apps = await fetchApplications();
+        logPerformance({
+          endpoint: "fetchApplications",
+          startTime,
+          statusCode: 200,
+          metadata: { applicationsCount: apps?.length }
+        });
+        return apps;
+      } catch (error) {
+        logPerformance({
+          endpoint: "fetchApplications",
+          startTime,
+          statusCode: 500,
+          error
+        });
+        throw error;
+      }
+    },
     staleTime: 5 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
     refetchOnWindowFocus: false,
@@ -36,6 +58,7 @@ const ApplicationList = () => {
     isTrial: boolean,
     trialEndDate: Date | null
   ) => {
+    const startTime = performance.now();
     try {
       const { data: { user } } = await supabase.auth.getUser();
 
@@ -62,6 +85,13 @@ const ApplicationList = () => {
 
       await queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
 
+      logPerformance({
+        endpoint: "addSubscription",
+        startTime,
+        statusCode: 200,
+        metadata: { appName: selectedApp.name }
+      });
+
       toast({
         title: "Abonnement ajouté",
         description: `L'abonnement à ${selectedApp.name} a été ajouté avec succès${
@@ -73,6 +103,13 @@ const ApplicationList = () => {
       setIsDialogOpen(false);
       navigate("/dashboard");
     } catch (error) {
+      logPerformance({
+        endpoint: "addSubscription",
+        startTime,
+        statusCode: 500,
+        error
+      });
+
       console.error("Error adding subscription:", error);
       toast({
         title: "Erreur",
