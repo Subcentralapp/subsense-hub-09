@@ -9,7 +9,13 @@ const queryClient = new QueryClient({
     queries: {
       staleTime: 1000 * 60 * 5, // 5 minutes
       gcTime: 1000 * 60 * 30, // 30 minutes
-      retry: 1,
+      retry: (failureCount, error) => {
+        // Ne pas réessayer si l'erreur est liée à l'authentification
+        if (error instanceof Error && error.message.includes('Authentication')) {
+          return false;
+        }
+        return failureCount < 1;
+      },
       refetchOnWindowFocus: false,
       refetchOnMount: true,
     },
