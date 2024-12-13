@@ -33,40 +33,46 @@
   html {
     -webkit-text-size-adjust: none;
     text-size-adjust: none;
-    @apply overflow-x-hidden;
+    @apply overflow-x-hidden scroll-smooth;
   }
 
   body {
     @apply bg-background text-foreground antialiased overflow-x-hidden min-h-screen w-full;
   }
 
-  input, textarea, select {
-    font-size: 16px !important;
-    @apply [text-size-adjust:none];
+  /* Optimisation des performances de rendu */
+  @media (prefers-reduced-motion: no-preference) {
+    :root {
+      scroll-behavior: smooth;
+    }
   }
 
+  /* Optimisation des inputs pour mobile */
+  input, textarea, select {
+    font-size: 16px !important;
+    @apply [text-size-adjust:none] will-change-auto;
+  }
+
+  /* Optimisation des animations */
   .glass-card {
     @apply bg-white/80 backdrop-blur-sm border border-white/20 shadow-lg;
   }
 
   .hover-scale {
-    @apply transition-transform duration-200 hover:scale-105;
+    @apply transition-transform duration-200 hover:scale-105 will-change-transform;
   }
 
   .fade-in {
-    @apply animate-fade-in;
+    @apply animate-fade-in will-change-opacity;
   }
 
   @keyframes marquee {
-    0% {
-      transform: translateX(100%);
-    }
-    100% {
-      transform: translateX(-100%);
-    }
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
   }
 
   .animate-marquee {
     animation: marquee 15s linear infinite;
+    will-change: transform;
   }
 }

@@ -1,19 +1,32 @@
+import { lazy, Suspense } from "react";
 import { createBrowserRouter, RouterProvider, Outlet, Navigate } from "react-router-dom";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Landing from "./pages/Landing";
-import Identification from "./pages/Identification";
-import Dashboard from "./pages/Dashboard";
-import Profile from "./pages/Profile";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import Index from "./pages/Index";
-import Onboarding from "./pages/Onboarding";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-const queryClient = new QueryClient();
+// Lazy load components that aren't needed immediately
+const Landing = lazy(() => import("./pages/Landing"));
+const Identification = lazy(() => import("./pages/Identification"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Profile = lazy(() => import("./pages/Profile"));
+const Onboarding = lazy(() => import("./pages/Onboarding"));
+
+// Configure QueryClient with performance optimizations
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5, // Data remains fresh for 5 minutes
+      cacheTime: 1000 * 60 * 30, // Keep unused data in cache for 30 minutes
+      retry: 1, // Only retry failed requests once
+      refetchOnWindowFocus: false, // Don't refetch on window focus
+    },
+  },
+});
 
 function Layout() {
   return (
@@ -21,7 +34,13 @@ function Layout() {
       <Header />
       <main className="flex-grow w-full">
         <div className="w-full mx-auto px-4 sm:px-6 lg:px-8 pt-16">
-          <Outlet />
+          <Suspense fallback={
+            <div className="flex items-center justify-center min-h-[60vh]">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+          }>
+            <Outlet />
+          </Suspense>
         </div>
       </main>
       <Footer />
@@ -50,7 +69,6 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
         }
 
         if (mounted) {
-          console.log("Session check complete - authenticated:", !!session);
           setIsAuthenticated(!!session);
           setIsLoading(false);
         }
@@ -67,7 +85,6 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (mounted) {
-        console.log("Auth state changed - session exists:", !!session);
         setIsAuthenticated(!!session);
         setIsLoading(false);
       }
@@ -80,11 +97,14 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }, []);
 
   if (isLoading) {
-    return null;
+    return (
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
   }
 
   if (!isAuthenticated) {
-    console.log("User not authenticated, redirecting to /identification");
     return <Navigate to="/identification" replace />;
   }
 
@@ -102,7 +122,15 @@ const router = createBrowserRouter([
       },
       {
         path: "/landing",
-        element: <Landing />,
+        element: (
+          <Suspense fallback={
+            <div className="flex items-center justify-center min-h-[60vh]">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+          }>
+            <Landing />
+          </Suspense>
+        ),
       },
       {
         path: "/auth",
@@ -110,13 +138,27 @@ const router = createBrowserRouter([
       },
       {
         path: "/identification",
-        element: <Identification />,
+        element: (
+          <Suspense fallback={
+            <div className="flex items-center justify-center min-h-[60vh]">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+            </div>
+          }>
+            <Identification />
+          </Suspense>
+        ),
       },
       {
         path: "/onboarding",
         element: (
           <ProtectedRoute>
-            <Onboarding />
+            <Suspense fallback={
+              <div className="flex items-center justify-center min-h-[60vh]">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            }>
+              <Onboarding />
+            </Suspense>
           </ProtectedRoute>
         ),
       },
@@ -124,7 +166,13 @@ const router = createBrowserRouter([
         path: "/dashboard",
         element: (
           <ProtectedRoute>
-            <Dashboard />
+            <Suspense fallback={
+              <div className="flex items-center justify-center min-h-[60vh]">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            }>
+              <Dashboard />
+            </Suspense>
           </ProtectedRoute>
         ),
       },
@@ -132,7 +180,13 @@ const router = createBrowserRouter([
         path: "/profile",
         element: (
           <ProtectedRoute>
-            <Profile />
+            <Suspense fallback={
+              <div className="flex items-center justify-center min-h-[60vh]">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            }>
+              <Profile />
+            </Suspense>
           </ProtectedRoute>
         ),
       },
