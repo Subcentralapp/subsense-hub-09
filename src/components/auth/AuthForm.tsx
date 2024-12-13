@@ -136,6 +136,13 @@ const AuthForm = () => {
               },
             }}
             providers={["google"]}
+            options={{
+              emailRedirectTo: `${window.location.origin}/auth/callback`,
+              data: {
+                name: '',
+                phone: ''
+              }
+            }}
             localization={{
               variables: {
                 sign_up: {
@@ -143,13 +150,15 @@ const AuthForm = () => {
                   password_label: "Mot de passe",
                   email_input_placeholder: "Votre email",
                   password_input_placeholder: "Votre mot de passe (min. 8 caractères, 1 majuscule, 1 chiffre)",
-                  phone_label: "Téléphone",
-                  phone_input_placeholder: "Votre numéro de téléphone",
                   button_label: "S'inscrire",
                   loading_button_label: "Inscription en cours...",
                   social_provider_text: "Continuer avec {{provider}}",
                   link_text: "Vous n'avez pas de compte ? Inscrivez-vous",
                   confirmation_text: "Vérifiez vos emails pour confirmer votre inscription",
+                  name_label: "Nom complet",
+                  name_input_placeholder: "Votre nom complet",
+                  phone_label: "Téléphone",
+                  phone_input_placeholder: "Votre numéro de téléphone"
                 },
               },
             }}
