@@ -43,23 +43,74 @@ export const OnboardingForm = () => {
     setShowSkipDialog(true);
   };
 
-  const handleConfirmSkip = () => {
-    navigate("/dashboard");
-    toast({
-      title: "Bienvenue !",
-      description: "Vous pouvez toujours compléter votre profil plus tard dans les paramètres.",
-    });
+  const handleConfirmSkip = async () => {
+    try {
+      console.log("🔄 Redirection vers le dashboard après skip...");
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        console.error("❌ Pas d'utilisateur trouvé lors du skip");
+        return;
+      }
+
+      // Créer des préférences par défaut pour éviter de revenir à l'onboarding
+      const { error: preferencesError } = await supabase
+        .from('user_preferences')
+        .upsert({
+          id: user.id,
+          wants_recommendations: false,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        });
+
+      if (preferencesError) {
+        console.error("❌ Erreur lors de la création des préférences par défaut:", preferencesError);
+        throw preferencesError;
+      }
+
+      setShowSkipDialog(false);
+      toast({
+        title: "Bienvenue !",
+        description: "Vous pouvez toujours compléter votre profil plus tard dans les paramètres.",
+      });
+      
+      // Utiliser replace: true pour éviter l'empilement dans l'historique
+      navigate("/dashboard", { replace: true });
+    } catch (error) {
+      console.error("❌ Erreur lors du skip:", error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue. Veuillez réessayer.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleFinalSubmit = async () => {
-    console.log("Submitting form data:", formData);
-    await handleSubmit(formData);
-    confetti({
-      particleCount: 100,
-      spread: 70,
-      origin: { y: 0.6 }
-    });
-    setShowWelcomeDialog(true);
+    try {
+      console.log("📝 Soumission du formulaire:", formData);
+      await handleSubmit(formData);
+      
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+      
+      setShowWelcomeDialog(true);
+      
+      // Rediriger vers le dashboard après un court délai
+      setTimeout(() => {
+        navigate("/dashboard", { replace: true });
+      }, 2000);
+    } catch (error) {
+      console.error("❌ Erreur lors de la soumission:", error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la sauvegarde de vos préférences.",
+        variant: "destructive",
+      });
+    }
   };
 
   const currentStepConfig = steps[currentStep];
