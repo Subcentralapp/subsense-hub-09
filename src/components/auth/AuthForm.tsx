@@ -137,6 +137,28 @@ const AuthForm = () => {
             }}
             providers={["google"]}
             redirectTo={`${window.location.origin}/auth/callback`}
+            options={{
+              data: {
+                display_name: '',
+                phone: '',
+              },
+              signUpFields: [
+                {
+                  name: 'display_name',
+                  required: true,
+                  type: 'text',
+                  label: "Nom d'affichage",
+                  placeholder: "Votre nom d'affichage",
+                },
+                {
+                  name: 'phone',
+                  required: false,
+                  type: 'tel',
+                  label: 'Téléphone',
+                  placeholder: 'Votre numéro de téléphone (optionnel)',
+                },
+              ],
+            }}
             localization={{
               variables: {
                 sign_up: {
@@ -152,22 +174,6 @@ const AuthForm = () => {
                 },
               },
             }}
-            extendedSignUpFields={[
-              {
-                name: 'display_name',
-                required: true,
-                type: 'text',
-                label: "Nom d'affichage",
-                placeholder: "Votre nom d'affichage",
-              },
-              {
-                name: 'phone',
-                required: false,
-                type: 'tel',
-                label: 'Téléphone',
-                placeholder: 'Votre numéro de téléphone (optionnel)',
-              },
-            ]}
           />
         </TabsContent>
       </Tabs>
