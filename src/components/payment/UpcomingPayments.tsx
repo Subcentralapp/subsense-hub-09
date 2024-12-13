@@ -28,11 +28,11 @@ export const UpcomingPayments = () => {
       console.log("Fetched upcoming payments:", data);
       return data || [];
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 5 * 60 * 1000, // Cache pendant 5 minutes
     gcTime: 10 * 60 * 1000,
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-    refetchOnWindowFocus: false,
+    refetchOnWindowFocus: false, // Désactive le rechargement au focus de la fenêtre
     refetchOnMount: true,
     meta: {
       errorHandler: (error: Error) => {

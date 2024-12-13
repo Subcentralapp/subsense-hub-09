@@ -1,5 +1,6 @@
 import { Application } from "@/types/application";
 import { SubscriptionCard } from "./SubscriptionCard";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface Subscription {
   id: number;
@@ -23,6 +24,8 @@ export const SubscriptionGrid = ({
   onDelete, 
   applications 
 }: SubscriptionGridProps) => {
+  const queryClient = useQueryClient();
+
   const findAlternatives = (subscription: Subscription, allApps: Application[]) => {
     if (!subscription?.name || !allApps?.length) return null;
     
@@ -50,13 +53,19 @@ export const SubscriptionGrid = ({
     };
   };
 
+  const handleEdit = async (subscription: Subscription) => {
+    onEdit(subscription);
+    // Invalider le cache pour forcer un rechargement
+    await queryClient.invalidateQueries({ queryKey: ["upcomingPayments"] });
+  };
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
       {subscriptions.map((subscription) => (
         <SubscriptionCard
           key={subscription.id}
           subscription={subscription}
-          onEdit={onEdit}
+          onEdit={handleEdit}
           onDelete={onDelete}
           alternative={applications ? findAlternatives(subscription, applications) : null}
         />
