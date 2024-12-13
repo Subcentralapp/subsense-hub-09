@@ -179,30 +179,6 @@ export type Database = {
         }
         Relationships: []
       }
-      Invoices: {
-        Row: {
-          created_at: string | null
-          file_path: string | null
-          id: number
-          Names: string | null
-          url: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          file_path?: string | null
-          id?: number
-          Names?: string | null
-          url?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          file_path?: string | null
-          id?: number
-          Names?: string | null
-          url?: string | null
-        }
-        Relationships: []
-      }
       login_attempts: {
         Row: {
           attempt_time: string | null
@@ -227,21 +203,30 @@ export type Database = {
         }
         Relationships: []
       }
-      Métadonné: {
+      metadata: {
         Row: {
+          created_at: string | null
           date: Json | null
-          Name: number
-          Price: number
+          id: number
+          name: string
+          price: number
+          user_id: string
         }
         Insert: {
+          created_at?: string | null
           date?: Json | null
-          Name?: number
-          Price: number
+          id?: number
+          name: string
+          price: number
+          user_id: string
         }
         Update: {
+          created_at?: string | null
           date?: Json | null
-          Name?: number
-          Price?: number
+          id?: number
+          name?: string
+          price?: number
+          user_id?: string
         }
         Relationships: []
       }
