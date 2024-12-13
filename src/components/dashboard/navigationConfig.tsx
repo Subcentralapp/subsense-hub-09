@@ -1,24 +1,24 @@
-import { LayoutDashboard, Apps, Receipt, Scale } from "lucide-react";
+import { LayoutDashboard, AppWindow, Receipt, Scale } from "lucide-react";
 
-export const navigationConfig = [
+export const navigationItems = [
   {
-    title: "Tableau de bord",
-    href: "/dashboard",
+    label: "Tableau de bord",
     icon: LayoutDashboard,
+    path: "/dashboard"
   },
   {
-    title: "Applications",
-    href: "/dashboard/apps",
-    icon: Apps,
+    label: "Applications",
+    icon: AppWindow,
+    path: "/dashboard/apps"
   },
   {
-    title: "Paiements",
-    href: "/dashboard/payments",
+    label: "Paiements",
     icon: Receipt,
+    path: "/dashboard/payments"
   },
   {
-    title: "Comparer",
-    href: "/dashboard/compare",
+    label: "Comparer",
     icon: Scale,
-  },
+    path: "/dashboard/compare"
+  }
 ];
