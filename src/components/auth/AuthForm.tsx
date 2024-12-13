@@ -152,6 +152,22 @@ const AuthForm = () => {
                 },
               },
             }}
+            extendedSignUpFields={[
+              {
+                name: 'display_name',
+                required: true,
+                type: 'text',
+                label: "Nom d'affichage",
+                placeholder: "Votre nom d'affichage",
+              },
+              {
+                name: 'phone',
+                required: false,
+                type: 'tel',
+                label: 'Téléphone',
+                placeholder: 'Votre numéro de téléphone (optionnel)',
+              },
+            ]}
           />
         </TabsContent>
       </Tabs>
