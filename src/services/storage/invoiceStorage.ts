@@ -22,7 +22,7 @@ export const uploadInvoiceFile = async (file: File) => {
       .insert([{
         names: file.name,
         created_at: new Date().toISOString(),
-        user_id: user.id
+        user_id: user.id  // Make sure to set the user_id
       }])
       .select()
       .single();
@@ -124,9 +124,16 @@ export const fetchInvoices = async () => {
   try {
     console.log('Fetching invoices from database...');
     
+    // Get the current user
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      throw new Error('User must be authenticated to fetch invoices');
+    }
+
     const { data, error } = await supabase
       .from('invoices')
       .select('*')
+      .eq('user_id', user.id)  // Only fetch invoices for the current user
       .order('created_at', { ascending: false });
 
     if (error) {
