@@ -34,22 +34,10 @@ const routes = [
     element: <Layout />,
     errorElement: <ErrorBoundary />,
     children: [
-      { 
-        path: "/", 
-        element: <Index /> 
-      },
-      { 
-        path: "/landing",
-        element: <Landing />
-      },
-      {
-        path: "/identification",
-        element: <Identification />
-      },
-      {
-        path: "/auth",
-        element: <Identification />
-      },
+      { path: "/", element: <Index /> },
+      { path: "/landing", element: <Landing /> },
+      { path: "/identification", element: <Identification /> },
+      { path: "/auth", element: <Identification /> },
       {
         path: "/onboarding",
         element: (
@@ -59,7 +47,7 @@ const routes = [
         )
       },
       {
-        path: "/dashboard/*",
+        path: "/dashboard",
         element: (
           <ProtectedRoute>
             <Dashboard />
@@ -78,7 +66,6 @@ const routes = [
   }
 ];
 
-// Composant pour gérer les erreurs de route
 function ErrorBoundary() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
