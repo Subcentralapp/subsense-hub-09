@@ -11,7 +11,11 @@ export const supabase = createClient(
       flowType: 'pkce',
       storage: window?.localStorage,
       storageKey: 'supabase.auth.token',
-      redirectTo: 'https://subcentral.fr/auth?email_confirmed=true'
-    }
+    },
+    global: {
+      headers: {
+        'X-Client-Info': `subcentral-${window.location.hostname}`,
+      },
+    },
   }
 )
