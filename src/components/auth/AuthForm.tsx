@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import EmailConfirmation from "./EmailConfirmation";
 import { useNavigate } from "react-router-dom";
-import { AuthError } from "@supabase/supabase-js";
+import { EmailConfirmationHandler } from "./EmailConfirmationHandler";
 
 const AuthForm = () => {
   const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
@@ -24,82 +24,38 @@ const AuthForm = () => {
       }
 
       if (session?.user) {
-        // Récupérer une session fraîche pour s'assurer d'avoir les dernières informations
-        const { data: { user }, error: refreshError } = await supabase.auth.refreshSession();
-        
-        if (refreshError) {
-          console.error("Erreur lors du rafraîchissement de la session:", refreshError);
-          return;
-        }
-
-        console.log("Session utilisateur trouvée:", {
-          id: user?.id,
-          email: user?.email,
-          emailConfirmed: user?.email_confirmed_at,
-          lastSignIn: user?.last_sign_in_at
-        });
-
-        if (user?.email_confirmed_at) {
+        if (session.user.email_confirmed_at) {
           console.log("Email confirmé, redirection vers le tableau de bord");
           navigate("/dashboard");
-          toast({
-            title: "Email confirmé",
-            description: "Votre compte a été vérifié avec succès.",
-          });
         } else {
           console.log("Email non confirmé, affichage de l'écran de confirmation");
-          setEmail(user?.email || "");
+          setEmail(session.user.email || "");
           setShowEmailConfirmation(true);
         }
-      } else {
-        console.log("Aucune session active trouvée");
       }
     };
     
     checkUser();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Changement d'état d'authentification:", {
-        event: event,
-        userId: session?.user?.id,
-        email: session?.user?.email,
-        emailConfirmed: session?.user?.email_confirmed_at
-      });
+      console.log("Changement d'état d'authentification:", event);
 
-      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        // Forcer une actualisation de la session
-        const { data: { user }, error: refreshError } = await supabase.auth.refreshSession();
-        
-        if (refreshError) {
-          console.error("Erreur lors du rafraîchissement de la session:", refreshError);
-          return;
-        }
-
-        console.log("État de la session après rafraîchissement:", {
-          emailConfirmed: user?.email_confirmed_at,
-          lastSignIn: user?.last_sign_in_at
-        });
-
-        if (user?.email_confirmed_at) {
+      if (event === "SIGNED_IN") {
+        if (session?.user.email_confirmed_at) {
           console.log("Email confirmé, redirection vers le tableau de bord");
           navigate("/dashboard");
-          toast({
-            title: "Email confirmé",
-            description: "Votre compte a été vérifié avec succès.",
-          });
           return;
         }
-
-        if (!user?.email_confirmed_at) {
-          console.log("Email toujours non confirmé, affichage de l'écran de confirmation");
-          setEmail(user?.email || "");
+        
+        if (session?.user.email) {
+          console.log("Email non confirmé, affichage de l'écran de confirmation");
+          setEmail(session.user.email);
           setShowEmailConfirmation(true);
-          return;
         }
       }
 
-      if (event === 'SIGNED_OUT') {
-        console.log("Utilisateur déconnecté, réinitialisation de l'écran de confirmation");
+      if (event === "SIGNED_OUT") {
+        console.log("Utilisateur déconnecté");
         setShowEmailConfirmation(false);
       }
     });
@@ -109,55 +65,13 @@ const AuthForm = () => {
     };
   }, [navigate, toast]);
 
-  const handleError = (error: AuthError) => {
-    console.error("Erreur d'authentification:", error);
-    
-    if (error.message?.includes("Email not confirmed")) {
-      console.log("Email non confirmé, affichage de l'écran de confirmation");
-      setShowEmailConfirmation(true);
-      return;
-    }
-    
-    if (error.message?.includes("User already registered")) {
-      toast({
-        title: "Compte existant",
-        description: "Attention, vous possédez déjà un compte !",
-        variant: "destructive",
-      });
-      return;
-    }
-    
-    if (error.message?.includes("Invalid login credentials")) {
-      toast({
-        title: "Erreur de connexion",
-        description: "Email ou mot de passe incorrect.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (error.status === 429) {
-      toast({
-        title: "Action limitée",
-        description: "Pour des raisons de sécurité, veuillez patienter quelques secondes avant de réessayer.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    toast({
-      title: "Erreur",
-      description: error.message || "Une erreur est survenue",
-      variant: "destructive",
-    });
-  };
-
   if (showEmailConfirmation) {
     return <EmailConfirmation email={email} onBack={() => setShowEmailConfirmation(false)} />;
   }
 
   return (
     <div className="bg-background rounded-lg border p-8">
+      <EmailConfirmationHandler />
       <Auth
         supabaseClient={supabase}
         appearance={{
@@ -171,7 +85,6 @@ const AuthForm = () => {
             },
           },
         }}
-        providers={["google"]}
         localization={{
           variables: {
             sign_up: {
