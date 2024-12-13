@@ -70,6 +70,8 @@ const ApplicationList = () => {
 
       if (!selectedApp) return;
 
+      console.log("Adding subscription for user:", user.id);
+
       const { error } = await supabase.from("subscriptions").insert({
         name: selectedApp.name,
         price: price,
@@ -81,7 +83,10 @@ const ApplicationList = () => {
         trial_end_date: trialEndDate?.toISOString() || null,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error inserting subscription:", error);
+        throw error;
+      }
 
       await queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
 
