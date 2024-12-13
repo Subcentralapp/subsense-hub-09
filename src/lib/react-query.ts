@@ -11,17 +11,21 @@ export const queryClient = new QueryClient({
       staleTime: 5 * 60 * 1000,
       // Keep unused data in cache for 30 minutes
       gcTime: 30 * 60 * 1000,
-      // Add default error handling
-      onError: (error) => {
-        console.error("Query error:", error);
+      // Add default error handling using onSettled
+      onSettled: (data, error) => {
+        if (error) {
+          console.error("Query error:", error);
+        }
       }
     },
     mutations: {
       // Retry failed mutations once
       retry: 1,
-      // Add default error handling
-      onError: (error) => {
-        console.error("Mutation error:", error);
+      // Add default error handling using onSettled
+      onSettled: (data, error) => {
+        if (error) {
+          console.error("Mutation error:", error);
+        }
       }
     }
   },
