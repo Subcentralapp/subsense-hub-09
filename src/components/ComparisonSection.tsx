@@ -4,11 +4,13 @@ import { useState, useEffect } from "react";
 import { Application } from "@/types/application";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 
 const ComparisonSection = () => {
   const [selectedApps, setSelectedApps] = useState<Application[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const checkSession = async () => {
@@ -23,24 +25,42 @@ const ComparisonSection = () => {
             description: "Impossible de vérifier votre session",
             variant: "destructive",
           });
+          navigate("/identification", { replace: true });
           return;
         }
 
         if (!session) {
-          console.log("⚠️ ComparisonSection - Pas de session active");
+          console.log("⚠️ ComparisonSection - Pas de session active, redirection...");
+          navigate("/identification", { replace: true });
           return;
         }
 
         console.log("✅ ComparisonSection - Session active trouvée:", session.user.email);
       } catch (error) {
         console.error("❌ ComparisonSection - Erreur inattendue:", error);
+        navigate("/identification", { replace: true });
       } finally {
         setIsLoading(false);
       }
     };
 
+    // Vérifier la session immédiatement
     checkSession();
-  }, [toast]);
+
+    // Écouter les changements d'état d'authentification
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("🔄 ComparisonSection - État de l'authentification changé:", event);
+      
+      if (event === 'SIGNED_OUT' || !session) {
+        console.log("👋 ComparisonSection - Utilisateur déconnecté, redirection...");
+        navigate("/identification", { replace: true });
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate, toast]);
 
   const handleAppSelect = (apps: Application[]) => {
     console.log("📱 ComparisonSection - Applications sélectionnées:", apps);
