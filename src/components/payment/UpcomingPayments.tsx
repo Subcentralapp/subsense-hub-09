@@ -41,7 +41,7 @@ export const UpcomingPayments = () => {
           title: "Erreur de chargement",
           description: "Impossible de charger les paiements à venir. Veuillez réessayer.",
           variant: "destructive",
-          duration: 2000, // 2 secondes
+          duration: 2000,
         });
       }
     }

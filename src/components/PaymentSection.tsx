@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { useInvoiceStore } from "@/services/invoice/invoiceStore";
-import UpcomingPayments from "./payment/UpcomingPayments";
+import { UpcomingPayments } from "./payment/UpcomingPayments";
 import InvoiceUploader from "./payment/InvoiceUploader";
 import InvoiceList from "./payment/InvoiceList";
 import PaymentCharts from "./payment/PaymentCharts";
