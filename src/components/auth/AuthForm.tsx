@@ -155,10 +155,6 @@ const AuthForm = () => {
                   social_provider_text: "Continuer avec {{provider}}",
                   link_text: "Vous n'avez pas de compte ? Inscrivez-vous",
                   confirmation_text: "Vérifiez vos emails pour confirmer votre inscription",
-                  name_label: "Nom complet",
-                  name_input_placeholder: "Votre nom complet",
-                  phone_label: "Téléphone",
-                  phone_input_placeholder: "Votre numéro de téléphone"
                 },
               },
             }}
