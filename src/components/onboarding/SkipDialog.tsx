@@ -13,7 +13,7 @@ export const SkipDialog = ({ open, onOpenChange, onConfirm }: SkipDialogProps) =
 
   const handleSkip = async () => {
     try {
-      console.log("🔄 Création d'une entrée de préférences vide pour l'utilisateur...");
+      console.log("🔄 Vérification des préférences utilisateur existantes...");
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
@@ -21,18 +21,47 @@ export const SkipDialog = ({ open, onOpenChange, onConfirm }: SkipDialogProps) =
         return;
       }
 
-      // Créer une entrée vide dans user_preferences pour marquer l'onboarding comme ignoré
-      const { error } = await supabase.from('user_preferences').insert({
-        id: user.id,
-        wants_recommendations: false
-      });
+      // Vérifier si une entrée existe déjà
+      const { data: existingPrefs, error: fetchError } = await supabase
+        .from('user_preferences')
+        .select('*')
+        .eq('id', user.id)
+        .single();
 
-      if (error) {
-        console.error("❌ Erreur lors de la création des préférences:", error);
-        throw error;
+      if (fetchError && fetchError.code !== 'PGRST116') {
+        console.error("❌ Erreur lors de la vérification des préférences:", fetchError);
+        throw fetchError;
       }
 
-      console.log("✅ Préférences créées avec succès");
+      let upsertError;
+
+      if (existingPrefs) {
+        console.log("🔄 Mise à jour des préférences existantes...");
+        const { error } = await supabase
+          .from('user_preferences')
+          .update({
+            wants_recommendations: false,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', user.id);
+        upsertError = error;
+      } else {
+        console.log("➕ Création de nouvelles préférences...");
+        const { error } = await supabase
+          .from('user_preferences')
+          .insert({
+            id: user.id,
+            wants_recommendations: false
+          });
+        upsertError = error;
+      }
+
+      if (upsertError) {
+        console.error("❌ Erreur lors de la mise à jour/création des préférences:", upsertError);
+        throw upsertError;
+      }
+
+      console.log("✅ Préférences mises à jour avec succès");
       
       // Fermer le dialog
       onOpenChange(false);
@@ -50,13 +79,9 @@ export const SkipDialog = ({ open, onOpenChange, onConfirm }: SkipDialogProps) =
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Êtes-vous sûr de vouloir passer cette étape ?</AlertDialogTitle>
-          <AlertDialogDescription className="space-y-2">
-            <p>
-              Ce questionnaire nous aide à personnaliser votre expérience et à améliorer notre application.
-            </p>
-            <p>
-              Vous pourrez toujours y revenir plus tard dans les paramètres de votre compte.
-            </p>
+          <AlertDialogDescription>
+            Ce questionnaire nous aide à personnaliser votre expérience et à améliorer notre application.
+            Vous pourrez toujours y revenir plus tard dans les paramètres de votre compte.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter className="space-x-2">
