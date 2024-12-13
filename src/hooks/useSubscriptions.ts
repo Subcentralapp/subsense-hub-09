@@ -46,15 +46,15 @@ export const useSubscriptions = (page: number = 1) => {
         totalPages: Math.ceil((count || 0) / PAGE_SIZE)
       };
     },
-    staleTime: 3 * 60 * 1000,
-    gcTime: 15 * 60 * 1000,
+    staleTime: 30000, // 30 secondes
+    gcTime: 5 * 60 * 1000, // 5 minutes
     refetchOnWindowFocus: false,
   });
 
   const handleDelete = async (id: number) => {
     try {
-      // Optimistic update
       const previousData = queryClient.getQueryData<{ subscriptions: Subscription[], total: number }>(["subscriptions", page]);
+      
       queryClient.setQueryData(["subscriptions", page], (old: any) => ({
         ...old,
         subscriptions: old.subscriptions.filter((sub: Subscription) => sub.id !== id),
@@ -67,7 +67,6 @@ export const useSubscriptions = (page: number = 1) => {
         .eq('id', id);
 
       if (error) {
-        // Rollback on error
         queryClient.setQueryData(["subscriptions", page], previousData);
         throw error;
       }
@@ -77,8 +76,11 @@ export const useSubscriptions = (page: number = 1) => {
         description: "L'abonnement a été supprimé avec succès.",
       });
 
-      // Invalidate all subscription queries to update counts
-      queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
+      // Mise à jour silencieuse
+      queryClient.setQueryData(["upcomingPayments"], (oldData: any) => {
+        if (!oldData) return [];
+        return oldData.filter((payment: any) => payment.id !== id);
+      });
     } catch (error) {
       console.error("Error deleting subscription:", error);
       toast({
@@ -97,17 +99,19 @@ export const useSubscriptions = (page: number = 1) => {
         .update({ next_billing: newDate.toISOString() })
         .eq('id', subscriptionId);
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
-      // Invalidate queries to refresh the data
-      queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
-
-      toast({
-        title: "Succès",
-        description: "La date de prochain paiement a été mise à jour.",
+      // Mise à jour silencieuse du cache
+      queryClient.setQueryData(["subscriptions", page], (old: any) => {
+        if (!old) return old;
+        return {
+          ...old,
+          subscriptions: old.subscriptions.map((sub: Subscription) =>
+            sub.id === subscriptionId ? { ...sub, next_billing: newDate.toISOString() } : sub
+          )
+        };
       });
+
     } catch (error) {
       console.error("Error updating next billing date:", error);
       toast({

@@ -28,10 +28,10 @@ export const UpcomingPayments = () => {
       console.log("Fetched upcoming payments:", data);
       return data || [];
     },
-    staleTime: 30000, // Réduit à 30 secondes pour éviter trop de refetch
-    gcTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 30000,
+    gcTime: 5 * 60 * 1000,
     refetchOnWindowFocus: false,
-    refetchOnMount: false, // Désactivé pour éviter les refetch inutiles
+    refetchOnMount: false,
     meta: {
       errorHandler: (error: Error) => {
         console.error("Query error:", error);
