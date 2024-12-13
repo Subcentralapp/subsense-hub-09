@@ -55,8 +55,13 @@ export const SubscriptionGrid = ({
 
   const handleEdit = async (subscription: Subscription) => {
     onEdit(subscription);
-    // Invalider le cache pour forcer un rechargement
-    await queryClient.invalidateQueries({ queryKey: ["upcomingPayments"] });
+    // Mise à jour silencieuse du cache sans déclencher de refetch
+    queryClient.setQueryData(["upcomingPayments"], (oldData: any) => {
+      if (!oldData) return oldData;
+      return oldData.map((payment: any) => 
+        payment.id === subscription.id ? { ...payment, ...subscription } : payment
+      );
+    });
   };
 
   return (

@@ -28,20 +28,17 @@ export const UpcomingPayments = () => {
       console.log("Fetched upcoming payments:", data);
       return data || [];
     },
-    staleTime: 5 * 60 * 1000, // Cache pendant 5 minutes
-    gcTime: 10 * 60 * 1000,
-    retry: 3,
-    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
-    refetchOnWindowFocus: false, // Désactive le rechargement au focus de la fenêtre
-    refetchOnMount: true,
+    staleTime: 30000, // Réduit à 30 secondes pour éviter trop de refetch
+    gcTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
+    refetchOnMount: false, // Désactivé pour éviter les refetch inutiles
     meta: {
       errorHandler: (error: Error) => {
         console.error("Query error:", error);
         toast({
           title: "Erreur de chargement",
-          description: "Impossible de charger les paiements à venir. Veuillez réessayer.",
+          description: "Impossible de charger les paiements à venir.",
           variant: "destructive",
-          duration: 2000,
         });
       }
     }
