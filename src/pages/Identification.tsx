@@ -109,26 +109,6 @@ const Identification = () => {
                 }}
                 providers={["google"]}
                 redirectTo={`${window.location.origin}/auth/callback`}
-                additionalData={{
-                  display_name: '',
-                  phone: '',
-                }}
-                extendedSignUpFields={[
-                  {
-                    name: 'display_name',
-                    required: true,
-                    type: 'text',
-                    label: "Nom d'affichage",
-                    placeholder: "Votre nom d'affichage",
-                  },
-                  {
-                    name: 'phone',
-                    required: false,
-                    type: 'tel',
-                    label: 'Téléphone',
-                    placeholder: 'Votre numéro de téléphone (optionnel)',
-                  },
-                ]}
                 localization={{
                   variables: {
                     sign_up: {
