@@ -9,7 +9,7 @@ export const useSubscriptions = (page: number = 1) => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data, isLoading, refetch } = useQuery({
+  const { data, isLoading, error, refetch } = useQuery({
     queryKey: ["subscriptions", page],
     queryFn: async () => {
       console.log("Fetching subscriptions for page:", page);
@@ -44,10 +44,22 @@ export const useSubscriptions = (page: number = 1) => {
         totalPages: Math.ceil((count || 0) / PAGE_SIZE)
       };
     },
-    staleTime: Infinity, // Ne jamais considérer les données comme périmées
+    initialData: { subscriptions: [], total: 0, totalPages: 1 },
+    staleTime: 0, // Toujours considérer les données comme périmées
     gcTime: 24 * 60 * 60 * 1000, // 24 heures
-    refetchOnWindowFocus: false,
-    retry: 1
+    refetchOnWindowFocus: true, // Recharger quand la fenêtre reprend le focus
+    refetchOnMount: true, // Recharger au montage du composant
+    retry: 3, // Réessayer 3 fois en cas d'écheur
+    meta: {
+      errorHandler: (error: Error) => {
+        console.error("Query error:", error);
+        toast({
+          title: "Erreur",
+          description: "Impossible de charger les abonnements. Veuillez réessayer.",
+          variant: "destructive",
+        });
+      }
+    }
   });
 
   const handleDelete = async (id: number) => {
@@ -137,6 +149,7 @@ export const useSubscriptions = (page: number = 1) => {
     total: data?.total || 0,
     totalPages: data?.totalPages || 1,
     isLoading,
+    error,
     refetch,
     handleDelete,
     updateNextBillingDate,

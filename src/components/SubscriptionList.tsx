@@ -8,11 +8,12 @@ import { SubscriptionContent } from "./subscription/SubscriptionContent";
 import { Subscription } from "@/types/subscription";
 import { Button } from "./ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Skeleton } from "./ui/skeleton";
 
 const SubscriptionList = () => {
   const [editingSubscription, setEditingSubscription] = useState<Subscription | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const { subscriptions, isLoading, refetch, handleDelete, totalPages } = useSubscriptions(currentPage);
+  const { subscriptions, isLoading, error, refetch, handleDelete, totalPages } = useSubscriptions(currentPage);
 
   const handleEdit = (subscription: Subscription) => {
     console.log("Editing subscription:", subscription);
@@ -24,17 +25,12 @@ const SubscriptionList = () => {
     setCurrentPage(newPage);
   };
 
-  if (isLoading) {
+  if (error) {
     return (
-      <div className="space-y-4">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <SubscriptionHeader />
-          <ApplicationList />
-        </div>
-        <Card className="p-6">
-          <p>Chargement des abonnements...</p>
-        </Card>
-      </div>
+      <Card className="p-6">
+        <p className="text-red-500">Une erreur est survenue lors du chargement des abonnements.</p>
+        <Button onClick={() => refetch()} className="mt-4">Réessayer</Button>
+      </Card>
     );
   }
 
@@ -45,11 +41,27 @@ const SubscriptionList = () => {
         <ApplicationList />
       </div>
       
-      <SubscriptionContent 
-        subscriptions={subscriptions}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-      />
+      {isLoading ? (
+        <Card className="p-6">
+          <div className="space-y-4">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="flex items-center justify-between">
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-[200px]" />
+                  <Skeleton className="h-3 w-[150px]" />
+                </div>
+                <Skeleton className="h-8 w-[100px]" />
+              </div>
+            ))}
+          </div>
+        </Card>
+      ) : (
+        <SubscriptionContent 
+          subscriptions={subscriptions}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+      )}
 
       {totalPages > 1 && (
         <div className="flex justify-center gap-2 mt-4">
