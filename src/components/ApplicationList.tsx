@@ -16,15 +16,17 @@ const ApplicationList = () => {
   const queryClient = useQueryClient();
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const { fetchApplications, isLoading: isFetching } = useApplicationSearch();
+  const { fetchApplications } = useApplicationSearch();
   const { logPerformance } = usePerformanceMonitoring();
 
   const { data: applications, isLoading } = useQuery({
     queryKey: ["applications"],
     queryFn: async () => {
+      console.log("Fetching applications...");
       const startTime = performance.now();
       try {
         const apps = await fetchApplications();
+        console.log("Applications fetched successfully:", apps?.length);
         logPerformance({
           endpoint: "fetchApplications",
           startTime,
@@ -33,6 +35,7 @@ const ApplicationList = () => {
         });
         return apps;
       } catch (error) {
+        console.error("Error fetching applications:", error);
         logPerformance({
           endpoint: "fetchApplications",
           startTime,
@@ -42,10 +45,11 @@ const ApplicationList = () => {
         throw error;
       }
     },
-    staleTime: 30 * 60 * 1000, // 30 minutes
-    gcTime: 60 * 60 * 1000, // 1 hour
+    staleTime: Infinity, // Ne jamais considérer les données comme périmées
+    gcTime: 24 * 60 * 60 * 1000, // 24 heures
     refetchOnWindowFocus: false,
-    refetchOnMount: false
+    refetchOnMount: false,
+    retry: 1
   });
 
   const handleAddSubscription = async (app: Application) => {
@@ -149,7 +153,7 @@ const ApplicationList = () => {
     <>
       <ApplicationDialog
         applications={applications}
-        isLoading={isLoading || isFetching}
+        isLoading={isLoading}
         onAddSubscription={handleAddSubscription}
         isOpen={isDialogOpen}
         onOpenChange={setIsDialogOpen}

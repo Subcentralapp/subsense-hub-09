@@ -37,15 +37,17 @@ export const useSubscriptions = (page: number = 1) => {
         throw error;
       }
 
+      console.log("Subscriptions fetched successfully:", data?.length);
       return { 
         subscriptions: data || [], 
         total: count || 0,
         totalPages: Math.ceil((count || 0) / PAGE_SIZE)
       };
     },
-    staleTime: 30 * 60 * 1000, // 30 minutes
-    gcTime: 60 * 60 * 1000, // 1 hour
+    staleTime: Infinity, // Ne jamais considérer les données comme périmées
+    gcTime: 24 * 60 * 60 * 1000, // 24 heures
     refetchOnWindowFocus: false,
+    retry: 1
   });
 
   const handleDelete = async (id: number) => {
