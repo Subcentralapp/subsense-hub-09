@@ -136,13 +136,7 @@ const AuthForm = () => {
               },
             }}
             providers={["google"]}
-            options={{
-              emailRedirectTo: `${window.location.origin}/auth/callback`,
-              data: {
-                name: '',
-                phone: ''
-              }
-            }}
+            redirectTo={`${window.location.origin}/auth/callback`}
             localization={{
               variables: {
                 sign_up: {
