@@ -35,8 +35,8 @@ export const useTwoFactor = () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("Utilisateur non connecté");
 
-      // Générer un nouveau secret
-      const newSecret = OTPAuth.Secret.generate();
+      // Générer un nouveau secret de 20 bytes (160 bits) et le convertir en base32
+      const newSecret = new OTPAuth.Secret({ size: 20 });
       setSecret(newSecret.base32);
 
       return newSecret.base32;
