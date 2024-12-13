@@ -15,11 +15,21 @@ const AuthForm = () => {
 
   useEffect(() => {
     const checkUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
+      console.log("Checking user session...");
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError) {
+        console.error("Session check error:", sessionError);
+        return;
+      }
+
       if (session?.user) {
-        console.log("Session user found:", session.user);
-        console.log("Email confirmed status:", session.user.email_confirmed_at);
-        
+        console.log("User session found:", {
+          id: session.user.id,
+          email: session.user.email,
+          emailConfirmed: session.user.email_confirmed_at
+        });
+
         if (!session.user.email_confirmed_at) {
           console.log("Email not confirmed, showing confirmation screen");
           setEmail(session.user.email || "");
@@ -28,30 +38,48 @@ const AuthForm = () => {
           console.log("Email confirmed, redirecting to dashboard");
           navigate("/dashboard");
         }
+      } else {
+        console.log("No active session found");
       }
     };
     
     checkUser();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state change event:", event);
-      console.log("Session:", session);
+      console.log("Auth state change:", {
+        event: event,
+        userId: session?.user?.id,
+        userEmail: session?.user?.email,
+        emailConfirmed: session?.user?.email_confirmed_at
+      });
 
-      if (session?.user && !session.user.email_confirmed_at) {
-        console.log("User exists but email not confirmed");
-        setEmail(session.user.email || "");
-        setShowEmailConfirmation(true);
-        return;
-      }
+      if (session?.user) {
+        // Vérifier à nouveau la session après un changement d'état
+        const { data: { session: currentSession } } = await supabase.auth.getSession();
+        console.log("Current session after state change:", {
+          emailConfirmed: currentSession?.user?.email_confirmed_at
+        });
 
-      if (session?.user && session.user.email_confirmed_at) {
-        console.log("User exists and email confirmed, redirecting to dashboard");
-        navigate("/dashboard");
-        return;
+        if (currentSession?.user?.email_confirmed_at) {
+          console.log("Email confirmed in current session, redirecting to dashboard");
+          navigate("/dashboard");
+          toast({
+            title: "Email confirmé",
+            description: "Votre compte a été vérifié avec succès.",
+          });
+          return;
+        }
+
+        if (!currentSession?.user?.email_confirmed_at) {
+          console.log("Email still not confirmed, showing confirmation screen");
+          setEmail(session.user.email || "");
+          setShowEmailConfirmation(true);
+          return;
+        }
       }
 
       if (event === "SIGNED_OUT") {
-        console.log("User signed out");
+        console.log("User signed out, resetting confirmation screen");
         setShowEmailConfirmation(false);
       }
     });
