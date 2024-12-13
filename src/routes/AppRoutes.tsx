@@ -32,21 +32,29 @@ const routes = [
   {
     path: "/",
     element: <Layout />,
+    errorElement: <ErrorBoundary />,
     children: [
-      { path: "/", element: <Index /> },
+      { 
+        path: "/", 
+        element: <Index /> 
+      },
       { 
         path: "/landing",
-        element: <Suspense fallback={<LoadingSpinner />}><Landing /></Suspense>
+        element: <Landing />
       },
       {
         path: "/identification",
-        element: <Suspense fallback={<LoadingSpinner />}><Identification /></Suspense>
+        element: <Identification />
+      },
+      {
+        path: "/auth",
+        element: <Identification />
       },
       {
         path: "/onboarding",
         element: (
           <ProtectedRoute>
-            <Suspense fallback={<LoadingSpinner />}><Onboarding /></Suspense>
+            <Onboarding />
           </ProtectedRoute>
         )
       },
@@ -54,7 +62,7 @@ const routes = [
         path: "/dashboard/*",
         element: (
           <ProtectedRoute>
-            <Suspense fallback={<LoadingSpinner />}><Dashboard /></Suspense>
+            <Dashboard />
           </ProtectedRoute>
         )
       },
@@ -62,13 +70,33 @@ const routes = [
         path: "/profile",
         element: (
           <ProtectedRoute>
-            <Suspense fallback={<LoadingSpinner />}><Profile /></Suspense>
+            <Profile />
           </ProtectedRoute>
         )
       }
     ]
   }
 ];
+
+// Composant pour gérer les erreurs de route
+function ErrorBoundary() {
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="text-center space-y-4">
+        <h1 className="text-4xl font-bold text-primary">Oops!</h1>
+        <p className="text-muted-foreground">
+          La page que vous recherchez n'existe pas.
+        </p>
+        <button
+          onClick={() => window.location.href = '/'}
+          className="inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-10 px-4 py-2"
+        >
+          Retour à l'accueil
+        </button>
+      </div>
+    </div>
+  );
+}
 
 export const router = createBrowserRouter(routes);
 

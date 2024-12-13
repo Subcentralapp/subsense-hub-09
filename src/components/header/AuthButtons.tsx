@@ -32,7 +32,7 @@ export const AuthButtons = ({ user }: AuthButtonsProps) => {
           <Button
             variant="outline"
             className="flex items-center space-x-2 border-primary/20 hover:border-primary/40 transition-colors"
-            onClick={() => navigate("/auth")}
+            onClick={() => navigate("/identification")}
           >
             <LogIn className="h-4 w-4 text-primary" />
             <span className="text-primary hidden md:inline">Connexion</span>
