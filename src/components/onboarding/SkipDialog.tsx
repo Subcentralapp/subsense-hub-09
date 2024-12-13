@@ -1,5 +1,6 @@
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 interface SkipDialogProps {
   open: boolean;
@@ -10,13 +11,38 @@ interface SkipDialogProps {
 export const SkipDialog = ({ open, onOpenChange, onConfirm }: SkipDialogProps) => {
   const navigate = useNavigate();
 
-  const handleSkip = () => {
-    // First close the dialog
-    onOpenChange(false);
-    // Then call onConfirm which will show the toast
-    onConfirm();
-    // Finally navigate
-    navigate("/dashboard");
+  const handleSkip = async () => {
+    try {
+      console.log("🔄 Création d'une entrée de préférences vide pour l'utilisateur...");
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        console.error("❌ Aucun utilisateur connecté");
+        return;
+      }
+
+      // Créer une entrée vide dans user_preferences pour marquer l'onboarding comme ignoré
+      const { error } = await supabase.from('user_preferences').insert({
+        id: user.id,
+        wants_recommendations: false
+      });
+
+      if (error) {
+        console.error("❌ Erreur lors de la création des préférences:", error);
+        throw error;
+      }
+
+      console.log("✅ Préférences créées avec succès");
+      
+      // Fermer le dialog
+      onOpenChange(false);
+      // Appeler onConfirm qui affichera le toast
+      onConfirm();
+      // Rediriger vers le dashboard
+      navigate("/dashboard", { replace: true });
+    } catch (error) {
+      console.error("❌ Erreur lors du skip:", error);
+    }
   };
 
   return (

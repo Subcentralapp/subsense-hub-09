@@ -11,11 +11,11 @@ export const useAuthRedirect = () => {
   const checkUserPreferences = async (userId: string, email_confirmed_at: string | null) => {
     try {
       await checkRateLimit('auth');
-      console.log("Vérification du statut de l'email et des préférences utilisateur...");
+      console.log("🔍 Vérification du statut de l'email et des préférences utilisateur...");
       
       // Vérifier si l'email est confirmé
       if (!email_confirmed_at) {
-        console.log("Email non confirmé, redirection vers la page d'attente");
+        console.log("❌ Email non confirmé, redirection vers la page d'attente");
         toast({
           title: "Vérification d'email requise",
           description: "Veuillez vérifier votre email avant de continuer. Vérifiez votre boîte de réception.",
@@ -25,22 +25,30 @@ export const useAuthRedirect = () => {
         return;
       }
 
-      console.log("Email confirmé, vérification des préférences...");
-      const { data: preferences } = await supabase
+      console.log("✅ Email confirmé, vérification des préférences...");
+      const { data: preferences, error } = await supabase
         .from('user_preferences')
         .select('*')
         .eq('id', userId)
         .single();
 
-      if (!preferences) {
-        console.log("Pas de préférences trouvées, redirection vers onboarding");
-        navigate("/onboarding", { replace: true });
-      } else {
-        console.log("Préférences trouvées, redirection vers le tableau de bord");
-        navigate("/dashboard", { replace: true });
+      if (error) {
+        console.error("❌ Erreur lors de la vérification des préférences:", error);
+        throw error;
       }
+
+      // Si l'utilisateur n'a jamais vu l'onboarding (pas de préférences)
+      if (!preferences) {
+        console.log("🆕 Première connexion, redirection vers onboarding");
+        navigate("/onboarding", { replace: true });
+        return;
+      }
+
+      // Dans tous les autres cas (préférences existantes ou onboarding ignoré)
+      console.log("👉 Redirection vers le tableau de bord");
+      navigate("/dashboard", { replace: true });
     } catch (error) {
-      console.error("Erreur lors de la vérification:", error);
+      console.error("❌ Erreur lors de la vérification:", error);
       if (error.message?.includes('Too many requests')) {
         toast({
           title: "Trop de tentatives",
@@ -54,6 +62,8 @@ export const useAuthRedirect = () => {
           variant: "destructive",
         });
       }
+      // En cas d'erreur, rediriger vers le dashboard par défaut
+      navigate("/dashboard", { replace: true });
     }
   };
 
@@ -65,7 +75,7 @@ export const useAuthRedirect = () => {
           await checkUserPreferences(session.user.id, session.user.email_confirmed_at);
         }
       } catch (error) {
-        console.error("Erreur lors de la vérification du statut d'authentification:", error);
+        console.error("❌ Erreur lors de la vérification du statut d'authentification:", error);
         toast({
           title: "Erreur",
           description: "Une erreur est survenue lors de la vérification de votre compte.",
@@ -79,7 +89,7 @@ export const useAuthRedirect = () => {
     checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Changement d'état d'authentification:", event, session);
+      console.log("🔄 Changement d'état d'authentification:", event, session);
       if (event === 'SIGNED_IN' && session) {
         await checkUserPreferences(session.user.id, session.user.email_confirmed_at);
       } else if (event === 'USER_UPDATED' && session) {
