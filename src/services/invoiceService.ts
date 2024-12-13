@@ -34,7 +34,7 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
             .eq('invoice_id', inv.id)
             .order('created_at', { ascending: false })
             .limit(1)
-            .maybeSingle(); // Changed from single() to maybeSingle()
+            .maybeSingle();
           
           return {
             id: inv.id.toString(),
@@ -68,17 +68,24 @@ export const useInvoiceStore = create<InvoiceStore>((set, get) => ({
 
   updateInvoiceDetails: async (invoiceId: string, details: Partial<InvoiceDetails>) => {
     try {
+      console.log('Updating invoice details:', { invoiceId, details });
       set({ isLoading: true });
       
       const { error } = await supabase
         .from('invoicedetails')
         .insert({
           invoice_id: parseInt(invoiceId),
-          ...details,
+          amount: details.amount,
+          invoice_date: details.invoice_date,
+          status: details.status,
+          merchant_name: details.merchant_name,
           created_at: new Date().toISOString()
         });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error in updateInvoiceDetails:', error);
+        throw error;
+      }
 
       await get().fetchInvoices();
     } catch (error) {
