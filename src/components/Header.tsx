@@ -8,49 +8,96 @@ import { UserNav } from "./UserNav";
 import { PromoMessage } from "./header/PromoMessage";
 import { MobileMenu } from "./header/MobileMenu";
 import { AuthButtons } from "./header/AuthButtons";
+import { useToast } from "@/hooks/use-toast";
 
 export const Header = () => {
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
+    let mounted = true;
+
     // Check current session on mount
     const checkUser = async () => {
       try {
-        console.log("🔍 Vérification de la session au montage...");
+        console.log("🔍 Vérification initiale de la session...");
         const { data: { session }, error } = await supabase.auth.getSession();
+        
         if (error) {
           console.error("❌ Erreur lors de la vérification de la session:", error);
-          setUser(null);
+          if (mounted) {
+            setUser(null);
+            toast({
+              title: "Erreur de session",
+              description: "Impossible de vérifier votre session. Veuillez vous reconnecter.",
+              variant: "destructive",
+            });
+          }
           return;
         }
-        console.log("✅ Session actuelle:", session);
-        setUser(session?.user || null);
+
+        if (!session) {
+          console.log("⚠️ Pas de session active trouvée");
+          if (mounted) {
+            setUser(null);
+          }
+          return;
+        }
+
+        console.log("✅ Session active trouvée:", session.user.email);
+        if (mounted) {
+          setUser(session.user);
+        }
       } catch (error) {
-        console.error("❌ Erreur lors de la vérification de la session:", error);
-        setUser(null);
+        console.error("❌ Erreur inattendue lors de la vérification de la session:", error);
+        if (mounted) {
+          setUser(null);
+          toast({
+            title: "Erreur",
+            description: "Une erreur est survenue. Veuillez réessayer.",
+            variant: "destructive",
+          });
+        }
       } finally {
-        setIsLoading(false);
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
     };
     
     checkUser();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       console.log("🔄 État de l'authentification changé:", event);
-      if (event === "SIGNED_IN") {
-        console.log("✅ Utilisateur connecté:", session?.user);
-        setUser(session?.user);
+      
+      if (event === "SIGNED_IN" && session) {
+        console.log("✅ Utilisateur connecté:", session.user.email);
+        if (mounted) {
+          setUser(session.user);
+          navigate("/dashboard");
+        }
       } else if (event === "SIGNED_OUT") {
         console.log("👋 Utilisateur déconnecté");
-        setUser(null);
-        navigate("/landing", { replace: true });
+        if (mounted) {
+          setUser(null);
+          navigate("/landing", { replace: true });
+        }
+      } else if (event === "TOKEN_REFRESHED") {
+        console.log("🔄 Token rafraîchi");
+        if (mounted && session) {
+          setUser(session.user);
+        }
       }
     });
 
-    return () => subscription.unsubscribe();
-  }, [navigate]);
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, [navigate, toast]);
 
   if (isLoading) {
     return null;
