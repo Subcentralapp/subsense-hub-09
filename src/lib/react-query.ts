@@ -11,9 +11,9 @@ export const queryClient = new QueryClient({
       staleTime: 5 * 60 * 1000,
       // Keep unused data in cache for 30 minutes
       gcTime: 30 * 60 * 1000,
-      // Add default error handling using onSettled
-      onSettled: (data, error) => {
-        if (error) {
+      // Add default error handling in meta
+      meta: {
+        errorHandler: (error: Error) => {
           console.error("Query error:", error);
         }
       }
@@ -21,9 +21,9 @@ export const queryClient = new QueryClient({
     mutations: {
       // Retry failed mutations once
       retry: 1,
-      // Add default error handling using onSettled
-      onSettled: (data, error) => {
-        if (error) {
+      // Add default error handling in meta
+      meta: {
+        errorHandler: (error: Error) => {
           console.error("Mutation error:", error);
         }
       }
