@@ -32,7 +32,7 @@ export const useAuthRedirect = () => {
         .eq('id', userId)
         .single();
 
-      if (error) {
+      if (error && error.code !== 'PGRST116') {
         console.error("❌ Erreur lors de la vérification des préférences:", error);
         throw error;
       }
