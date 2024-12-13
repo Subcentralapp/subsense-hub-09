@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import EmailConfirmation from "./EmailConfirmation";
 import { useNavigate } from "react-router-dom";
-import { AuthError, AuthChangeEvent } from "@supabase/supabase-js";
+import { AuthError } from "@supabase/supabase-js";
 
 const AuthForm = () => {
   const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
@@ -17,69 +17,47 @@ const AuthForm = () => {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
-        if (session.user.email_confirmed_at) {
-          console.log("User already logged in and email confirmed, redirecting to dashboard");
-          navigate("/dashboard");
-        } else {
-          console.log("User logged in but email not confirmed, showing confirmation screen");
+        console.log("Session user found:", session.user);
+        console.log("Email confirmed status:", session.user.email_confirmed_at);
+        
+        if (!session.user.email_confirmed_at) {
+          console.log("Email not confirmed, showing confirmation screen");
           setEmail(session.user.email || "");
           setShowEmailConfirmation(true);
+        } else {
+          console.log("Email confirmed, redirecting to dashboard");
+          navigate("/dashboard");
         }
       }
     };
     
     checkUser();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
-      console.log("Auth state change:", event, session);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth state change event:", event);
+      console.log("Session:", session);
 
-      if (event === 'SIGNED_IN') {
-        if (session?.user.email_confirmed_at) {
-          console.log("User signed in and email confirmed, redirecting to dashboard");
-          navigate("/dashboard");
-        } else {
-          console.log("User signed in but email not confirmed, showing confirmation screen");
-          setEmail(session.user.email || "");
-          setShowEmailConfirmation(true);
-        }
+      if (session?.user && !session.user.email_confirmed_at) {
+        console.log("User exists but email not confirmed");
+        setEmail(session.user.email || "");
+        setShowEmailConfirmation(true);
+        return;
       }
 
-      if (event === 'SIGNED_OUT') {
+      if (session?.user && session.user.email_confirmed_at) {
+        console.log("User exists and email confirmed, redirecting to dashboard");
+        navigate("/dashboard");
+        return;
+      }
+
+      if (event === "SIGNED_OUT") {
         console.log("User signed out");
         setShowEmailConfirmation(false);
-      }
-
-      if (event === 'USER_UPDATED') {
-        console.log("User updated - email confirmation status:", session?.user.email_confirmed_at);
-        if (session?.user.email_confirmed_at) {
-          console.log("Email confirmed, redirecting to dashboard");
-          navigate("/dashboard");
-          toast({
-            title: "Email confirmé",
-            description: "Votre email a été confirmé. Vous pouvez maintenant accéder à votre tableau de bord.",
-          });
-        }
-      }
-    });
-
-    const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session) => {
-      if (event === 'SIGNED_UP') {
-        console.log("New sign up, showing email confirmation screen");
-        setEmail(session?.user?.email || "");
-        setShowEmailConfirmation(true);
-      }
-
-      if (event === 'PASSWORD_RECOVERY') {
-        toast({
-          title: "Réinitialisation du mot de passe",
-          description: "Vérifiez vos emails pour réinitialiser votre mot de passe.",
-        });
       }
     });
 
     return () => {
       subscription.unsubscribe();
-      authSubscription.unsubscribe();
     };
   }, [navigate, toast]);
 
@@ -87,6 +65,7 @@ const AuthForm = () => {
     console.error("Auth error:", error);
     
     if (error.message?.includes("Email not confirmed")) {
+      console.log("Email not confirmed error, showing confirmation screen");
       setShowEmailConfirmation(true);
       return;
     }
