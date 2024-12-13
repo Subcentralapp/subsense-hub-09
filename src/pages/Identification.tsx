@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -6,8 +6,12 @@ import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CustomSignUpForm } from "@/components/auth/CustomSignUpForm";
+import EmailConfirmation from "@/components/auth/EmailConfirmation";
+import { EmailConfirmationHandler } from "@/components/auth/EmailConfirmationHandler";
 
 const Identification = () => {
+  const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
+  const [email, setEmail] = useState("");
   const navigate = useNavigate();
   const { toast } = useToast();
 
@@ -16,22 +20,25 @@ const Identification = () => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state changed:", event, session);
       
-      if (session) {
-        console.log("User signed in, redirecting to dashboard");
-        navigate("/dashboard");
-      } else if (event === 'SIGNED_OUT') {
-        console.log("User signed out");
-        toast({
-          title: "Déconnexion réussie",
-          description: "Vous avez été déconnecté avec succès.",
-        });
+      if (session?.user.email_confirmed_at) {
+        console.log("Email confirmé, redirection vers onboarding");
+        navigate("/onboarding");
       }
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [navigate, toast]);
+  }, [navigate]);
+
+  const handleEmailSent = (email: string) => {
+    setEmail(email);
+    setShowEmailConfirmation(true);
+  };
+
+  if (showEmailConfirmation) {
+    return <EmailConfirmation email={email} onBack={() => setShowEmailConfirmation(false)} />;
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background">
@@ -46,6 +53,7 @@ const Identification = () => {
         </div>
 
         <div className="bg-background rounded-lg border p-8">
+          <EmailConfirmationHandler />
           <Tabs defaultValue="signin" className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-8">
               <TabsTrigger value="signin">Connexion</TabsTrigger>
@@ -94,7 +102,7 @@ const Identification = () => {
             </TabsContent>
             
             <TabsContent value="signup">
-              <CustomSignUpForm />
+              <CustomSignUpForm onEmailSent={handleEmailSent} />
             </TabsContent>
           </Tabs>
         </div>

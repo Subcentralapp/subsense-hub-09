@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import {
   Form,
   FormControl,
@@ -37,10 +36,13 @@ const formSchema = z.object({
     .max(15, "Le numéro de téléphone ne peut pas dépasser 15 chiffres"),
 });
 
-export function CustomSignUpForm() {
+interface CustomSignUpFormProps {
+  onEmailSent: (email: string) => void;
+}
+
+export function CustomSignUpForm({ onEmailSent }: CustomSignUpFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -87,14 +89,8 @@ export function CustomSignUpForm() {
           throw profileError;
         }
 
-        console.log("✅ Profil créé avec succès");
-        toast({
-          title: "Inscription réussie !",
-          description: "Bienvenue sur SubaCentral ! Configurons votre profil.",
-        });
-
-        // Redirection vers l'onboarding
-        navigate("/onboarding");
+        console.log("✅ Profil créé avec succès, redirection vers la confirmation email");
+        onEmailSent(values.email);
       }
     } catch (error: any) {
       console.error("❌ Erreur:", error);

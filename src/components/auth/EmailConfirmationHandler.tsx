@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 export const EmailConfirmationHandler = () => {
   const [searchParams] = useSearchParams();
@@ -39,9 +39,10 @@ export const EmailConfirmationHandler = () => {
               console.log("Email confirmed successfully");
               toast({
                 title: "Email confirmé",
-                description: "Votre email a été vérifié avec succès.",
+                description: "Votre email a été vérifié avec succès. Vous pouvez maintenant vous connecter.",
               });
-              navigate("/dashboard");
+              // Rediriger vers la page de connexion après confirmation
+              navigate("/identification", { replace: true });
             }
           }
         } catch (error) {
