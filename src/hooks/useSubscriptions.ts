@@ -89,6 +89,35 @@ export const useSubscriptions = (page: number = 1) => {
     }
   };
 
+  const updateNextBillingDate = async (subscriptionId: number, newDate: Date) => {
+    try {
+      console.log("Updating next billing date for subscription", subscriptionId, "to", newDate);
+      const { error } = await supabase
+        .from('subscriptions')
+        .update({ next_billing: newDate.toISOString() })
+        .eq('id', subscriptionId);
+
+      if (error) {
+        throw error;
+      }
+
+      // Invalidate queries to refresh the data
+      queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
+
+      toast({
+        title: "Succès",
+        description: "La date de prochain paiement a été mise à jour.",
+      });
+    } catch (error) {
+      console.error("Error updating next billing date:", error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la mise à jour de la date.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return {
     subscriptions: data?.subscriptions || [],
     total: data?.total || 0,
@@ -96,5 +125,6 @@ export const useSubscriptions = (page: number = 1) => {
     isLoading,
     refetch,
     handleDelete,
+    updateNextBillingDate,
   };
 };
