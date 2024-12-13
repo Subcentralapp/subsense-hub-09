@@ -9,6 +9,39 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      active_sessions: {
+        Row: {
+          created_at: string | null
+          device_info: Json | null
+          expires_at: string
+          id: number
+          ip_address: string | null
+          last_active: string | null
+          session_token: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          device_info?: Json | null
+          expires_at: string
+          id?: number
+          ip_address?: string | null
+          last_active?: string | null
+          session_token: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          device_info?: Json | null
+          expires_at?: string
+          id?: number
+          ip_address?: string | null
+          last_active?: string | null
+          session_token?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       applications: {
         Row: {
           AVANTAGES: string | null
@@ -308,6 +341,11 @@ export type Database = {
           id: string
           last_login: string | null
           last_password_change: string | null
+          login_history: Json[] | null
+          password_last_changed: string | null
+          security_questions: Json | null
+          two_factor_enabled: boolean | null
+          two_factor_secret: string | null
           username: string | null
         }
         Insert: {
@@ -318,6 +356,11 @@ export type Database = {
           id: string
           last_login?: string | null
           last_password_change?: string | null
+          login_history?: Json[] | null
+          password_last_changed?: string | null
+          security_questions?: Json | null
+          two_factor_enabled?: boolean | null
+          two_factor_secret?: string | null
           username?: string | null
         }
         Update: {
@@ -328,6 +371,11 @@ export type Database = {
           id?: string
           last_login?: string | null
           last_password_change?: string | null
+          login_history?: Json[] | null
+          password_last_changed?: string | null
+          security_questions?: Json | null
+          two_factor_enabled?: boolean | null
+          two_factor_secret?: string | null
           username?: string | null
         }
         Relationships: []
@@ -442,6 +490,36 @@ export type Database = {
         }
         Relationships: []
       }
+      suspicious_activities: {
+        Row: {
+          activity_type: string
+          created_at: string | null
+          details: Json | null
+          id: number
+          ip_address: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          activity_type: string
+          created_at?: string | null
+          details?: Json | null
+          id?: number
+          ip_address?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          activity_type?: string
+          created_at?: string | null
+          details?: Json | null
+          id?: number
+          ip_address?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       user_preferences: {
         Row: {
           age_range: string | null
@@ -511,6 +589,10 @@ export type Database = {
     }
     Functions: {
       check_trial_ending: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      clean_expired_sessions: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
