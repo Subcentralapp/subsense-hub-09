@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ExternalLink } from "lucide-react";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 
 const AdSpace = () => {
   const ads = [
@@ -8,11 +9,13 @@ const AdSpace = () => {
       title: "Offre Spéciale Disney+",
       description: "3 mois à -50% pour tout nouvel abonnement",
       image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=500&q=80",
+      lowQualityImage: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=50&q=20",
     },
     {
       title: "Amazon Prime Student",
       description: "Profitez de -50% sur votre abonnement Prime avec votre statut étudiant",
       image: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=500&q=80",
+      lowQualityImage: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=50&q=20",
     },
   ];
 
@@ -27,8 +30,9 @@ const AdSpace = () => {
               className="overflow-hidden rounded-lg border border-gray-100 hover-scale"
             >
               <div className="relative h-48">
-                <img
+                <OptimizedImage
                   src={ad.image}
+                  lowQualityUrl={ad.lowQualityImage}
                   alt={ad.title}
                   className="w-full h-full object-cover"
                 />

@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/carousel";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { OptimizedImage } from "@/components/ui/optimized-image";
 
 const partnerAds = [
   {
@@ -14,6 +15,7 @@ const partnerAds = [
     subtitle: "La musique en illimité",
     description: "3 mois gratuits pour tout nouvel abonnement",
     image: "https://images.unsplash.com/photo-1614680376593-902f74cf0d41?w=1200&q=80",
+    lowQualityImage: "https://images.unsplash.com/photo-1614680376593-902f74cf0d41?w=100&q=20",
     link: "https://spotify.com",
   },
   {
@@ -21,6 +23,7 @@ const partnerAds = [
     subtitle: "La suite bureautique complète",
     description: "-50% sur votre abonnement annuel",
     image: "https://images.unsplash.com/photo-1633419461186-7d40a38105ec?w=1200&q=80",
+    lowQualityImage: "https://images.unsplash.com/photo-1633419461186-7d40a38105ec?w=100&q=20",
     link: "https://microsoft.com",
   },
   {
@@ -28,6 +31,7 @@ const partnerAds = [
     subtitle: "Libérez votre créativité",
     description: "Essai gratuit de 30 jours + 20% de réduction",
     image: "https://images.unsplash.com/photo-1626785774573-4b799315345d?w=1200&q=80",
+    lowQualityImage: "https://images.unsplash.com/photo-1626785774573-4b799315345d?w=100&q=20",
     link: "https://adobe.com",
   },
 ];
@@ -38,7 +42,9 @@ const AdCarousel = () => {
       <div className="space-y-4">
         <Separator className="my-8" />
         <h2 className="text-2xl font-bold text-center">Nos Partenaires Premium</h2>
-        <p className="text-muted-foreground text-center">Découvrez les offres exclusives de nos partenaires</p>
+        <p className="text-muted-foreground text-center">
+          Découvrez les offres exclusives de nos partenaires
+        </p>
       </div>
       
       <Carousel
@@ -52,8 +58,9 @@ const AdCarousel = () => {
           {partnerAds.map((ad, index) => (
             <CarouselItem key={index}>
               <div className="relative h-[300px] w-full overflow-hidden rounded-xl">
-                <img
+                <OptimizedImage
                   src={ad.image}
+                  lowQualityUrl={ad.lowQualityImage}
                   alt={ad.title}
                   className="w-full h-full object-cover"
                 />
