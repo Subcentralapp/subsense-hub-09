@@ -343,6 +343,30 @@ export type Database = {
           },
         ]
       }
+      rate_limits: {
+        Row: {
+          created_at: string
+          endpoint: string
+          id: number
+          key: string
+          timestamp: string
+        }
+        Insert: {
+          created_at?: string
+          endpoint: string
+          id?: number
+          key: string
+          timestamp?: string
+        }
+        Update: {
+          created_at?: string
+          endpoint?: string
+          id?: number
+          key?: string
+          timestamp?: string
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           category: string | null
@@ -455,6 +479,10 @@ export type Database = {
         Returns: undefined
       }
       clean_old_login_attempts: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      clean_old_rate_limits: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }

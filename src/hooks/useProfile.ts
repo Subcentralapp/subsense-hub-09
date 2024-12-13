@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { checkRateLimit } from "@/lib/rateLimiter";
 
 export interface Profile {
   username?: string;
@@ -22,6 +23,7 @@ export const useProfile = () => {
 
   const getUser = async () => {
     try {
+      await checkRateLimit('api');  // Rate limiting pour les requêtes API
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError) throw userError;
       
@@ -44,13 +46,12 @@ export const useProfile = () => {
         console.log("Profile error:", profileError);
         
         if (profileError.code === 'PGRST116') {
-          // Profile doesn't exist, create one
           console.log("No profile found, creating one...");
           const { data: newProfile, error: insertError } = await supabase
             .from('profiles')
             .insert([{ 
               id: user.id,
-              username: user.email?.split('@')[0] // Set a default username
+              username: user.email?.split('@')[0]
             }])
             .select()
             .single();
@@ -70,11 +71,19 @@ export const useProfile = () => {
       
     } catch (error) {
       console.error("Error in getUser:", error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de charger les informations utilisateur",
-        variant: "destructive",
-      });
+      if (error.message?.includes('Too many requests')) {
+        toast({
+          title: "Trop de requêtes",
+          description: "Veuillez patienter quelques minutes avant de réessayer.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Erreur",
+          description: "Impossible de charger les informations utilisateur",
+          variant: "destructive",
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -82,6 +91,7 @@ export const useProfile = () => {
 
   const handleSignOut = async () => {
     try {
+      await checkRateLimit('auth');  // Rate limiting pour la déconnexion
       await supabase.auth.signOut();
       toast({
         title: "Déconnexion réussie",
@@ -90,11 +100,19 @@ export const useProfile = () => {
       navigate("/auth");
     } catch (error) {
       console.error("Error signing out:", error);
-      toast({
-        title: "Erreur",
-        description: "Une erreur est survenue lors de la déconnexion",
-        variant: "destructive",
-      });
+      if (error.message?.includes('Too many requests')) {
+        toast({
+          title: "Trop de tentatives",
+          description: "Veuillez patienter quelques minutes avant de réessayer.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Erreur",
+          description: "Une erreur est survenue lors de la déconnexion",
+          variant: "destructive",
+        });
+      }
     }
   };
 
