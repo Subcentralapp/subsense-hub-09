@@ -1,8 +1,7 @@
-import { useEffect, lazy, Suspense } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -110,28 +109,26 @@ const Identification = () => {
                 }}
                 providers={["google"]}
                 redirectTo={`${window.location.origin}/auth/callback`}
-                options={{
-                  data: {
-                    display_name: '',
-                    phone: '',
-                  },
-                  signUpFields: [
-                    {
-                      name: 'display_name',
-                      required: true,
-                      type: 'text',
-                      label: "Nom d'affichage",
-                      placeholder: "Votre nom d'affichage",
-                    },
-                    {
-                      name: 'phone',
-                      required: false,
-                      type: 'tel',
-                      label: 'Téléphone',
-                      placeholder: 'Votre numéro de téléphone (optionnel)',
-                    },
-                  ],
+                additionalData={{
+                  display_name: '',
+                  phone: '',
                 }}
+                extendedSignUpFields={[
+                  {
+                    name: 'display_name',
+                    required: true,
+                    type: 'text',
+                    label: "Nom d'affichage",
+                    placeholder: "Votre nom d'affichage",
+                  },
+                  {
+                    name: 'phone',
+                    required: false,
+                    type: 'tel',
+                    label: 'Téléphone',
+                    placeholder: 'Votre numéro de téléphone (optionnel)',
+                  },
+                ]}
                 localization={{
                   variables: {
                     sign_up: {
