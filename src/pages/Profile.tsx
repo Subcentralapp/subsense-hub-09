@@ -11,6 +11,7 @@ import { SecurityInfo } from "@/components/profile/SecurityInfo";
 import { PasswordManagement } from "@/components/profile/PasswordManagement";
 import { AccountDeletion } from "@/components/profile/AccountDeletion";
 import { ProfilePageHeader } from "@/components/profile/ProfilePageHeader";
+import { TwoFactorSetup } from "@/components/auth/TwoFactorSetup";
 import { useProfile } from "@/hooks/useProfile";
 
 export default function Profile() {
@@ -66,11 +67,8 @@ export default function Profile() {
           </TabsContent>
           
           <TabsContent value="security" className="space-y-4">
-            <Card className="p-4 sm:p-6 overflow-hidden">
-              <div className="max-w-full">
-                <SecurityInfo user={user} />
-              </div>
-            </Card>
+            <TwoFactorSetup />
+            <SecurityInfo user={user} />
             <Card className="p-4 sm:p-6 overflow-hidden">
               <div className="max-w-full">
                 <PasswordManagement />
