@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { SupportMessage } from "./SupportMessage";
 import { useState } from "react";
 
-// Ensure this matches exactly with the navigationItems from DashboardNavigation
 const navigationItems = [
   { icon: BarChart, label: "Tableau de bord", path: "/dashboard", tab: "dashboard" },
   { icon: Receipt, label: "Paiements", path: "/dashboard", tab: "payments" },
@@ -17,7 +16,7 @@ export const MobileMenu = () => {
   const [open, setOpen] = useState(false);
 
   const handleNavigation = (path: string, tab: string) => {
-    console.log(`Navigating to ${path} with tab ${tab}`);
+    console.log(`MobileMenu - Navigating to ${path} with tab ${tab}`);
     navigate(path, { state: { activeTab: tab } });
     setOpen(false);
   };
@@ -33,9 +32,9 @@ export const MobileMenu = () => {
         <nav className="flex flex-col gap-4 mt-8">
           {navigationItems.map((item) => (
             <button 
-              key={item.label}
+              key={item.tab}
               onClick={() => handleNavigation(item.path, item.tab)}
-              className="flex items-center gap-3 text-lg font-medium hover:text-primary transition-colors text-left"
+              className="flex items-center gap-3 text-lg font-medium hover:text-primary transition-colors text-left w-full px-4 py-2 rounded-lg hover:bg-gray-100"
             >
               <item.icon className="h-5 w-5" />
               {item.label}
