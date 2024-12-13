@@ -20,13 +20,11 @@ export const useSubscriptions = (page: number = 1) => {
         return { subscriptions: [], total: 0 };
       }
 
-      // Fetch total count
       const { count } = await supabase
         .from('subscriptions')
         .select('*', { count: 'exact', head: true })
         .eq('user_id', user.id);
 
-      // Fetch paginated data
       const { data, error } = await supabase
         .from('subscriptions')
         .select('*')
@@ -39,15 +37,14 @@ export const useSubscriptions = (page: number = 1) => {
         throw error;
       }
 
-      console.log(`Fetched ${data?.length} subscriptions, total: ${count}`);
       return { 
         subscriptions: data || [], 
         total: count || 0,
         totalPages: Math.ceil((count || 0) / PAGE_SIZE)
       };
     },
-    staleTime: 30000, // 30 secondes
-    gcTime: 5 * 60 * 1000, // 5 minutes
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
     refetchOnWindowFocus: false,
   });
 
@@ -76,7 +73,7 @@ export const useSubscriptions = (page: number = 1) => {
         description: "L'abonnement a été supprimé avec succès.",
       });
 
-      // Mise à jour silencieuse
+      // Mise à jour silencieuse du cache des paiements à venir
       queryClient.setQueryData(["upcomingPayments"], (oldData: any) => {
         if (!oldData) return [];
         return oldData.filter((payment: any) => payment.id !== id);
@@ -110,6 +107,16 @@ export const useSubscriptions = (page: number = 1) => {
             sub.id === subscriptionId ? { ...sub, next_billing: newDate.toISOString() } : sub
           )
         };
+      });
+
+      // Mise à jour silencieuse du cache des paiements à venir
+      queryClient.setQueryData(["upcomingPayments"], (oldData: any) => {
+        if (!oldData) return oldData;
+        return oldData.map((payment: any) =>
+          payment.id === subscriptionId 
+            ? { ...payment, next_billing: newDate.toISOString() }
+            : payment
+        );
       });
 
     } catch (error) {
