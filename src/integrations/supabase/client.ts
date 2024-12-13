@@ -13,27 +13,14 @@ export const supabase = createClient(
     global: {
       headers: {
         'X-Client-Info': 'submanager',
+        'X-Client-Version': '1.0.0',
       },
     },
     db: {
       schema: 'public'
-    },
-    // Ajout de paramètres de sécurité pour les requêtes
-    headers: {
-      'X-Client-Info': 'submanager',
-      'X-Client-Version': '1.0.0',
-    },
+    }
   }
 )
-
-// Intercepteur pour ajouter le token JWT à chaque requête
-supabase.client.interceptors.request.use((config) => {
-  const session = supabase.auth.session()
-  if (session?.access_token) {
-    config.headers.Authorization = `Bearer ${session.access_token}`
-  }
-  return config
-})
 
 // Fonction utilitaire pour vérifier les permissions
 export const checkPermission = async (permission: string): Promise<boolean> => {
