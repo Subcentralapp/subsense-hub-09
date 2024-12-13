@@ -1,41 +1,28 @@
 import { useQuery } from "@tanstack/react-query";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Calendar, ChevronDown, ChevronUp } from "lucide-react";
-import { format, parseISO } from "date-fns";
-import { fr } from "date-fns/locale";
-import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
-import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+import { Card } from "@/components/ui/card";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const UpcomingPayments = () => {
+export const UpcomingPayments = () => {
   const { toast } = useToast();
-  const [expandedId, setExpandedId] = useState<number | null>(null);
 
-  const { data: subscriptions, isLoading, error, refetch } = useQuery({
-    queryKey: ['upcoming-payments'],
+  const { data: upcomingPayments, isLoading } = useQuery({
+    queryKey: ["upcomingPayments"],
     queryFn: async () => {
       console.log("Fetching upcoming payments...");
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        console.error("No user found");
-        throw new Error("User not logged in");
-      }
+      const { data, error } = await supabase
+        .from("subscriptions")
+        .select("*")
+        .gte("next_billing", new Date().toISOString())
+        .order("next_billing", { ascending: true })
+        .limit(5);
 
-      const currentDate = new Date().toISOString();
-      console.log("Current date for filter:", currentDate);
-
-      const { data, error: fetchError } = await supabase
-        .from('subscriptions')
-        .select('*')
-        .eq('user_id', user.id)
-        .gt('next_billing', currentDate)
-        .order('next_billing', { ascending: true });
-
-      if (fetchError) {
-        console.error("Error fetching upcoming payments:", fetchError);
-        throw fetchError;
+      if (error) {
+        console.error("Error fetching upcoming payments:", error);
+        throw error;
       }
 
       console.log("Fetched upcoming payments:", data);
@@ -54,109 +41,53 @@ const UpcomingPayments = () => {
           title: "Erreur de chargement",
           description: "Impossible de charger les paiements à venir. Veuillez réessayer.",
           variant: "destructive",
+          duration: 2000, // 2 secondes
         });
       }
     }
   });
 
-  const toggleDetails = (id: number) => {
-    setExpandedId(expandedId === id ? null : id);
-  };
-
-  if (error) {
-    return (
-      <Card className="p-6">
-        <div className="text-center space-y-4">
-          <p className="text-red-500">Une erreur est survenue lors de la récupération des paiements à venir.</p>
-          <Button 
-            onClick={() => refetch()} 
-            variant="outline"
-            className="mx-auto"
-          >
-            Réessayer
-          </Button>
-        </div>
-      </Card>
-    );
-  }
-
   if (isLoading) {
     return (
-      <Card className="p-6">
-        <div className="flex items-center justify-center h-40">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <Card className="p-4">
+        <h3 className="text-lg font-semibold mb-4">Paiements à venir</h3>
+        <div className="space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="flex justify-between items-center">
+              <Skeleton className="h-4 w-1/3" />
+              <Skeleton className="h-4 w-1/4" />
+            </div>
+          ))}
         </div>
       </Card>
     );
   }
 
-  if (!subscriptions || subscriptions.length === 0) {
+  if (!upcomingPayments || upcomingPayments.length === 0) {
     return (
-      <Card className="p-6">
-        <p className="text-gray-500 text-center">Aucun paiement à venir pour le moment.</p>
+      <Card className="p-4">
+        <h3 className="text-lg font-semibold mb-4">Paiements à venir</h3>
+        <p className="text-muted-foreground">Aucun paiement à venir</p>
       </Card>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-semibold">Paiements à venir</h2>
-      {subscriptions.map(sub => (
-        <motion.div
-          key={sub.id}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-        >
-          <Card className="border border-gray-200 p-4">
-            <div className="flex flex-col gap-4">
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                <div className="min-w-0 flex-1">
-                  <h3 className="text-lg font-medium truncate">{sub.name}</h3>
-                  <p className="text-sm text-gray-500 truncate">
-                    {format(parseISO(sub.next_billing), 'PPP', { locale: fr })}
-                  </p>
-                  <p className="text-sm text-gray-500">{sub.price} €</p>
-                </div>
-                <Button 
-                  variant="outline" 
-                  className="w-full sm:w-auto whitespace-nowrap"
-                  onClick={() => toggleDetails(sub.id)}
-                >
-                  <Calendar className="h-4 w-4 mr-2" />
-                  Voir les détails
-                  {expandedId === sub.id ? (
-                    <ChevronUp className="h-4 w-4 ml-2" />
-                  ) : (
-                    <ChevronDown className="h-4 w-4 ml-2" />
-                  )}
-                </Button>
-              </div>
-              
-              {expandedId === sub.id && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="border-t pt-4 mt-2"
-                >
-                  <div className="space-y-2">
-                    <p><span className="font-medium">Catégorie:</span> {sub.category || 'Non spécifiée'}</p>
-                    <p><span className="font-medium">Description:</span> {sub.description || 'Aucune description'}</p>
-                    <p><span className="font-medium">Date de création:</span> {format(parseISO(sub.created_at), 'PPP', { locale: fr })}</p>
-                    {sub.is_trial && sub.trial_end_date && (
-                      <p><span className="font-medium">Fin de la période d'essai:</span> {format(parseISO(sub.trial_end_date), 'PPP', { locale: fr })}</p>
-                    )}
-                  </div>
-                </motion.div>
-              )}
+    <Card className="p-4">
+      <h3 className="text-lg font-semibold mb-4">Paiements à venir</h3>
+      <div className="space-y-4">
+        {upcomingPayments.map((payment) => (
+          <div key={payment.id} className="flex justify-between items-center">
+            <div>
+              <p className="font-medium">{payment.name}</p>
+              <p className="text-sm text-muted-foreground">
+                {format(new Date(payment.next_billing), "d MMMM yyyy", { locale: fr })}
+              </p>
             </div>
-          </Card>
-        </motion.div>
-      ))}
-    </div>
+            <p className="font-semibold">{payment.price}€</p>
+          </div>
+        ))}
+      </div>
+    </Card>
   );
 };
-
-export default UpcomingPayments;
