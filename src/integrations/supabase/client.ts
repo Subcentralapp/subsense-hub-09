@@ -1,9 +1,18 @@
 import { createClient } from '@supabase/supabase-js'
 
+// Vérification de la présence des variables d'environnement
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.error('Missing Supabase environment variables')
+  throw new Error('Missing Supabase environment variables. Please check your .env file.')
+}
+
 // Configuration de base de Supabase avec des options de sécurité renforcées
 export const supabase = createClient(
-  import.meta.env.VITE_SUPABASE_URL || '',
-  import.meta.env.VITE_SUPABASE_ANON_KEY || '',
+  supabaseUrl,
+  supabaseAnonKey,
   {
     auth: {
       autoRefreshToken: true,
@@ -34,10 +43,8 @@ export const checkPermission = async (permission: string): Promise<boolean> => {
       .eq('id', user.id)
       .single()
 
-    // Vérification basique des rôles (à adapter selon vos besoins)
     if (!userRoles) return false
     
-    // Exemple de vérification de permission basique
     switch (userRoles.role) {
       case 'admin':
         return true
