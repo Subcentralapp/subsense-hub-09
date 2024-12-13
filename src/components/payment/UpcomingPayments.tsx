@@ -28,10 +28,10 @@ export const UpcomingPayments = () => {
       console.log("Fetched upcoming payments:", data);
       return data || [];
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: 30 * 60 * 1000, // 30 minutes
+    gcTime: 60 * 60 * 1000, // 1 hour
     refetchOnWindowFocus: false,
-    refetchOnMount: true,
+    refetchOnMount: false,
     meta: {
       errorHandler: (error: Error) => {
         console.error("Query error:", error);
@@ -46,11 +46,20 @@ export const UpcomingPayments = () => {
 
   if (isLoading) {
     return (
-      <div className="space-y-4">
-        {[...Array(3)].map((_, i) => (
-          <Skeleton key={i} className="h-16 w-full rounded-lg" />
-        ))}
-      </div>
+      <Card className="p-4">
+        <h3 className="text-lg font-semibold mb-4">Paiements à venir</h3>
+        <div className="space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="flex justify-between items-center animate-pulse">
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-32" />
+                <Skeleton className="h-3 w-24" />
+              </div>
+              <Skeleton className="h-4 w-16" />
+            </div>
+          ))}
+        </div>
+      </Card>
     );
   }
 

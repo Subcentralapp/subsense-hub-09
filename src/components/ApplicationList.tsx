@@ -42,9 +42,10 @@ const ApplicationList = () => {
         throw error;
       }
     },
-    staleTime: 5 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
+    staleTime: 30 * 60 * 1000, // 30 minutes
+    gcTime: 60 * 60 * 1000, // 1 hour
     refetchOnWindowFocus: false,
+    refetchOnMount: false
   });
 
   const handleAddSubscription = async (app: Application) => {
@@ -88,7 +89,27 @@ const ApplicationList = () => {
         throw error;
       }
 
-      await queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
+      // Mise à jour silencieuse du cache
+      queryClient.setQueryData(["subscriptions"], (oldData: any) => {
+        if (!oldData) return { subscriptions: [], total: 0, totalPages: 1 };
+        return {
+          ...oldData,
+          subscriptions: [
+            {
+              id: Date.now(),
+              name: selectedApp.name,
+              price: price,
+              category: selectedApp.category,
+              next_billing: nextBilling.toISOString(),
+              description: selectedApp.description,
+              is_trial: isTrial,
+              trial_end_date: trialEndDate?.toISOString() || null,
+            },
+            ...oldData.subscriptions,
+          ],
+          total: oldData.total + 1,
+        };
+      });
 
       logPerformance({
         endpoint: "addSubscription",

@@ -43,8 +43,8 @@ export const useSubscriptions = (page: number = 1) => {
         totalPages: Math.ceil((count || 0) / PAGE_SIZE)
       };
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: 30 * 60 * 1000, // 30 minutes
+    gcTime: 60 * 60 * 1000, // 1 hour
     refetchOnWindowFocus: false,
   });
 
@@ -52,6 +52,7 @@ export const useSubscriptions = (page: number = 1) => {
     try {
       const previousData = queryClient.getQueryData<{ subscriptions: Subscription[], total: number }>(["subscriptions", page]);
       
+      // Mise à jour optimiste
       queryClient.setQueryData(["subscriptions", page], (old: any) => ({
         ...old,
         subscriptions: old.subscriptions.filter((sub: Subscription) => sub.id !== id),
