@@ -32,8 +32,25 @@ const ComparisonSearch = ({ onSelect }: ComparisonSearchProps) => {
           throw error;
         }
 
-        console.log(`✅ ComparisonSearch - ${data?.length || 0} applications chargées`);
-        setApplications(data || []);
+        // Convertir les données de la base de données au format Application
+        const formattedData: Application[] = data.map(app => ({
+          id: app.id,
+          name: app.NOM || '',
+          price: app.PRICE ? parseFloat(app.PRICE) : 0,
+          category: app.CATÉGORIE || null,
+          description: app.DESCRIPTION || null,
+          features: Array.isArray(app.CARACTÉRISTIQUES) ? app.CARACTÉRISTIQUES : [],
+          pros: app.AVANTAGES || null,
+          cons: app.INCONVÉNIENTS || null,
+          website_url: app["URL DU SITE WEB"] || null,
+          logo_url: app["URL DU LOGO"] || null,
+          rating: app.NOTE || null,
+          review: app.REVUE || null,
+          users_count: app["NOMBRE D'UTILISATEURS"] || null
+        }));
+
+        console.log(`✅ ComparisonSearch - ${formattedData.length || 0} applications chargées`);
+        setApplications(formattedData);
       } catch (error) {
         console.error("❌ ComparisonSearch - Erreur inattendue:", error);
         toast({
@@ -50,11 +67,11 @@ const ComparisonSearch = ({ onSelect }: ComparisonSearchProps) => {
   }, [toast]);
 
   const filteredApps = applications.filter(app => 
-    app.NOM?.toLowerCase().includes(searchTerm.toLowerCase())
+    app.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const handleAppSelect = (app: Application) => {
-    console.log("📱 ComparisonSearch - Application sélectionnée:", app.NOM);
+    console.log("📱 ComparisonSearch - Application sélectionnée:", app.name);
     if (selectedApps.find(a => a.id === app.id)) {
       setSelectedApps(prev => prev.filter(a => a.id !== app.id));
     } else if (selectedApps.length < 3) {
@@ -96,16 +113,16 @@ const ComparisonSearch = ({ onSelect }: ComparisonSearchProps) => {
               onClick={() => handleAppSelect(app)}
             >
               <div className="flex items-center gap-3">
-                {app.URL_DU_LOGO && (
+                {app.logo_url && (
                   <img 
-                    src={app.URL_DU_LOGO} 
-                    alt={app.NOM || "Logo"} 
+                    src={app.logo_url} 
+                    alt={app.name || "Logo"} 
                     className="w-8 h-8 object-contain"
                   />
                 )}
                 <div className="text-left">
-                  <p className="font-medium">{app.NOM}</p>
-                  <p className="text-sm text-muted-foreground">{app.CATÉGORIE}</p>
+                  <p className="font-medium">{app.name}</p>
+                  <p className="text-sm text-muted-foreground">{app.category}</p>
                 </div>
               </div>
             </Button>
