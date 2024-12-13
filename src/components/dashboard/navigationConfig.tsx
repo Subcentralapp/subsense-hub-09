@@ -1,24 +1,24 @@
-import { BarChart, Receipt, ArrowRightLeft, AppWindow } from "lucide-react";
+import { LayoutDashboard, Apps, Receipt, Scale } from "lucide-react";
 
-export const navigationItems = [
+export const navigationConfig = [
   {
-    label: "Tableau de bord",
-    icon: BarChart,
-    path: "/dashboard"
+    title: "Tableau de bord",
+    href: "/dashboard",
+    icon: LayoutDashboard,
   },
   {
-    label: "Paiements",
+    title: "Applications",
+    href: "/dashboard/apps",
+    icon: Apps,
+  },
+  {
+    title: "Paiements",
+    href: "/dashboard/payments",
     icon: Receipt,
-    path: "/dashboard/payments"
   },
   {
-    label: "Comparer",
-    icon: ArrowRightLeft,
-    path: "/dashboard/compare"
+    title: "Comparer",
+    href: "/dashboard/compare",
+    icon: Scale,
   },
-  {
-    label: "Applications",
-    icon: AppWindow,
-    path: "/dashboard/apps"
-  }
 ];

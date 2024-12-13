@@ -6,12 +6,14 @@ import { CompareContent } from "@/components/dashboard/CompareContent";
 import { Routes, Route } from "react-router-dom";
 
 const Dashboard = () => {
+  console.log("Rendering Dashboard component");
+  
   return (
     <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-8">
       <div className="space-y-4 sm:space-y-8">
         <DashboardNavigation />
         <Routes>
-          <Route path="/" element={<DashboardContent />} />
+          <Route index element={<DashboardContent />} />
           <Route path="apps" element={<AppsContent />} />
           <Route path="payments" element={<PaymentsContent />} />
           <Route path="compare" element={<CompareContent />} />

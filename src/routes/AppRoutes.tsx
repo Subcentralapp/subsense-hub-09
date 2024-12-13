@@ -78,7 +78,6 @@ const routes = [
   }
 ];
 
-// Composant pour gérer les erreurs de route
 function ErrorBoundary() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-background">
