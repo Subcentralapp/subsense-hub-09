@@ -23,9 +23,11 @@ export function UserNav() {
 
     const checkSession = async () => {
       try {
+        console.log("🔍 Vérification de la session...");
         const { data: { session }, error } = await supabase.auth.getSession();
+        
         if (error) {
-          console.error("Erreur lors de la vérification de la session:", error);
+          console.error("❌ Erreur lors de la vérification de la session:", error);
           if (mounted) {
             setIsSessionValid(false);
             navigate("/auth", { replace: true });
@@ -34,17 +36,20 @@ export function UserNav() {
         }
 
         if (mounted) {
-          console.log("Session check result:", !!session);
-          setIsSessionValid(!!session);
-          if (!session) {
-            navigate("/auth", { replace: true });
+          const hasValidSession = !!session;
+          console.log("✅ État de la session:", hasValidSession);
+          setIsSessionValid(hasValidSession);
+          
+          if (!hasValidSession) {
+            console.log("🚫 Pas de session valide, redirection vers /landing");
+            navigate("/landing", { replace: true });
           }
         }
       } catch (error) {
-        console.error("Erreur lors de la vérification de la session:", error);
+        console.error("❌ Erreur inattendue lors de la vérification de la session:", error);
         if (mounted) {
           setIsSessionValid(false);
-          navigate("/auth", { replace: true });
+          navigate("/landing", { replace: true });
         }
       }
     };
@@ -54,58 +59,38 @@ export function UserNav() {
 
     // Écouter les changements d'état d'authentification
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("🔄 État de l'authentification changé:", event, "Session:", !!session);
+      
       if (mounted) {
-        console.log("État de l'authentification changé:", event, "Session:", !!session);
-        
-        // Nettoyer le cache si l'utilisateur se déconnecte
         if (event === 'SIGNED_OUT') {
+          console.log("👋 Utilisateur déconnecté, nettoyage et redirection...");
           await clearAppCache();
-        }
-        
-        setIsSessionValid(!!session);
-        if (!session) {
-          navigate("/auth", { replace: true });
+          setIsSessionValid(false);
+          navigate("/landing", { replace: true });
+        } else if (event === 'SIGNED_IN' && session) {
+          console.log("🎉 Utilisateur connecté");
+          setIsSessionValid(true);
+          navigate("/dashboard", { replace: true });
         }
       }
     });
 
-    // Synchroniser avec le stockage local
-    const handleStorageChange = (e: StorageEvent) => {
-      if (e.key === 'supabase.auth.token') {
-        checkSession();
-      }
-    };
-    window.addEventListener('storage', handleStorageChange);
-
     return () => {
       mounted = false;
       subscription.unsubscribe();
-      window.removeEventListener('storage', handleStorageChange);
     };
   }, [navigate]);
 
   const clearAppCache = async () => {
     console.log("🧹 Nettoyage du cache de l'application...");
     try {
-      // Purger le cache React Query
       await queryClient.clear();
-      
-      // Nettoyer localStorage sauf les données d'authentification
-      const authToken = localStorage.getItem('supabase.auth.token');
       localStorage.clear();
-      if (authToken) {
-        localStorage.setItem('supabase.auth.token', authToken);
-      }
-      
-      // Nettoyer sessionStorage
       sessionStorage.clear();
       
-      // Invalider tous les caches de service worker si présents
       if ('caches' in window) {
         const cacheKeys = await caches.keys();
-        await Promise.all(
-          cacheKeys.map(key => caches.delete(key))
-        );
+        await Promise.all(cacheKeys.map(key => caches.delete(key)));
       }
       
       console.log("✨ Cache nettoyé avec succès");
@@ -117,35 +102,20 @@ export function UserNav() {
   const handleSignOut = async () => {
     console.log("🔄 Tentative de déconnexion...");
     try {
-      // Nettoyer le cache avant la déconnexion
-      await clearAppCache();
-
       const { error } = await supabase.auth.signOut();
-      if (error) {
-        console.error("❌ Erreur lors de la déconnexion:", error);
-        toast({
-          title: "Erreur",
-          description: "Une erreur est survenue lors de la déconnexion",
-          variant: "destructive",
-        });
-        return;
-      }
+      if (error) throw error;
 
       console.log("✅ Déconnexion réussie");
-      setIsSessionValid(false);
-
       toast({
         title: "Déconnexion réussie",
         description: "À bientôt !",
       });
 
-      // Forcer un rechargement complet de la page après la déconnexion
-      window.location.href = '/landing';
     } catch (error) {
-      console.error("❌ Erreur inattendue lors de la déconnexion:", error);
+      console.error("❌ Erreur lors de la déconnexion:", error);
       toast({
         title: "Erreur",
-        description: "Une erreur inattendue est survenue",
+        description: "Une erreur est survenue lors de la déconnexion",
         variant: "destructive",
       });
     }
