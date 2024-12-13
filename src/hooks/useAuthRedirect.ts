@@ -10,7 +10,7 @@ export const useAuthRedirect = () => {
 
   const checkUserPreferences = async (userId: string, email_confirmed_at: string | null) => {
     try {
-      await checkRateLimit('auth');  // Rate limiting pour l'authentification
+      await checkRateLimit('auth');
       console.log("Vérification du statut de l'email et des préférences utilisateur...");
       
       // Vérifier si l'email est confirmé

@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/components/ui/use-toast";
 import {
   Form,
   FormControl,
@@ -15,9 +16,9 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
 
-const signUpSchema = z.object({
+const formSchema = z.object({
   email: z.string().email("Email invalide"),
   password: z
     .string()
@@ -28,19 +29,21 @@ const signUpSchema = z.object({
     ),
   displayName: z
     .string()
-    .min(2, "Le nom d'affichage doit contenir au moins 2 caractères"),
-  phone: z.string().optional(),
+    .min(2, "Le nom d'affichage doit contenir au moins 2 caractères")
+    .max(50, "Le nom d'affichage ne peut pas dépasser 50 caractères"),
+  phone: z
+    .string()
+    .min(10, "Le numéro de téléphone doit contenir au moins 10 chiffres")
+    .max(15, "Le numéro de téléphone ne peut pas dépasser 15 chiffres"),
 });
 
-type SignUpForm = z.infer<typeof signUpSchema>;
-
 export function CustomSignUpForm() {
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
 
-  const form = useForm<SignUpForm>({
-    resolver: zodResolver(signUpSchema),
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -49,37 +52,55 @@ export function CustomSignUpForm() {
     },
   });
 
-  const onSubmit = async (data: SignUpForm) => {
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    console.log("📝 Début de l'inscription...");
+    setIsLoading(true);
     try {
-      setIsLoading(true);
-      console.log("Tentative d'inscription avec les données:", data);
-
-      const { error: signUpError } = await supabase.auth.signUp({
-        email: data.email,
-        password: data.password,
+      const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+        email: values.email,
+        password: values.password,
         options: {
           data: {
-            display_name: data.displayName,
-            phone: data.phone || null,
+            display_name: values.displayName,
+            phone: values.phone,
           },
         },
       });
 
-      if (signUpError) throw signUpError;
+      if (signUpError) {
+        console.error("❌ Erreur lors de l'inscription:", signUpError);
+        throw signUpError;
+      }
 
-      toast({
-        title: "Inscription réussie !",
-        description:
-          "Veuillez vérifier votre email pour confirmer votre inscription.",
-      });
+      if (signUpData.user) {
+        console.log("✅ Inscription réussie, création du profil...");
+        
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .update({
+            username: values.displayName,
+          })
+          .eq('id', signUpData.user.id);
 
-      navigate("/auth/callback");
-    } catch (error) {
-      console.error("Erreur lors de l'inscription:", error);
+        if (profileError) {
+          console.error("❌ Erreur lors de la création du profil:", profileError);
+          throw profileError;
+        }
+
+        console.log("✅ Profil créé avec succès");
+        toast({
+          title: "Inscription réussie !",
+          description: "Bienvenue sur SubaCentral ! Configurons votre profil.",
+        });
+
+        // Redirection vers l'onboarding
+        navigate("/onboarding");
+      }
+    } catch (error: any) {
+      console.error("❌ Erreur:", error);
       toast({
-        title: "Erreur",
-        description:
-          "Une erreur est survenue lors de l'inscription. Veuillez réessayer.",
+        title: "Erreur lors de l'inscription",
+        description: error.message || "Une erreur est survenue",
         variant: "destructive",
       });
     } finally {
@@ -89,97 +110,103 @@ export function CustomSignUpForm() {
 
   return (
     <Form {...form}>
-      <form
-        onSubmit={form.handleSubmit(onSubmit)}
-        className="space-y-4 w-full max-w-md"
-      >
-        <FormField
-          control={form.control}
-          name="email"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email</FormLabel>
-              <FormControl>
-                <Input
-                  type="email"
-                  placeholder="votre@email.com"
-                  {...field}
-                  disabled={isLoading}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+        <div className="space-y-4">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="email"
+                    placeholder="exemple@email.com"
+                    disabled={isLoading}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Mot de passe</FormLabel>
-              <FormControl>
-                <Input
-                  type="password"
-                  placeholder="••••••••"
-                  {...field}
-                  disabled={isLoading}
-                />
-              </FormControl>
-              <FormDescription className="text-xs text-muted-foreground">
-                Le mot de passe doit contenir :
-                <ul className="list-disc list-inside mt-1">
-                  <li>Au moins 8 caractères</li>
-                  <li>Au moins une lettre minuscule</li>
-                  <li>Au moins une lettre majuscule</li>
-                  <li>Au moins un chiffre</li>
-                  <li>Au moins un symbole spécial (!@#$%^&*)</li>
-                </ul>
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Mot de passe</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="password"
+                    placeholder="••••••••"
+                    disabled={isLoading}
+                  />
+                </FormControl>
+                <FormDescription className="text-xs text-muted-foreground">
+                  Le mot de passe doit contenir :
+                  <ul className="list-disc list-inside mt-1">
+                    <li>Au moins 8 caractères</li>
+                    <li>Au moins une lettre minuscule</li>
+                    <li>Au moins une lettre majuscule</li>
+                    <li>Au moins un chiffre</li>
+                    <li>Au moins un symbole spécial (!@#$%^&*)</li>
+                  </ul>
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="displayName"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nom d'affichage</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Votre nom public"
-                  {...field}
-                  disabled={isLoading}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="displayName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Nom d'affichage</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    placeholder="John Doe"
+                    disabled={isLoading}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
-        <FormField
-          control={form.control}
-          name="phone"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Téléphone (optionnel)</FormLabel>
-              <FormControl>
-                <Input
-                  type="tel"
-                  placeholder="Votre numéro de téléphone"
-                  {...field}
-                  disabled={isLoading}
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <FormField
+            control={form.control}
+            name="phone"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Téléphone</FormLabel>
+                <FormControl>
+                  <Input
+                    {...field}
+                    type="tel"
+                    placeholder="+33612345678"
+                    disabled={isLoading}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
         <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Inscription en cours..." : "S'inscrire"}
+          {isLoading ? (
+            <>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              Inscription en cours...
+            </>
+          ) : (
+            "S'inscrire"
+          )}
         </Button>
       </form>
     </Form>
