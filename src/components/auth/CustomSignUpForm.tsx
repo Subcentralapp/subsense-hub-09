@@ -11,6 +11,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
@@ -22,8 +23,8 @@ const signUpSchema = z.object({
     .string()
     .min(8, "Le mot de passe doit contenir au moins 8 caractères")
     .regex(
-      /^(?=.*[A-Z])(?=.*\d)/,
-      "Le mot de passe doit contenir au moins une majuscule et un chiffre"
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])/,
+      "Le mot de passe doit contenir au moins une minuscule, une majuscule, un chiffre et un symbole"
     ),
   displayName: z
     .string()
@@ -125,6 +126,16 @@ export function CustomSignUpForm() {
                   disabled={isLoading}
                 />
               </FormControl>
+              <FormDescription className="text-xs text-muted-foreground">
+                Le mot de passe doit contenir :
+                <ul className="list-disc list-inside mt-1">
+                  <li>Au moins 8 caractères</li>
+                  <li>Au moins une lettre minuscule</li>
+                  <li>Au moins une lettre majuscule</li>
+                  <li>Au moins un chiffre</li>
+                  <li>Au moins un symbole spécial (!@#$%^&*)</li>
+                </ul>
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
