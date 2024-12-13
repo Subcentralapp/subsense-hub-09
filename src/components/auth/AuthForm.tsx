@@ -15,53 +15,73 @@ const AuthForm = () => {
 
   useEffect(() => {
     const checkUser = async () => {
-      console.log("Checking user session...");
+      console.log("Vérification de la session utilisateur...");
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
       if (sessionError) {
-        console.error("Session check error:", sessionError);
+        console.error("Erreur lors de la vérification de la session:", sessionError);
         return;
       }
 
       if (session?.user) {
-        console.log("User session found:", {
-          id: session.user.id,
-          email: session.user.email,
-          emailConfirmed: session.user.email_confirmed_at
+        // Récupérer une session fraîche pour s'assurer d'avoir les dernières informations
+        const { data: { user }, error: refreshError } = await supabase.auth.refreshSession();
+        
+        if (refreshError) {
+          console.error("Erreur lors du rafraîchissement de la session:", refreshError);
+          return;
+        }
+
+        console.log("Session utilisateur trouvée:", {
+          id: user?.id,
+          email: user?.email,
+          emailConfirmed: user?.email_confirmed_at,
+          lastSignIn: user?.last_sign_in_at
         });
 
-        if (!session.user.email_confirmed_at) {
-          console.log("Email not confirmed, showing confirmation screen");
-          setEmail(session.user.email || "");
-          setShowEmailConfirmation(true);
-        } else {
-          console.log("Email confirmed, redirecting to dashboard");
+        if (user?.email_confirmed_at) {
+          console.log("Email confirmé, redirection vers le tableau de bord");
           navigate("/dashboard");
+          toast({
+            title: "Email confirmé",
+            description: "Votre compte a été vérifié avec succès.",
+          });
+        } else {
+          console.log("Email non confirmé, affichage de l'écran de confirmation");
+          setEmail(user?.email || "");
+          setShowEmailConfirmation(true);
         }
       } else {
-        console.log("No active session found");
+        console.log("Aucune session active trouvée");
       }
     };
     
     checkUser();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Auth state change:", {
+      console.log("Changement d'état d'authentification:", {
         event: event,
         userId: session?.user?.id,
-        userEmail: session?.user?.email,
+        email: session?.user?.email,
         emailConfirmed: session?.user?.email_confirmed_at
       });
 
-      if (session?.user) {
-        // Vérifier à nouveau la session après un changement d'état
-        const { data: { session: currentSession } } = await supabase.auth.getSession();
-        console.log("Current session after state change:", {
-          emailConfirmed: currentSession?.user?.email_confirmed_at
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        // Forcer une actualisation de la session
+        const { data: { user }, error: refreshError } = await supabase.auth.refreshSession();
+        
+        if (refreshError) {
+          console.error("Erreur lors du rafraîchissement de la session:", refreshError);
+          return;
+        }
+
+        console.log("État de la session après rafraîchissement:", {
+          emailConfirmed: user?.email_confirmed_at,
+          lastSignIn: user?.last_sign_in_at
         });
 
-        if (currentSession?.user?.email_confirmed_at) {
-          console.log("Email confirmed in current session, redirecting to dashboard");
+        if (user?.email_confirmed_at) {
+          console.log("Email confirmé, redirection vers le tableau de bord");
           navigate("/dashboard");
           toast({
             title: "Email confirmé",
@@ -70,16 +90,16 @@ const AuthForm = () => {
           return;
         }
 
-        if (!currentSession?.user?.email_confirmed_at) {
-          console.log("Email still not confirmed, showing confirmation screen");
-          setEmail(session.user.email || "");
+        if (!user?.email_confirmed_at) {
+          console.log("Email toujours non confirmé, affichage de l'écran de confirmation");
+          setEmail(user?.email || "");
           setShowEmailConfirmation(true);
           return;
         }
       }
 
-      if (event === "SIGNED_OUT") {
-        console.log("User signed out, resetting confirmation screen");
+      if (event === 'SIGNED_OUT') {
+        console.log("Utilisateur déconnecté, réinitialisation de l'écran de confirmation");
         setShowEmailConfirmation(false);
       }
     });
@@ -90,10 +110,10 @@ const AuthForm = () => {
   }, [navigate, toast]);
 
   const handleError = (error: AuthError) => {
-    console.error("Auth error:", error);
+    console.error("Erreur d'authentification:", error);
     
     if (error.message?.includes("Email not confirmed")) {
-      console.log("Email not confirmed error, showing confirmation screen");
+      console.log("Email non confirmé, affichage de l'écran de confirmation");
       setShowEmailConfirmation(true);
       return;
     }
