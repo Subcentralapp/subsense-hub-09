@@ -3,12 +3,21 @@ import { AppsContent } from "@/components/dashboard/AppsContent";
 import { PaymentsContent } from "@/components/dashboard/PaymentsContent";
 import { CompareContent } from "@/components/dashboard/CompareContent";
 import { DashboardContent } from "@/components/dashboard/DashboardContent";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 
 const Dashboard = () => {
   const location = useLocation();
   const state = location.state as { activeTab?: string } | null;
   const activeTab = state?.activeTab || "dashboard";
+
+  console.log("Dashboard - Current location:", location.pathname);
+  console.log("Dashboard - Active tab:", activeTab);
+
+  // Rediriger vers le bon sous-chemin en fonction de l'activeTab
+  if (location.pathname === "/dashboard" && activeTab !== "dashboard") {
+    console.log("Dashboard - Redirecting to:", `/dashboard/${activeTab}`);
+    return <Navigate to={`/dashboard/${activeTab}`} replace />;
+  }
 
   return (
     <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-8">
