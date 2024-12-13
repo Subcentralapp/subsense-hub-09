@@ -5,25 +5,27 @@ import { cn } from "@/lib/utils";
 export const DashboardNavigation = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const state = location.state as { activeTab?: string } | null;
-  const activeTab = state?.activeTab || "dashboard";
+  const currentPath = location.pathname;
 
-  const handleNavigation = (tab: string) => {
-    navigate("/dashboard", { state: { activeTab: tab } });
+  const handleNavigation = (path: string) => {
+    console.log("Navigation vers:", path);
+    navigate(path);
   };
 
   return (
     <nav className="flex items-center justify-around gap-2 p-4">
       {navigationItems.map((item) => {
         const Icon = item.icon;
+        const isActive = currentPath === item.path;
+        
         return (
           <button
             key={item.label}
-            onClick={() => handleNavigation(item.tab)}
+            onClick={() => handleNavigation(item.path)}
             className={cn(
               "flex items-center gap-2 px-4 py-2 rounded-lg transition-colors",
               "hover:bg-primary/10",
-              activeTab === item.tab
+              isActive
                 ? "text-primary bg-primary/5"
                 : "text-muted-foreground"
             )}
