@@ -17,20 +17,30 @@ const AuthForm = () => {
     const checkUser = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
-        console.log("User already logged in, redirecting to dashboard");
-        navigate("/dashboard");
+        if (session.user.email_confirmed_at) {
+          console.log("User already logged in and email confirmed, redirecting to dashboard");
+          navigate("/dashboard");
+        } else {
+          console.log("User logged in but email not confirmed, showing confirmation screen");
+          setEmail(session.user.email || "");
+          setShowEmailConfirmation(true);
+        }
       }
     };
     
     checkUser();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state change:", event, session);
 
       if (event === 'SIGNED_IN') {
         if (session?.user.email_confirmed_at) {
           console.log("User signed in and email confirmed, redirecting to dashboard");
           navigate("/dashboard");
+        } else {
+          console.log("User signed in but email not confirmed, showing confirmation screen");
+          setEmail(session.user.email || "");
+          setShowEmailConfirmation(true);
         }
       }
 
@@ -42,11 +52,11 @@ const AuthForm = () => {
       if (event === 'USER_UPDATED') {
         console.log("User updated - email confirmation status:", session?.user.email_confirmed_at);
         if (session?.user.email_confirmed_at) {
-          console.log("Email confirmed, redirecting to identification");
-          navigate("/identification");
+          console.log("Email confirmed, redirecting to dashboard");
+          navigate("/dashboard");
           toast({
             title: "Email confirmé",
-            description: "Votre email a été confirmé. Vous pouvez maintenant vous connecter.",
+            description: "Votre email a été confirmé. Vous pouvez maintenant accéder à votre tableau de bord.",
           });
         }
       }
@@ -75,6 +85,11 @@ const AuthForm = () => {
 
   const handleError = (error: AuthError) => {
     console.error("Auth error:", error);
+    
+    if (error.message?.includes("Email not confirmed")) {
+      setShowEmailConfirmation(true);
+      return;
+    }
     
     if (error.message?.includes("User already registered")) {
       toast({
