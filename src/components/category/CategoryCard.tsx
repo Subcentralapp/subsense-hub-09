@@ -64,11 +64,13 @@ export const CategoryCard = ({
       />
       
       {/* Version mobile - Liste uniquement */}
-      <CategoryContent 
-        isExpanded={isExpanded}
-        applications={applications}
-        onAddTool={onAddTool}
-      />
+      <div className="md:hidden">
+        <CategoryContent 
+          isExpanded={isExpanded}
+          applications={applications}
+          onAddTool={onAddTool}
+        />
+      </div>
 
       {/* Version desktop - Bloc horizontal uniquement */}
       {isExpanded && applications.length > 0 && (
