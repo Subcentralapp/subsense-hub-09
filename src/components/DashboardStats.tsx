@@ -2,38 +2,62 @@ import { Card } from "@/components/ui/card";
 import { DollarSign, TrendingUp, Calendar, Award } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/components/ui/use-toast";
 
 const DashboardStats = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
   const { data } = useQuery({
     queryKey: ['dashboard-subscriptions'],
     queryFn: async () => {
-      console.log("DashboardStats - Fetching subscriptions...");
-      const { data: { user } } = await supabase.auth.getUser();
-      
-      if (!user) {
-        console.log("DashboardStats - No user found, returning empty array");
+      try {
+        console.log("DashboardStats - Fetching subscriptions...");
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error("DashboardStats - Session error:", sessionError);
+          throw sessionError;
+        }
+
+        if (!session) {
+          console.log("DashboardStats - No session found, redirecting...");
+          navigate("/identification");
+          return { subscriptions: [] };
+        }
+
+        const { data, error } = await supabase
+          .from('subscriptions')
+          .select('*')
+          .eq('user_id', session.user.id)
+          .order('created_at', { ascending: false });
+
+        if (error) {
+          console.error("DashboardStats - Error fetching subscriptions:", error);
+          if (error.message.includes('JWT')) {
+            toast({
+              title: "Session expirée",
+              description: "Votre session a expiré. Veuillez vous reconnecter.",
+              variant: "destructive",
+            });
+            navigate("/identification");
+          }
+          throw error;
+        }
+
+        console.log("DashboardStats - Fetched subscriptions:", data);
+        return { subscriptions: data || [] };
+      } catch (error) {
+        console.error("DashboardStats - Error:", error);
         return { subscriptions: [] };
       }
-
-      const { data, error } = await supabase
-        .from('subscriptions')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error("DashboardStats - Error fetching subscriptions:", error);
-        throw error;
-      }
-
-      console.log("DashboardStats - Fetched subscriptions:", data);
-      return { subscriptions: data || [] };
     },
     initialData: { subscriptions: [] },
-    staleTime: 0, // Toujours considérer les données comme périmées
-    gcTime: 0, // Ne pas mettre en cache les données
-    refetchOnMount: true, // Recharger au montage du composant
-    refetchOnWindowFocus: true // Recharger quand la fenêtre reprend le focus
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true
   });
 
   // S'assurer que subscriptions est toujours un tableau

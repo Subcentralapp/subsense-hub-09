@@ -2,30 +2,55 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { MonthlyEvolutionChart } from "./charts/MonthlyEvolutionChart";
 import { CategoryChart } from "./charts/CategoryChart";
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/components/ui/use-toast";
 
 const PaymentCharts = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
+
   const { data } = useQuery({
     queryKey: ['payment-charts-subscriptions'],
     queryFn: async () => {
-      console.log("PaymentCharts - Fetching subscriptions...");
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        console.log("PaymentCharts - No user found, returning empty array");
+      try {
+        console.log("PaymentCharts - Fetching subscriptions...");
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+        
+        if (sessionError) {
+          console.error("PaymentCharts - Session error:", sessionError);
+          throw sessionError;
+        }
+
+        if (!session) {
+          console.log("PaymentCharts - No session found, redirecting...");
+          navigate("/identification");
+          return { subscriptions: [] };
+        }
+
+        const { data, error } = await supabase
+          .from('subscriptions')
+          .select('*')
+          .eq('user_id', session.user.id);
+
+        if (error) {
+          console.error("PaymentCharts - Error fetching subscriptions:", error);
+          if (error.message.includes('JWT')) {
+            toast({
+              title: "Session expirée",
+              description: "Votre session a expiré. Veuillez vous reconnecter.",
+              variant: "destructive",
+            });
+            navigate("/identification");
+          }
+          throw error;
+        }
+
+        console.log("PaymentCharts - Fetched subscriptions:", data);
+        return { subscriptions: data || [] };
+      } catch (error) {
+        console.error("PaymentCharts - Error:", error);
         return { subscriptions: [] };
       }
-
-      const { data, error } = await supabase
-        .from('subscriptions')
-        .select('*')
-        .eq('user_id', user.id);
-
-      if (error) {
-        console.error("PaymentCharts - Error fetching subscriptions:", error);
-        throw error;
-      }
-
-      console.log("PaymentCharts - Fetched subscriptions:", data);
-      return { subscriptions: data || [] };
     },
     initialData: { subscriptions: [] },
     staleTime: 0,
