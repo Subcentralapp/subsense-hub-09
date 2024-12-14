@@ -18,6 +18,12 @@ const DashboardStats = () => {
         
         if (sessionError) {
           console.error("DashboardStats - Session error:", sessionError);
+          toast({
+            title: "Erreur de session",
+            description: "Votre session a expiré. Veuillez vous reconnecter.",
+            variant: "destructive",
+          });
+          navigate("/identification");
           throw sessionError;
         }
 
@@ -35,12 +41,14 @@ const DashboardStats = () => {
 
         if (error) {
           console.error("DashboardStats - Error fetching subscriptions:", error);
-          if (error.message.includes('JWT')) {
+          if (error.message.includes('JWT') || error.message.includes('session')) {
             toast({
               title: "Session expirée",
               description: "Votre session a expiré. Veuillez vous reconnecter.",
               variant: "destructive",
             });
+            // Déconnexion explicite en cas d'erreur de session
+            await supabase.auth.signOut();
             navigate("/identification");
           }
           throw error;
@@ -57,7 +65,8 @@ const DashboardStats = () => {
     staleTime: 0,
     gcTime: 0,
     refetchOnMount: true,
-    refetchOnWindowFocus: true
+    refetchOnWindowFocus: true,
+    retry: 1
   });
 
   // S'assurer que subscriptions est toujours un tableau
