@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
-import { Provider } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import EmailConfirmation from "./EmailConfirmation";
@@ -39,7 +38,7 @@ const AuthForm = () => {
             console.log("Pas de préférences trouvées, redirection vers onboarding");
             navigate("/onboarding", { replace: true });
           } else {
-            console.log("Préférences trouvées, redirection vers le dashboard");
+            console.log("Préférences trouvées, redirection vers dashboard");
             navigate("/dashboard", { replace: true });
           }
         } else {
@@ -107,23 +106,6 @@ const AuthForm = () => {
     return <EmailConfirmation email={email} onBack={() => setShowEmailConfirmation(false)} />;
   }
 
-  const authConfig = {
-    supabaseClient: supabase,
-    appearance: {
-      theme: ThemeSupa,
-      variables: {
-        default: {
-          colors: {
-            brand: '#2563eb',
-            brandAccent: '#1d4ed8',
-          },
-        },
-      },
-    },
-    providers: ['google' as Provider],
-    redirectTo: `${window.location.origin}/auth/callback`,
-  };
-
   return (
     <div className="bg-background rounded-lg border p-8">
       <EmailConfirmationHandler />
@@ -135,8 +117,20 @@ const AuthForm = () => {
         
         <TabsContent value="signin">
           <Auth
-            {...authConfig}
+            supabaseClient={supabase}
             view="sign_in"
+            appearance={{
+              theme: ThemeSupa,
+              variables: {
+                default: {
+                  colors: {
+                    brand: '#2563eb',
+                    brandAccent: '#1d4ed8',
+                  },
+                },
+              },
+            }}
+            providers={["google"]}
             localization={{
               variables: {
                 sign_in: {
