@@ -8,9 +8,6 @@ export const AppsContent = () => {
       <Card className="p-6">
         <TechnicalStackSuggestion />
       </Card>
-      <Card className="p-6">
-        <TrendingTools2025 />
-      </Card>
     </div>
   );
 };
