@@ -45,7 +45,7 @@ export const ApplicationCard = ({ app, onAdd }: ApplicationCardProps) => {
           size="sm"
           className="w-full bg-primary text-white hover:bg-primary/90"
         >
-          Ajouter l'abonnement
+          Découvrir
         </Button>
       </div>
     </div>
