@@ -34,7 +34,9 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        // Si nous avons une session, vérifions les préférences
+        console.log("✅ Session trouvée:", session.user.id);
+
+        // Vérification des préférences utilisateur
         const { data: preferences, error: preferencesError } = await supabase
           .from('user_preferences')
           .select('*')
@@ -80,7 +82,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
         return;
       }
 
-      // Vérifier les préférences si nous avons une session
+      // Vérification des préférences si nous avons une session
       const { data: preferences, error: preferencesError } = await supabase
         .from('user_preferences')
         .select('*')
