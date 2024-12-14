@@ -20,6 +20,15 @@ export const ComparisonSearch = ({
   selectedApps,
   isMobile = false,
 }: ComparisonSearchProps) => {
+  const handleChangeApp = (index: number) => {
+    // Réinitialiser l'application sélectionnée
+    const updatedApps = [...selectedApps];
+    updatedApps[index] = {} as Application;
+    onSelectApp({} as Application, index);
+    onSearchChange('', index);
+    console.log("Réinitialisation de l'application à l'index:", index);
+  };
+
   if (isMobile) {
     return (
       <div className="w-full space-y-3">
@@ -33,7 +42,7 @@ export const ComparisonSearch = ({
             }`}
           >
             <div className="p-3">
-              {selectedApps[index] ? (
+              {selectedApps[index]?.name ? (
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     {selectedApps[index].logo_url ? (
@@ -66,7 +75,7 @@ export const ComparisonSearch = ({
                     </div>
                   </div>
                   <button 
-                    onClick={() => onSearchChange('', index)}
+                    onClick={() => handleChangeApp(index)}
                     className="text-sm text-primary hover:text-primary/80 underline px-2"
                   >
                     Changer
@@ -106,12 +115,12 @@ export const ComparisonSearch = ({
           className="relative"
         >
           <div className={`rounded-xl ${
-            selectedApps[index] 
+            selectedApps[index]?.name
               ? 'bg-white shadow-lg border border-primary/20' 
               : 'bg-neutral-light border-2 border-dashed border-gray-200 hover:border-primary/30 transition-all'
           }`}>
             <div className="p-4">
-              {selectedApps[index] ? (
+              {selectedApps[index]?.name ? (
                 <div className="flex items-center gap-4 mb-4">
                   {selectedApps[index].logo_url ? (
                     <img 
@@ -155,7 +164,7 @@ export const ComparisonSearch = ({
                   );
                 })}
                 onSelectApp={(app) => onSelectApp(app, index)}
-                placeholder={selectedApps[index] ? "Changer d'application" : "Rechercher une application"}
+                placeholder={selectedApps[index]?.name ? "Changer d'application" : "Rechercher une application"}
               />
             </div>
           </div>
