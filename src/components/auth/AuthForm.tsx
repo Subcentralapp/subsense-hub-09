@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Auth, Provider } from "@supabase/auth-ui-react";
+import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -113,7 +113,7 @@ const AuthForm = () => {
         },
       },
     },
-    providers: ["google" as Provider],
+    providers: ["google"],
     redirectTo: `${window.location.origin}/auth/callback`,
   };
 
