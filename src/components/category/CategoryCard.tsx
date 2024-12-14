@@ -3,6 +3,7 @@ import { Application } from "@/types/application";
 import { CategoryHeader } from "@/components/stack/CategoryHeader";
 import { CategoryContent } from "./CategoryContent";
 import { stackCategories } from "@/data/stackSuggestions";
+import { ApplicationCard } from "../ApplicationCard";
 
 interface CategoryCardProps {
   name: string;
@@ -61,11 +62,35 @@ export const CategoryCard = ({
         onClick={handleClick}
       />
       
+      {/* Version mobile - Liste */}
       <CategoryContent 
         isExpanded={isExpanded}
         applications={applications}
         onAddTool={onAddTool}
       />
+
+      {/* Version desktop - Affichage horizontal */}
+      {isExpanded && applications.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          exit={{ opacity: 0, height: 0 }}
+          className="hidden md:grid md:grid-cols-3 gap-4 mt-4"
+        >
+          {applications.map((app) => (
+            <ApplicationCard
+              key={app.id}
+              app={app}
+              onAdd={() => {
+                console.log('Add application:', app.name);
+                if (onAddTool) {
+                  onAddTool(app);
+                }
+              }}
+            />
+          ))}
+        </motion.div>
+      )}
     </div>
   );
 };
