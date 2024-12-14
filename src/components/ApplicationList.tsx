@@ -22,11 +22,11 @@ const ApplicationList = () => {
   const { data: applications, isLoading } = useQuery({
     queryKey: ["applications"],
     queryFn: async () => {
-      console.log("Fetching applications...");
+      console.log("📱 Fetching applications...");
       const startTime = performance.now();
       try {
         const apps = await fetchApplications();
-        console.log("Applications fetched successfully:", apps?.length);
+        console.log("✅ Applications fetched successfully:", apps?.length);
         logPerformance({
           endpoint: "fetchApplications",
           startTime,
@@ -35,7 +35,7 @@ const ApplicationList = () => {
         });
         return apps;
       } catch (error) {
-        console.error("Error fetching applications:", error);
+        console.error("❌ Error fetching applications:", error);
         logPerformance({
           endpoint: "fetchApplications",
           startTime,
@@ -45,15 +45,15 @@ const ApplicationList = () => {
         throw error;
       }
     },
-    staleTime: Infinity, // Ne jamais considérer les données comme périmées
-    gcTime: 24 * 60 * 60 * 1000, // 24 heures
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000, // 10 minutes
     refetchOnWindowFocus: false,
-    refetchOnMount: false,
-    retry: 1
+    refetchOnMount: true,
+    retry: 2
   });
 
   const handleAddSubscription = async (app: Application) => {
-    console.log("Opening customization dialog for:", app.name);
+    console.log("🎯 Opening customization dialog for:", app.name);
     setSelectedApp(app);
   };
 
@@ -65,19 +65,23 @@ const ApplicationList = () => {
   ) => {
     const startTime = performance.now();
     try {
+      console.log("🔄 Checking authentication...");
       const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
-        console.log("User not authenticated, redirecting to auth");
+        console.log("❌ User not authenticated, redirecting to auth");
         navigate("/auth");
         return;
       }
 
-      if (!selectedApp) return;
+      if (!selectedApp) {
+        console.log("❌ No app selected");
+        return;
+      }
 
-      console.log("Adding subscription for user:", user.id);
+      console.log("📝 Adding subscription for user:", user.id);
 
-      const { error } = await supabase.from("subscriptions").insert({
+      const { data, error } = await supabase.from("subscriptions").insert({
         name: selectedApp.name,
         price: price,
         category: selectedApp.category,
@@ -86,31 +90,21 @@ const ApplicationList = () => {
         user_id: user.id,
         is_trial: isTrial,
         trial_end_date: trialEndDate?.toISOString() || null,
-      });
+      }).select().single();
 
       if (error) {
-        console.error("Error inserting subscription:", error);
+        console.error("❌ Error inserting subscription:", error);
         throw error;
       }
 
-      // Mise à jour silencieuse du cache
+      console.log("✅ Subscription added successfully:", data);
+
+      // Mise à jour optimiste du cache
       queryClient.setQueryData(["subscriptions"], (oldData: any) => {
-        if (!oldData) return { subscriptions: [], total: 0, totalPages: 1 };
+        if (!oldData) return { subscriptions: [data], total: 1, totalPages: 1 };
         return {
           ...oldData,
-          subscriptions: [
-            {
-              id: Date.now(),
-              name: selectedApp.name,
-              price: price,
-              category: selectedApp.category,
-              next_billing: nextBilling.toISOString(),
-              description: selectedApp.description,
-              is_trial: isTrial,
-              trial_end_date: trialEndDate?.toISOString() || null,
-            },
-            ...oldData.subscriptions,
-          ],
+          subscriptions: [data, ...oldData.subscriptions],
           total: oldData.total + 1,
         };
       });
@@ -132,7 +126,7 @@ const ApplicationList = () => {
       setSelectedApp(null);
       setIsDialogOpen(false);
       navigate("/dashboard");
-    } catch (error) {
+    } catch (error: any) {
       logPerformance({
         endpoint: "addSubscription",
         startTime,
@@ -140,10 +134,10 @@ const ApplicationList = () => {
         error
       });
 
-      console.error("Error adding subscription:", error);
+      console.error("❌ Error adding subscription:", error);
       toast({
         title: "Erreur",
-        description: "Une erreur est survenue lors de l'ajout de l'abonnement.",
+        description: error?.message || "Une erreur est survenue lors de l'ajout de l'abonnement.",
         variant: "destructive",
       });
     }
