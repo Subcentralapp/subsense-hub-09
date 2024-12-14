@@ -4,20 +4,23 @@ import { StatsExport } from "./StatsExport";
 import { StatsCard } from "./StatsCard";
 
 const DetailedStats = () => {
-  const { data: subscriptions } = useStatsData();
+  const { data } = useStatsData();
+  
+  // S'assurer que data.subscriptions est un tableau
+  const subscriptions = Array.isArray(data?.subscriptions) ? data.subscriptions : [];
 
   const stats = {
-    totalMonthly: subscriptions?.reduce((sum, sub) => sum + Number(sub.price), 0) || 0,
-    totalYearly: (subscriptions?.reduce((sum, sub) => sum + Number(sub.price), 0) || 0) * 12,
-    averagePerSub: subscriptions?.length ? 
+    totalMonthly: subscriptions.reduce((sum, sub) => sum + Number(sub.price), 0),
+    totalYearly: subscriptions.reduce((sum, sub) => sum + Number(sub.price), 0) * 12,
+    averagePerSub: subscriptions.length ? 
       (subscriptions.reduce((sum, sub) => sum + Number(sub.price), 0) / subscriptions.length) : 0,
-    categoryBreakdown: subscriptions?.reduce((acc: Record<string, number>, sub) => {
+    categoryBreakdown: subscriptions.reduce((acc: Record<string, number>, sub) => {
       const category = sub.category || 'Non catégorisé';
       acc[category] = (acc[category] || 0) + Number(sub.price);
       return acc;
     }, {}),
-    totalSubscriptions: subscriptions?.length || 0,
-    trialSubscriptions: subscriptions?.filter(sub => sub.is_trial).length || 0,
+    totalSubscriptions: subscriptions.length,
+    trialSubscriptions: subscriptions.filter(sub => sub.is_trial).length,
   };
 
   return (
