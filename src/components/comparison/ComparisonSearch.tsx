@@ -35,8 +35,8 @@ export const ComparisonSearch = ({
         {[0, 1, 2].map((index) => (
           <div 
             key={index} 
-            className={`relative rounded-xl shadow-sm ${
-              selectedApps[index] 
+            className={`relative rounded-xl ${
+              selectedApps[index]?.name 
                 ? 'bg-gradient-to-r from-primary/10 to-primary/5' 
                 : 'bg-white'
             }`}
@@ -121,27 +121,37 @@ export const ComparisonSearch = ({
           }`}>
             <div className="p-4">
               {selectedApps[index]?.name ? (
-                <div className="flex items-center gap-4 mb-4">
-                  {selectedApps[index].logo_url ? (
-                    <img 
-                      src={selectedApps[index].logo_url}
-                      alt={`Logo ${selectedApps[index].name}`}
-                      className="w-12 h-12 rounded-lg object-contain bg-white shadow-sm border border-gray-100"
-                    />
-                  ) : (
-                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <span className="text-xl font-bold text-primary">
-                        {selectedApps[index].name.charAt(0)}
-                      </span>
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      {selectedApps[index].logo_url ? (
+                        <img 
+                          src={selectedApps[index].logo_url}
+                          alt={`Logo ${selectedApps[index].name}`}
+                          className="w-12 h-12 rounded-lg object-contain bg-white shadow-sm border border-gray-100"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <span className="text-xl font-bold text-primary">
+                            {selectedApps[index].name.charAt(0)}
+                          </span>
+                        </div>
+                      )}
+                      <div>
+                        <h3 className="font-semibold text-gray-900">
+                          {selectedApps[index].name}
+                        </h3>
+                        <p className="text-sm text-gray-500">
+                          {selectedApps[index].category || 'Non catégorisé'}
+                        </p>
+                      </div>
                     </div>
-                  )}
-                  <div>
-                    <h3 className="font-semibold text-gray-900">
-                      {selectedApps[index].name}
-                    </h3>
-                    <p className="text-sm text-gray-500">
-                      {selectedApps[index].category || 'Non catégorisé'}
-                    </p>
+                    <button 
+                      onClick={() => handleChangeApp(index)}
+                      className="text-sm text-primary hover:text-primary/80 underline px-2"
+                    >
+                      Changer
+                    </button>
                   </div>
                 </div>
               ) : (
