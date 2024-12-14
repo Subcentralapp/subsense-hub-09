@@ -21,6 +21,21 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
           return;
         }
 
+        // Si l'utilisateur est sur la route /onboarding, vérifier s'il a déjà des préférences
+        if (location.pathname === '/onboarding') {
+          const { data: preferences } = await supabase
+            .from('user_preferences')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+
+          // Si l'utilisateur a déjà des préférences, le rediriger vers le dashboard
+          if (preferences) {
+            window.location.href = '/dashboard';
+            return;
+          }
+        }
+
         console.log("✅ Session trouvée");
         setIsAuthenticated(true);
         setIsLoading(false);
@@ -42,14 +57,14 @@ export const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     return () => {
       subscription.unsubscribe();
     };
-  }, []);
+  }, [location.pathname]);
 
   if (isLoading) {
     return <LoadingSpinner />;
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/auth" state={{ from: location }} replace />;
+    return <Navigate to="/landing" state={{ from: location }} replace />;
   }
 
   return <>{children}</>;
