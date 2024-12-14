@@ -3,18 +3,21 @@ import { supabase } from "@/integrations/supabase/client";
 import { BackgroundLines } from "./header/BackgroundLines";
 import { Logo } from "./header/Logo";
 import { SupportMessage } from "./header/SupportMessage";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { UserNav } from "./UserNav";
 import { PromoMessage } from "./header/PromoMessage";
 import { MobileMenu } from "./header/MobileMenu";
 import { AuthButtons } from "./header/AuthButtons";
 import { useToast } from "@/hooks/use-toast";
+import { Ticket } from "lucide-react";
 
 export const Header = () => {
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const location = useLocation();
+  const isLandingPage = location.pathname === "/landing";
 
   useEffect(() => {
     const checkUser = async () => {
@@ -103,7 +106,13 @@ export const Header = () => {
         <div className="flex items-center h-14 sm:h-16">
           {/* Mobile Layout */}
           <div className="flex items-center gap-4 sm:hidden">
-            <MobileMenu />
+            {isLandingPage ? (
+              <button className="p-2" aria-label="Crowdfunding">
+                <Ticket className="h-6 w-6 text-primary" />
+              </button>
+            ) : (
+              <MobileMenu />
+            )}
           </div>
           
           {/* Logo - Centered on mobile, left on desktop */}
