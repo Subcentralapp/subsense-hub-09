@@ -18,28 +18,30 @@ const queryClient = new QueryClient({
       },
       refetchOnWindowFocus: false,
       refetchOnMount: true,
-      // Ajouter un timeout pour éviter les chargements infinis
-      queryFn: async (context) => {
-        const timeoutPromise = new Promise((_, reject) => {
-          setTimeout(() => {
-            reject(new Error('Request timeout'));
-          }, 10000); // 10 secondes timeout
-        });
-
-        try {
-          const result = await Promise.race([
-            context.queryFn(context.queryKey),
-            timeoutPromise
-          ]);
-          return result;
-        } catch (error) {
-          console.error('Query error:', error);
-          throw error;
-        }
-      }
     },
   },
 });
+
+// Add global timeout handler for all queries
+const originalFetch = window.fetch;
+window.fetch = async (...args) => {
+  const timeoutPromise = new Promise((_, reject) => {
+    setTimeout(() => {
+      reject(new Error('Request timeout'));
+    }, 10000); // 10 seconds timeout
+  });
+
+  try {
+    const result = await Promise.race([
+      originalFetch(...args),
+      timeoutPromise
+    ]);
+    return result;
+  } catch (error) {
+    console.error('Fetch error:', error);
+    throw error;
+  }
+};
 
 function App() {
   return (
