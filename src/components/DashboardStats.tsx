@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 const DashboardStats = () => {
-  const { data: subscriptions } = useQuery({
+  const { data } = useQuery({
     queryKey: ['subscriptions'],
     queryFn: async () => {
       console.log("Fetching subscriptions for dashboard stats...");
@@ -12,7 +12,7 @@ const DashboardStats = () => {
       
       if (!user) {
         console.log("No user found, returning empty array");
-        return [];
+        return { subscriptions: [] };
       }
 
       const { data, error } = await supabase
@@ -27,15 +27,19 @@ const DashboardStats = () => {
       }
 
       console.log("Fetched subscriptions for stats:", data);
-      return data;
-    }
+      return { subscriptions: data || [] };
+    },
+    initialData: { subscriptions: [] }
   });
 
+  // S'assurer que subscriptions est toujours un tableau
+  const subscriptions = Array.isArray(data?.subscriptions) ? data.subscriptions : [];
+
   // Calculate statistics
-  const monthlyTotal = subscriptions?.reduce((sum, sub) => sum + Number(sub.price), 0) || 0;
+  const monthlyTotal = subscriptions.reduce((sum, sub) => sum + Number(sub.price), 0);
   const yearlyTotal = monthlyTotal * 12;
-  const subscriptionCount = subscriptions?.length || 0;
-  const mostExpensive = subscriptions?.reduce((max, sub) => 
+  const subscriptionCount = subscriptions.length;
+  const mostExpensive = subscriptions.reduce((max, sub) => 
     (!max || Number(sub.price) > Number(max.price)) ? sub : max, 
     null as any
   )?.name || '-';
