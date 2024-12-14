@@ -68,7 +68,7 @@ export const CategoryCard = ({
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
           exit={{ opacity: 0, height: 0 }}
-          className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+          className="mt-4 space-y-4"
         >
           {applications.map((app) => (
             <ApplicationCard
