@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Application } from "@/types/application";
-import { CategoryHeader } from "./CategoryHeader";
+import { CategoryHeader } from "@/components/stack/CategoryHeader";
 import { CategoryContent } from "./CategoryContent";
 import { stackCategories } from "@/data/stackSuggestions";
 
