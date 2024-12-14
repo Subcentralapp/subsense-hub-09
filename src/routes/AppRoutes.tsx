@@ -6,6 +6,8 @@ import Identification from "@/pages/Identification";
 import Dashboard from "@/pages/Dashboard";
 import Profile from "@/pages/Profile";
 import Onboarding from "@/pages/Onboarding";
+import PrivacyPolicy from "@/pages/PrivacyPolicy";
+import Terms from "@/pages/Terms";
 import { ProtectedRoute } from "@/components/auth/ProtectedRoute";
 import { DashboardContent } from "@/components/dashboard/DashboardContent";
 import { PaymentsContent } from "@/components/dashboard/PaymentsContent";
@@ -18,18 +20,11 @@ export const router = createBrowserRouter([
     element: <Layout><Outlet /></Layout>,
     errorElement: <ErrorBoundary />,
     children: [
-      { 
-        path: "/", 
-        element: <Index /> 
-      },
-      { 
-        path: "/landing", 
-        element: <Landing /> 
-      },
-      { 
-        path: "/identification", 
-        element: <Identification /> 
-      },
+      { path: "/", element: <Index /> },
+      { path: "/landing", element: <Landing /> },
+      { path: "/identification", element: <Identification /> },
+      { path: "/privacy", element: <PrivacyPolicy /> },
+      { path: "/terms", element: <Terms /> },
       {
         path: "/onboarding",
         element: (
@@ -46,22 +41,10 @@ export const router = createBrowserRouter([
           </ProtectedRoute>
         ),
         children: [
-          {
-            path: "",
-            element: <DashboardContent />
-          },
-          {
-            path: "payments",
-            element: <PaymentsContent />
-          },
-          {
-            path: "compare",
-            element: <CompareContent />
-          },
-          {
-            path: "apps",
-            element: <AppsContent />
-          }
+          { path: "", element: <DashboardContent /> },
+          { path: "payments", element: <PaymentsContent /> },
+          { path: "compare", element: <CompareContent /> },
+          { path: "apps", element: <AppsContent /> }
         ]
       },
       {

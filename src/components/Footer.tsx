@@ -1,53 +1,47 @@
-import { Instagram, Twitter } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Mail } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="w-full bg-neutral-light mt-auto">
-      <div className="container mx-auto px-4">
-        {/* Ligne décorative ondulée */}
-        <div className="w-full h-4 bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1440 320%22%3E%3Cpath fill=%22%23ffffff%22 d=%22M0,96L48,112C96,128,192,160,288,186.7C384,213,480,235,576,213.3C672,192,768,128,864,128C960,128,1056,192,1152,208C1248,224,1344,192,1392,176L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z%22%3E%3C/path%3E%3C/svg%3E')] bg-repeat-x"></div>
-        
-        {/* Contenu du footer */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 py-8">
-          {/* Colonne de gauche */}
-          <div className="text-center md:text-left">
-            <h3 className="font-bold text-lg mb-4">Navigation</h3>
-            <ul className="space-y-2">
-              <li><Link to="/dashboard" className="hover:text-primary transition-colors">Tableau de bord</Link></li>
-              <li><Link to="/profile" className="hover:text-primary transition-colors">Mon compte</Link></li>
-              <li><Link to="/subscriptions" className="hover:text-primary transition-colors">Mes abonnements</Link></li>
-            </ul>
-          </div>
-
-          {/* Colonne du milieu */}
-          <div className="text-center">
-            <h3 className="font-bold text-lg mb-4">Économisez plus</h3>
-            <Link 
-              to="/auth"
-              className="bg-yellow-400 hover:bg-yellow-500 text-black font-semibold px-6 py-2 rounded-full transition-colors inline-block"
-            >
-              Analyser mes dépenses
-            </Link>
-          </div>
-
-          {/* Colonne de droite */}
-          <div className="text-center md:text-right">
-            <h3 className="font-bold text-lg mb-4">Communauté</h3>
-            <div className="flex justify-center md:justify-end space-x-4">
-              <a href="#" className="hover:text-primary transition-colors" title="Suivez nos conseils d'économies sur Twitter">
-                <Twitter className="h-6 w-6" />
-              </a>
-              <a href="#" className="hover:text-primary transition-colors" title="Découvrez nos astuces sur Instagram">
-                <Instagram className="h-6 w-6" />
+    <footer className="bg-white border-t mt-auto">
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Description */}
+          <div className="space-y-4">
+            <p className="text-gray-600 text-sm leading-relaxed">
+              Subcentral est l'application tout-en-un qui vous permet de centraliser, gérer et suivre vos abonnements numériques. 
+              Comparez vos applications préférées, découvrez de nouvelles options, gérez vos paiements et obtenez des factures 
+              directement depuis votre tableau de bord. Simplifiez votre gestion d'abonnements et gardez un œil sur vos finances 
+              facilement avec Subcentral.
+            </p>
+            <div className="flex items-center space-x-2 text-gray-600">
+              <Mail className="h-4 w-4" />
+              <a href="mailto:subcentral@gowithia.fr" className="text-sm hover:text-primary transition-colors">
+                subcentral@gowithia.fr
               </a>
             </div>
           </div>
+
+          {/* Links */}
+          <div className="space-y-4 md:text-right">
+            <h3 className="font-semibold text-gray-900 mb-4">Mentions légales</h3>
+            <nav className="space-y-2">
+              <div>
+                <Link to="/privacy" className="text-sm text-gray-600 hover:text-primary transition-colors">
+                  Politique de confidentialité
+                </Link>
+              </div>
+              <div>
+                <Link to="/terms" className="text-sm text-gray-600 hover:text-primary transition-colors">
+                  Conditions générales d'utilisation
+                </Link>
+              </div>
+            </nav>
+          </div>
         </div>
 
-        {/* Copyright */}
-        <div className="border-t border-gray-200 py-4 text-center text-sm">
-          <p>&copy; {new Date().getFullYear()} Subcentral - Simplifiez la gestion de vos abonnements</p>
+        <div className="mt-8 pt-4 border-t text-center text-sm text-gray-500">
+          <p>&copy; {new Date().getFullYear()} Subcentral - Tous droits réservés</p>
         </div>
       </div>
     </footer>
