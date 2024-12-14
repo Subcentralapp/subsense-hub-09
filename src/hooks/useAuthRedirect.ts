@@ -37,14 +37,22 @@ export const useAuthRedirect = () => {
         throw error;
       }
 
-      // Si l'utilisateur n'a pas encore fait l'onboarding (pas de préférences)
-      if (!preferences) {
-        console.log("🆕 Première connexion, redirection vers onboarding");
+      // Si l'utilisateur n'a pas de préférences ET que c'est sa première connexion
+      const { data: loginHistory } = await supabase
+        .from('profiles')
+        .select('login_history')
+        .eq('id', userId)
+        .single();
+      
+      const isFirstLogin = !loginHistory?.login_history || loginHistory.login_history.length <= 1;
+
+      if (!preferences && isFirstLogin) {
+        console.log("🆕 Première connexion détectée, redirection vers onboarding");
         navigate("/onboarding", { replace: true });
         return;
       }
 
-      // Dans tous les autres cas (préférences existantes)
+      // Dans tous les autres cas, redirection vers le dashboard
       console.log("👉 Redirection vers le tableau de bord");
       navigate("/dashboard", { replace: true });
     } catch (error) {
@@ -74,7 +82,7 @@ export const useAuthRedirect = () => {
         if (session) {
           await checkUserPreferences(session.user.id, session.user.email_confirmed_at);
         } else {
-          // Si pas de session, rediriger vers la page de connexion
+          console.log("👋 Pas de session active, redirection vers landing");
           navigate("/landing", { replace: true });
         }
       } catch (error) {
