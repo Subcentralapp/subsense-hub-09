@@ -103,6 +103,17 @@ const ComparisonSection = () => {
           transition={{ duration: 0.5 }}
           className="space-y-4 sm:space-y-8"
         >
+          {/* Version mobile du hero */}
+          <div className="sm:hidden space-y-4 text-center px-4">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
+              Comparez et Économisez
+            </h1>
+            <p className="text-sm text-gray-600">
+              Trouvez la meilleure solution pour votre entreprise en comparant les applications
+            </p>
+          </div>
+
+          {/* Hero desktop */}
           <div className="sm:block hidden">
             <ComparisonHero />
           </div>
@@ -152,6 +163,37 @@ const ComparisonSection = () => {
             </div>
           </div>
 
+          {/* Version mobile des indicateurs de confiance */}
+          <div className="sm:hidden space-y-4 px-4 py-6 bg-gray-50">
+            <h3 className="text-lg font-semibold text-center text-gray-900 mb-6">
+              Pourquoi nous faire confiance ?
+            </h3>
+            <div className="space-y-6">
+              <div className="flex items-center gap-4">
+                <Shield className="h-8 w-8 text-primary shrink-0" />
+                <div>
+                  <h4 className="font-medium">Comparaison Objective</h4>
+                  <p className="text-sm text-gray-600">Analyses détaillées basées sur des critères précis</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <Zap className="h-8 w-8 text-primary shrink-0" />
+                <div>
+                  <h4 className="font-medium">Données à Jour</h4>
+                  <p className="text-sm text-gray-600">Prix et fonctionnalités mis à jour quotidiennement</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-4">
+                <Award className="h-8 w-8 text-primary shrink-0" />
+                <div>
+                  <h4 className="font-medium">Meilleurs Prix</h4>
+                  <p className="text-sm text-gray-600">Accès aux meilleures offres et réductions</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Version desktop des indicateurs */}
           <div className="hidden sm:block">
             <TrustIndicators />
           </div>
