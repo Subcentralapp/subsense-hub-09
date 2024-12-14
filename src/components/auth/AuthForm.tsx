@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Auth, Provider } from "@supabase/auth-ui-react";
+import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -7,6 +7,7 @@ import EmailConfirmation from "./EmailConfirmation";
 import { useNavigate } from "react-router-dom";
 import { EmailConfirmationHandler } from "./EmailConfirmationHandler";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { CustomSignUpForm } from "./CustomSignUpForm";
 
 const AuthForm = () => {
   const [showEmailConfirmation, setShowEmailConfirmation] = useState(false);
@@ -113,7 +114,7 @@ const AuthForm = () => {
         },
       },
     },
-    providers: ['google' as Provider],
+    providers: ['google'],
     redirectTo: `${window.location.origin}/auth/callback`,
   };
 
@@ -156,25 +157,7 @@ const AuthForm = () => {
         </TabsContent>
         
         <TabsContent value="signup">
-          <Auth
-            {...authConfig}
-            view="sign_up"
-            localization={{
-              variables: {
-                sign_up: {
-                  email_label: "Email",
-                  password_label: "Mot de passe",
-                  email_input_placeholder: "Votre email",
-                  password_input_placeholder: "Votre mot de passe (min. 8 caractères)",
-                  button_label: "S'inscrire",
-                  loading_button_label: "Inscription en cours...",
-                  social_provider_text: "Continuer avec {{provider}}",
-                  link_text: "Vous n'avez pas de compte ? Inscrivez-vous",
-                  confirmation_text: "Vérifiez vos emails pour confirmer votre inscription",
-                },
-              },
-            }}
-          />
+          <CustomSignUpForm onEmailSent={handleEmailSent} />
         </TabsContent>
       </Tabs>
     </div>
