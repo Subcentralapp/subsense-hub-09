@@ -97,6 +97,11 @@ const AuthForm = () => {
     };
   }, [navigate, toast]);
 
+  const handleEmailSent = (email: string) => {
+    setEmail(email);
+    setShowEmailConfirmation(true);
+  };
+
   if (showEmailConfirmation) {
     return <EmailConfirmation email={email} onBack={() => setShowEmailConfirmation(false)} />;
   }
@@ -114,7 +119,7 @@ const AuthForm = () => {
         },
       },
     },
-    providers: ['google'],
+    providers: [{ id: 'google', name: 'Google' }],
     redirectTo: `${window.location.origin}/auth/callback`,
   };
 
