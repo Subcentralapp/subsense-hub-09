@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 
@@ -7,6 +7,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -53,7 +54,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
         // 3. N'est pas déjà sur la page d'onboarding
         if (!preferences && location.pathname !== '/onboarding') {
           console.log("🆕 Première connexion, redirection vers onboarding");
-          return <Navigate to="/onboarding" replace />;
+          navigate('/onboarding', { replace: true });
         }
       } catch (error) {
         console.error("❌ Erreur inattendue:", error);
@@ -82,7 +83,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
         // Rediriger vers l'onboarding uniquement pour les nouveaux utilisateurs
         if (!preferences && location.pathname !== '/onboarding') {
           console.log("🆕 Nouvel utilisateur connecté, redirection vers onboarding");
-          return <Navigate to="/onboarding" replace />;
+          navigate('/onboarding', { replace: true });
         }
       } else if (event === 'SIGNED_OUT') {
         setIsAuthenticated(false);
@@ -94,7 +95,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     return () => {
       subscription.unsubscribe();
     };
-  }, [location.pathname]);
+  }, [location.pathname, navigate]);
 
   if (isLoading) {
     return <LoadingSpinner />;
