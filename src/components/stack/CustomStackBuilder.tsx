@@ -1,10 +1,13 @@
 import { useState } from 'react';
 import { Card } from "@/components/ui/card";
-import { Zap, X, ArrowRight } from "lucide-react";
+import { Zap, X, ArrowRight, Plus } from "lucide-react";
 import { Application } from '@/types/application';
 import { StackSearch } from './StackSearch';
 import { toast } from '@/hooks/use-toast';
 import { motion } from "framer-motion";
+import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import CustomApplicationForm from '../dialog/CustomApplicationForm';
 
 interface CustomStackBuilderProps {
   selectedTools: Application[];
@@ -12,13 +15,46 @@ interface CustomStackBuilderProps {
 }
 
 export const CustomStackBuilder = ({ selectedTools, onRemoveTool }: CustomStackBuilderProps) => {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const totalBudget = selectedTools.reduce((sum, tool) => sum + (tool.price || 0), 0);
+
+  const handleAddCustomApp = async (app: Application) => {
+    // Simuler l'ajout d'une application personnalisée
+    const customApp: Application = {
+      ...app,
+      id: Date.now(), // Générer un ID unique
+    };
+    
+    selectedTools.push(customApp);
+    setIsDialogOpen(false);
+    toast({
+      title: "Application ajoutée",
+      description: `${app.name} a été ajoutée à votre stack personnalisée`,
+    });
+  };
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-2 mb-4">
-        <Zap className="h-5 w-5 text-primary" />
-        <h3 className="text-lg font-medium">Stack Technique Personnalisée</h3>
+      <div className="flex items-center justify-between gap-2 mb-4">
+        <div className="flex items-center gap-2">
+          <Zap className="h-5 w-5 text-primary" />
+          <h3 className="text-lg font-medium">Stack Technique Personnalisée</h3>
+        </div>
+        
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          <DialogTrigger asChild>
+            <Button variant="outline" className="gap-2">
+              <Plus className="h-4 w-4" />
+              Je n'ai pas trouvé mon app
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <CustomApplicationForm
+              onSubmit={handleAddCustomApp}
+              onCancel={() => setIsDialogOpen(false)}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
 
       <Card className="p-4 bg-white border border-gray-100">

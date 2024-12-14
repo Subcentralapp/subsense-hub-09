@@ -5,6 +5,7 @@ import { ApplicationCard } from "./ApplicationCard";
 import { Application } from "@/types/application";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { Plus } from "lucide-react";
 
 interface CategoryCardProps {
   name: string;
@@ -12,14 +13,16 @@ interface CategoryCardProps {
   color: string;
   isSelected: boolean;
   onSelect: () => void;
+  onAddTool?: (app: Application) => void;
 }
 
-export const CategoryCard = ({ name, description, color, isSelected, onSelect }: CategoryCardProps) => {
+export const CategoryCard = ({ name, description, color, isSelected, onSelect, onAddTool }: CategoryCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const { data: applications } = useQuery({
     queryKey: ['applications', name],
     queryFn: async () => {
+      console.log('Fetching applications for category:', name);
       const { data, error } = await supabase
         .from('applications')
         .select('*')
@@ -52,13 +55,8 @@ export const CategoryCard = ({ name, description, color, isSelected, onSelect }:
   });
 
   const handleClick = () => {
-    // Sur mobile, on gère l'expansion locale
-    if (window.innerWidth < 768) {
-      setIsExpanded(!isExpanded);
-    } else {
-      // Sur desktop, on garde le comportement existant
-      onSelect();
-    }
+    setIsExpanded(!isExpanded);
+    onSelect();
   };
 
   return (
@@ -80,8 +78,7 @@ export const CategoryCard = ({ name, description, color, isSelected, onSelect }:
         </Card>
       </motion.div>
 
-      {/* Applications list - visible only on mobile when expanded */}
-      {isExpanded && window.innerWidth < 768 && applications && applications.length > 0 && (
+      {(isExpanded || isSelected) && applications && applications.length > 0 && (
         <motion.div
           initial={{ opacity: 0, height: 0 }}
           animate={{ opacity: 1, height: "auto" }}
@@ -94,7 +91,9 @@ export const CategoryCard = ({ name, description, color, isSelected, onSelect }:
               app={app}
               onAdd={() => {
                 console.log('Add application:', app.name);
-                window.open(app.website_url, '_blank');
+                if (onAddTool) {
+                  onAddTool(app);
+                }
               }}
             />
           ))}
