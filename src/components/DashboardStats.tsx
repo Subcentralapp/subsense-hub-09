@@ -5,13 +5,13 @@ import { supabase } from "@/integrations/supabase/client";
 
 const DashboardStats = () => {
   const { data } = useQuery({
-    queryKey: ['subscriptions'],
+    queryKey: ['dashboard-subscriptions'],
     queryFn: async () => {
-      console.log("Fetching subscriptions for dashboard stats...");
+      console.log("DashboardStats - Fetching subscriptions...");
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        console.log("No user found, returning empty array");
+        console.log("DashboardStats - No user found, returning empty array");
         return { subscriptions: [] };
       }
 
@@ -22,14 +22,18 @@ const DashboardStats = () => {
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.error("Error fetching subscriptions:", error);
+        console.error("DashboardStats - Error fetching subscriptions:", error);
         throw error;
       }
 
-      console.log("Fetched subscriptions for stats:", data);
+      console.log("DashboardStats - Fetched subscriptions:", data);
       return { subscriptions: data || [] };
     },
-    initialData: { subscriptions: [] }
+    initialData: { subscriptions: [] },
+    staleTime: 0, // Toujours considérer les données comme périmées
+    gcTime: 0, // Ne pas mettre en cache les données
+    refetchOnMount: true, // Recharger au montage du composant
+    refetchOnWindowFocus: true // Recharger quand la fenêtre reprend le focus
   });
 
   // S'assurer que subscriptions est toujours un tableau
