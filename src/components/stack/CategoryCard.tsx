@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Application } from "@/types/application";
 import { CategoryHeader } from "./CategoryHeader";
-import { ApplicationsList } from "./ApplicationsList";
 import { stackCategories } from "@/data/stackSuggestions";
+import { ApplicationCard } from "@/components/ApplicationCard";
+import { motion } from "framer-motion";
 
 interface CategoryCardProps {
   name: string;
@@ -18,7 +19,7 @@ export const CategoryCard = ({
   description, 
   color, 
   isSelected, 
-  onSelect, 
+  onSelect,
   onAddTool 
 }: CategoryCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -31,7 +32,7 @@ export const CategoryCard = ({
     }
   };
 
-  // Get applications from stackCategories instead of database
+  // Get applications from stackCategories
   const applications = stackCategories
     .find(cat => cat.name === name)
     ?.recommendations.map(rec => ({
@@ -62,11 +63,26 @@ export const CategoryCard = ({
         onClick={handleClick}
       />
       
-      {isExpanded && (
-        <ApplicationsList 
-          applications={applications}
-          onAddTool={onAddTool}
-        />
+      {isExpanded && applications.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          exit={{ opacity: 0, height: 0 }}
+          className="mt-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"
+        >
+          {applications.map((app) => (
+            <ApplicationCard
+              key={app.id}
+              app={app}
+              onAdd={() => {
+                console.log('Add application:', app.name);
+                if (onAddTool) {
+                  onAddTool(app);
+                }
+              }}
+            />
+          ))}
+        </motion.div>
       )}
     </div>
   );
