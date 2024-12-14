@@ -16,7 +16,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { z } from "zod";
 import { Loader2 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
   email: z.string().email("Email invalide"),
@@ -44,7 +43,6 @@ interface CustomSignUpFormProps {
 export function CustomSignUpForm({ onEmailSent }: CustomSignUpFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -91,8 +89,8 @@ export function CustomSignUpForm({ onEmailSent }: CustomSignUpFormProps) {
           throw profileError;
         }
 
-        // Rediriger vers l'onboarding uniquement après l'inscription
-        navigate("/onboarding", { replace: true });
+        console.log("✉️ Email de confirmation envoyé à:", values.email);
+        onEmailSent(values.email);
       }
     } catch (error: any) {
       console.error("❌ Erreur:", error);
@@ -209,4 +207,4 @@ export function CustomSignUpForm({ onEmailSent }: CustomSignUpFormProps) {
       </form>
     </Form>
   );
-};
+}

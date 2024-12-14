@@ -26,8 +26,20 @@ const AuthForm = () => {
 
       if (session?.user) {
         if (session.user.email_confirmed_at) {
-          console.log("Email confirmé, redirection vers le tableau de bord");
-          navigate("/dashboard");
+          console.log("Email confirmé, vérification des préférences...");
+          const { data: preferences } = await supabase
+            .from('user_preferences')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+
+          if (!preferences) {
+            console.log("Pas de préférences trouvées, redirection vers onboarding");
+            navigate("/onboarding", { replace: true });
+          } else {
+            console.log("Préférences trouvées, redirection vers le dashboard");
+            navigate("/dashboard", { replace: true });
+          }
         } else {
           console.log("Email non confirmé, affichage de l'écran de confirmation");
           setEmail(session.user.email || "");
@@ -42,16 +54,34 @@ const AuthForm = () => {
       console.log("Changement d'état d'authentification:", event);
 
       if (event === "SIGNED_IN") {
-        if (session?.user.email_confirmed_at) {
-          console.log("Email confirmé, redirection vers le tableau de bord");
-          navigate("/dashboard");
+        if (!session?.user.email_confirmed_at) {
+          console.log("Email non confirmé, affichage de l'écran de confirmation");
+          setEmail(session.user.email || "");
+          setShowEmailConfirmation(true);
           return;
         }
         
-        if (session?.user.email) {
-          console.log("Email non confirmé, affichage de l'écran de confirmation");
-          setEmail(session.user.email);
-          setShowEmailConfirmation(true);
+        try {
+          const { data: preferences } = await supabase
+            .from('user_preferences')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+
+          if (!preferences) {
+            console.log("Première connexion, redirection vers onboarding");
+            navigate("/onboarding", { replace: true });
+          } else {
+            console.log("Connexion normale, redirection vers dashboard");
+            navigate("/dashboard", { replace: true });
+          }
+        } catch (error) {
+          console.error("Erreur lors de la vérification des préférences:", error);
+          toast({
+            title: "Erreur",
+            description: "Une erreur est survenue lors de la connexion",
+            variant: "destructive",
+          });
         }
       }
 
