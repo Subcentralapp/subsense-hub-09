@@ -51,7 +51,7 @@ const AuthForm = () => {
     checkUser();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("Changement d'état d'authentification:", event);
+      console.log("Changement d'état d'authentification:", event, session);
 
       if (event === "SIGNED_IN") {
         if (!session?.user.email_confirmed_at) {
@@ -100,6 +100,23 @@ const AuthForm = () => {
     return <EmailConfirmation email={email} onBack={() => setShowEmailConfirmation(false)} />;
   }
 
+  const authConfig = {
+    supabaseClient: supabase,
+    appearance: {
+      theme: ThemeSupa,
+      variables: {
+        default: {
+          colors: {
+            brand: '#2563eb',
+            brandAccent: '#1d4ed8',
+          },
+        },
+      },
+    },
+    providers: ["google"],
+    redirectTo: `${window.location.origin}/auth/callback`,
+  };
+
   return (
     <div className="bg-background rounded-lg border p-8">
       <EmailConfirmationHandler />
@@ -111,21 +128,8 @@ const AuthForm = () => {
         
         <TabsContent value="signin">
           <Auth
-            supabaseClient={supabase}
+            {...authConfig}
             view="sign_in"
-            appearance={{
-              theme: ThemeSupa,
-              variables: {
-                default: {
-                  colors: {
-                    brand: '#2563eb',
-                    brandAccent: '#1d4ed8',
-                  },
-                },
-              },
-            }}
-            providers={["google"]}
-            redirectTo={`${window.location.origin}/auth/callback`}
             localization={{
               variables: {
                 sign_in: {
@@ -153,28 +157,15 @@ const AuthForm = () => {
         
         <TabsContent value="signup">
           <Auth
-            supabaseClient={supabase}
+            {...authConfig}
             view="sign_up"
-            appearance={{
-              theme: ThemeSupa,
-              variables: {
-                default: {
-                  colors: {
-                    brand: '#2563eb',
-                    brandAccent: '#1d4ed8',
-                  },
-                },
-              },
-            }}
-            providers={["google"]}
-            redirectTo={`${window.location.origin}/auth/callback`}
             localization={{
               variables: {
                 sign_up: {
                   email_label: "Email",
                   password_label: "Mot de passe",
                   email_input_placeholder: "Votre email",
-                  password_input_placeholder: "Votre mot de passe (min. 8 caractères, 1 majuscule, 1 chiffre)",
+                  password_input_placeholder: "Votre mot de passe (min. 8 caractères)",
                   button_label: "S'inscrire",
                   loading_button_label: "Inscription en cours...",
                   social_provider_text: "Continuer avec {{provider}}",
