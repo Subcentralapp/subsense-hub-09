@@ -4,25 +4,18 @@ import { useState, useEffect } from "react";
 import { Application } from "@/types/application";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { useNavigate } from "react-router-dom";
 
 const ComparisonSection = () => {
   const [selectedApps, setSelectedApps] = useState<Application[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   useEffect(() => {
-    let isSubscribed = true;
-
     const checkSession = async () => {
       try {
         console.log("🔍 ComparisonSection - Vérification de la session...");
         const { data: { session }, error } = await supabase.auth.getSession();
         
-        // Vérifier si le composant est toujours monté
-        if (!isSubscribed) return;
-
         if (error) {
           console.error("❌ ComparisonSection - Erreur lors de la vérification de la session:", error);
           toast({
@@ -30,49 +23,24 @@ const ComparisonSection = () => {
             description: "Impossible de vérifier votre session",
             variant: "destructive",
           });
-          navigate("/identification", { replace: true });
           return;
         }
 
         if (!session) {
-          console.log("⚠️ ComparisonSection - Pas de session active, redirection...");
-          navigate("/identification", { replace: true });
+          console.log("⚠️ ComparisonSection - Pas de session active");
           return;
         }
 
         console.log("✅ ComparisonSection - Session active trouvée:", session.user.email);
       } catch (error) {
-        if (!isSubscribed) return;
         console.error("❌ ComparisonSection - Erreur inattendue:", error);
-        navigate("/identification", { replace: true });
       } finally {
-        if (isSubscribed) {
-          setIsLoading(false);
-        }
+        setIsLoading(false);
       }
     };
 
-    // Vérifier la session immédiatement
     checkSession();
-
-    // Écouter les changements d'état d'authentification avec un timeout de sécurité
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (!isSubscribed) return;
-      
-      console.log("🔄 ComparisonSection - État de l'authentification changé:", event);
-      
-      if (event === 'SIGNED_OUT' || !session) {
-        console.log("👋 ComparisonSection - Utilisateur déconnecté, redirection...");
-        navigate("/identification", { replace: true });
-      }
-    });
-
-    // Cleanup function
-    return () => {
-      isSubscribed = false;
-      subscription.unsubscribe();
-    };
-  }, [navigate, toast]);
+  }, [toast]);
 
   const handleAppSelect = (apps: Application[]) => {
     console.log("📱 ComparisonSection - Applications sélectionnées:", apps);

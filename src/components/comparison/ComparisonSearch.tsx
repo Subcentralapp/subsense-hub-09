@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, Plus, Loader2 } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
 
 interface ComparisonSearchProps {
   onSelect: (apps: Application[]) => void;
@@ -19,8 +19,6 @@ const ComparisonSearch = ({ onSelect }: ComparisonSearchProps) => {
   const { toast } = useToast();
 
   useEffect(() => {
-    let isSubscribed = true;
-
     const fetchApplications = async () => {
       try {
         console.log("🔍 ComparisonSearch - Chargement des applications...");
@@ -34,8 +32,7 @@ const ComparisonSearch = ({ onSelect }: ComparisonSearchProps) => {
           throw error;
         }
 
-        if (!isSubscribed) return;
-
+        // Convertir les données de la base de données au format Application
         const formattedData: Application[] = data.map(app => ({
           id: app.id,
           name: app.NOM || '',
@@ -52,12 +49,9 @@ const ComparisonSearch = ({ onSelect }: ComparisonSearchProps) => {
           users_count: app["NOMBRE D'UTILISATEURS"] || null
         }));
 
-        console.log(`✅ ComparisonSearch - ${formattedData.length} applications chargées`);
-        if (isSubscribed) {
-          setApplications(formattedData);
-        }
+        console.log(`✅ ComparisonSearch - ${formattedData.length || 0} applications chargées`);
+        setApplications(formattedData);
       } catch (error) {
-        if (!isSubscribed) return;
         console.error("❌ ComparisonSearch - Erreur inattendue:", error);
         toast({
           title: "Erreur",
@@ -65,17 +59,11 @@ const ComparisonSearch = ({ onSelect }: ComparisonSearchProps) => {
           variant: "destructive",
         });
       } finally {
-        if (isSubscribed) {
-          setIsLoading(false);
-        }
+        setIsLoading(false);
       }
     };
 
     fetchApplications();
-
-    return () => {
-      isSubscribed = false;
-    };
   }, [toast]);
 
   const filteredApps = applications.filter(app => 
@@ -83,24 +71,13 @@ const ComparisonSearch = ({ onSelect }: ComparisonSearchProps) => {
   );
 
   const handleAppSelect = (app: Application) => {
-    if (selectedApps.length >= 3) {
-      toast({
-        title: "Maximum atteint",
-        description: "Vous ne pouvez comparer que 3 applications à la fois",
-        variant: "destructive",
-      });
-      return;
-    }
-
+    console.log("📱 ComparisonSearch - Application sélectionnée:", app.name);
     if (selectedApps.find(a => a.id === app.id)) {
-      const newSelectedApps = selectedApps.filter(a => a.id !== app.id);
-      setSelectedApps(newSelectedApps);
-      onSelect(newSelectedApps);
-    } else {
-      const newSelectedApps = [...selectedApps, app];
-      setSelectedApps(newSelectedApps);
-      if (newSelectedApps.length >= 2) {
-        onSelect(newSelectedApps);
+      setSelectedApps(prev => prev.filter(a => a.id !== app.id));
+    } else if (selectedApps.length < 3) {
+      setSelectedApps(prev => [...prev, app]);
+      if (selectedApps.length === 1) {
+        onSelect([...selectedApps, app]);
       }
     }
   };
@@ -127,73 +104,28 @@ const ComparisonSearch = ({ onSelect }: ComparisonSearchProps) => {
           />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {[0, 1, 2].map((index) => (
-            <div
-              key={index}
-              className={`border-2 border-dashed rounded-lg p-4 min-h-[200px] ${
-                selectedApps[index]
-                  ? "border-primary bg-primary/5"
-                  : "border-gray-200 hover:border-primary/50"
-              }`}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {filteredApps.map((app) => (
+            <Button
+              key={app.id}
+              variant={selectedApps.find(a => a.id === app.id) ? "default" : "outline"}
+              className="justify-start h-auto p-4"
+              onClick={() => handleAppSelect(app)}
             >
-              {selectedApps[index] ? (
-                <div className="flex flex-col h-full">
-                  <div className="flex items-center gap-3 mb-4">
-                    {selectedApps[index].logo_url && (
-                      <img
-                        src={selectedApps[index].logo_url}
-                        alt={selectedApps[index].name}
-                        className="w-12 h-12 object-contain rounded-lg"
-                      />
-                    )}
-                    <div>
-                      <h3 className="font-medium">{selectedApps[index].name}</h3>
-                      <p className="text-sm text-gray-500">
-                        {selectedApps[index].category}
-                      </p>
-                    </div>
-                  </div>
-                  <Button
-                    variant="ghost"
-                    className="mt-auto text-red-500 hover:text-red-600 hover:bg-red-50"
-                    onClick={() => handleAppSelect(selectedApps[index])}
-                  >
-                    Retirer
-                  </Button>
+              <div className="flex items-center gap-3">
+                {app.logo_url && (
+                  <img 
+                    src={app.logo_url} 
+                    alt={app.name || "Logo"} 
+                    className="w-8 h-8 object-contain"
+                  />
+                )}
+                <div className="text-left">
+                  <p className="font-medium">{app.name}</p>
+                  <p className="text-sm text-muted-foreground">{app.category}</p>
                 </div>
-              ) : (
-                <div className="flex flex-col items-center justify-center h-full text-gray-500">
-                  <Plus className="h-8 w-8 mb-2" />
-                  <p className="text-sm text-center">
-                    Sélectionnez une application à comparer
-                  </p>
-                  {searchTerm && filteredApps.length > 0 && (
-                    <div className="mt-4 w-full space-y-2">
-                      {filteredApps.slice(0, 3).map((app) => (
-                        <Button
-                          key={app.id}
-                          variant="ghost"
-                          className="w-full justify-start"
-                          onClick={() => handleAppSelect(app)}
-                        >
-                          <div className="flex items-center gap-2">
-                            {app.logo_url && (
-                              <img
-                                src={app.logo_url}
-                                alt={app.name}
-                                className="w-6 h-6 object-contain"
-                              />
-                            )}
-                            <span>{app.name}</span>
-                          </div>
-                        </Button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
+              </div>
+            </Button>
           ))}
         </div>
       </div>
