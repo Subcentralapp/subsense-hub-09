@@ -63,34 +63,39 @@ export const CategoryCard = ({
         onClick={handleClick}
       />
       
-      {/* Version mobile - Liste */}
+      {/* Version mobile - Liste uniquement */}
       <CategoryContent 
         isExpanded={isExpanded}
         applications={applications}
         onAddTool={onAddTool}
       />
 
-      {/* Version desktop - Affichage horizontal */}
+      {/* Version desktop - Bloc horizontal uniquement */}
       {isExpanded && applications.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
-          exit={{ opacity: 0, height: 0 }}
-          className="hidden md:grid md:grid-cols-3 gap-4 mt-4"
-        >
-          {applications.map((app) => (
-            <ApplicationCard
-              key={app.id}
-              app={app}
-              onAdd={() => {
-                console.log('Add application:', app.name);
-                if (onAddTool) {
-                  onAddTool(app);
-                }
-              }}
-            />
-          ))}
-        </motion.div>
+        <div className="hidden md:block mt-4">
+          <h3 className="text-xl font-medium text-gray-800 mb-4">
+            Applications recommandées pour {name}
+          </h3>
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="grid grid-cols-3 gap-4"
+          >
+            {applications.map((app) => (
+              <ApplicationCard
+                key={app.id}
+                app={app}
+                onAdd={() => {
+                  console.log('Add application:', app.name);
+                  if (onAddTool) {
+                    onAddTool(app);
+                  }
+                }}
+              />
+            ))}
+          </motion.div>
+        </div>
       )}
     </div>
   );

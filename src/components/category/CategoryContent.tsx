@@ -16,7 +16,7 @@ export const CategoryContent = ({ isExpanded, applications, onAddTool }: Categor
       initial={{ opacity: 0, height: 0 }}
       animate={{ opacity: 1, height: "auto" }}
       exit={{ opacity: 0, height: 0 }}
-      className="mt-4 space-y-4 md:hidden"
+      className="mt-4 space-y-4 md:hidden" // Only show on mobile
     >
       {applications.map((app) => (
         <ApplicationCard
