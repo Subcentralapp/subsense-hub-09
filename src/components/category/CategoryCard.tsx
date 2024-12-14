@@ -63,8 +63,8 @@ export const CategoryCard = ({
         onClick={handleClick}
       />
       
-      {/* Version mobile - Liste uniquement */}
-      <div className="md:hidden">
+      {/* Version mobile uniquement */}
+      <div className="block md:hidden">
         <CategoryContent 
           isExpanded={isExpanded}
           applications={applications}
@@ -72,7 +72,7 @@ export const CategoryCard = ({
         />
       </div>
 
-      {/* Version desktop - Bloc horizontal uniquement */}
+      {/* Version desktop uniquement */}
       {isExpanded && applications.length > 0 && (
         <div className="hidden md:block mt-4">
           <h3 className="text-xl font-medium text-gray-800 mb-4">
