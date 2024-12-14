@@ -8,26 +8,36 @@ import { UserNav } from "./UserNav";
 import { PromoMessage } from "./header/PromoMessage";
 import { MobileMenu } from "./header/MobileMenu";
 import { AuthButtons } from "./header/AuthButtons";
+import { useToast } from "@/hooks/use-toast";
 
 export const Header = () => {
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   useEffect(() => {
-    // Check current session on mount
     const checkUser = async () => {
       try {
+        console.log("🔍 Vérification de la session...");
         const { data: { session }, error } = await supabase.auth.getSession();
+        
         if (error) {
-          console.error("Erreur lors de la vérification de la session:", error);
+          console.error("❌ Erreur lors de la vérification de la session:", error);
+          // Si l'erreur est liée au refresh token, on déconnecte l'utilisateur
+          if (error.message?.includes('refresh_token_not_found')) {
+            console.log("🔄 Refresh token invalide, déconnexion...");
+            await handleSignOut();
+            return;
+          }
           setUser(null);
           return;
         }
-        console.log("Session actuelle:", session);
+
+        console.log("✅ Session actuelle:", session);
         setUser(session?.user || null);
       } catch (error) {
-        console.error("Erreur lors de la vérification de la session:", error);
+        console.error("❌ Erreur inattendue lors de la vérification de la session:", error);
         setUser(null);
       } finally {
         setIsLoading(false);
@@ -36,20 +46,51 @@ export const Header = () => {
     
     checkUser();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state changed:", event);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("🔄 État de l'authentification changé:", event);
+      
       if (event === "SIGNED_IN") {
-        console.log("User signed in:", session?.user);
+        console.log("✅ Utilisateur connecté:", session?.user);
         setUser(session?.user);
-      } else if (event === "SIGNED_OUT") {
-        console.log("User signed out");
-        setUser(null);
-        navigate("/landing", { replace: true });
+      } else if (event === "SIGNED_OUT" || event === "TOKEN_REFRESHED") {
+        if (!session) {
+          console.log("👋 Utilisateur déconnecté ou token invalide");
+          setUser(null);
+          navigate("/landing", { replace: true });
+          toast({
+            title: "Session expirée",
+            description: "Veuillez vous reconnecter",
+            variant: "destructive",
+          });
+        }
       }
     });
 
-    return () => subscription.unsubscribe();
-  }, [navigate]);
+    return () => {
+      console.log("🧹 Nettoyage des souscriptions");
+      subscription.unsubscribe();
+    };
+  }, [navigate, toast]);
+
+  const handleSignOut = async () => {
+    try {
+      console.log("🔄 Déconnexion...");
+      await supabase.auth.signOut();
+      setUser(null);
+      navigate("/landing", { replace: true });
+      toast({
+        title: "Déconnexion",
+        description: "Vous avez été déconnecté avec succès",
+      });
+    } catch (error) {
+      console.error("❌ Erreur lors de la déconnexion:", error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de la déconnexion",
+        variant: "destructive",
+      });
+    }
+  };
 
   if (isLoading) {
     return null;
