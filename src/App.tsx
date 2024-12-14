@@ -18,6 +18,25 @@ const queryClient = new QueryClient({
       },
       refetchOnWindowFocus: false,
       refetchOnMount: true,
+      // Ajouter un timeout pour éviter les chargements infinis
+      queryFn: async (context) => {
+        const timeoutPromise = new Promise((_, reject) => {
+          setTimeout(() => {
+            reject(new Error('Request timeout'));
+          }, 10000); // 10 secondes timeout
+        });
+
+        try {
+          const result = await Promise.race([
+            context.queryFn(context.queryKey),
+            timeoutPromise
+          ]);
+          return result;
+        } catch (error) {
+          console.error('Query error:', error);
+          throw error;
+        }
+      }
     },
   },
 });

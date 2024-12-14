@@ -15,7 +15,17 @@ const PaymentSection = () => {
     console.log("PaymentSection - Fetching invoices...");
     const loadInvoices = async () => {
       try {
+        const timeoutId = setTimeout(() => {
+          console.error("PaymentSection - Timeout while fetching invoices");
+          toast({
+            title: "Erreur",
+            description: "Le chargement des factures prend trop de temps. Veuillez réessayer.",
+            variant: "destructive",
+          });
+        }, 10000); // 10 secondes timeout
+
         await fetchInvoices();
+        clearTimeout(timeoutId);
         console.log("PaymentSection - Invoices fetched successfully");
       } catch (error) {
         console.error("PaymentSection - Error fetching invoices:", error);
@@ -29,6 +39,19 @@ const PaymentSection = () => {
 
     loadInvoices();
   }, [fetchInvoices, toast]);
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <Card className="p-6">
+          <div className="animate-pulse space-y-4">
+            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+            <div className="h-8 bg-gray-200 rounded w-1/2"></div>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
