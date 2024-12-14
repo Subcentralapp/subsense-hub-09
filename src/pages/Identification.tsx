@@ -16,20 +16,46 @@ const Identification = () => {
   const { toast } = useToast();
 
   useEffect(() => {
-    console.log("Setting up auth state change listener");
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state changed:", event, session);
+    console.log("🔍 Configuration de l'écouteur d'authentification");
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("🔄 Changement d'état d'authentification:", event);
       
-      if (session?.user.email_confirmed_at) {
-        console.log("Email confirmé, redirection vers onboarding");
-        navigate("/onboarding");
+      if (event === 'SIGNED_IN') {
+        if (!session) {
+          console.log("❌ Session invalide");
+          return;
+        }
+
+        try {
+          // Vérifier si c'est une première connexion en regardant les préférences
+          const { data: preferences } = await supabase
+            .from('user_preferences')
+            .select('*')
+            .eq('id', session.user.id)
+            .single();
+
+          if (!preferences) {
+            console.log("🆕 Nouvel utilisateur détecté, redirection vers onboarding");
+            navigate("/onboarding", { replace: true });
+          } else {
+            console.log("✅ Utilisateur existant, redirection vers dashboard");
+            navigate("/dashboard", { replace: true });
+          }
+        } catch (error) {
+          console.error("❌ Erreur lors de la vérification des préférences:", error);
+          toast({
+            title: "Erreur",
+            description: "Une erreur est survenue lors de la connexion.",
+            variant: "destructive",
+          });
+        }
       }
     });
 
     return () => {
       subscription.unsubscribe();
     };
-  }, [navigate]);
+  }, [navigate, toast]);
 
   const handleEmailSent = (email: string) => {
     setEmail(email);
