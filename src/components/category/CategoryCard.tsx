@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Application } from "@/types/application";
 import { CategoryHeader } from "@/components/stack/CategoryHeader";
-import { CategoryContent } from "./CategoryContent";
 import { stackCategories } from "@/data/stackSuggestions";
 import { motion } from "framer-motion";
 
@@ -62,18 +61,8 @@ export const CategoryCard = ({
         onClick={handleClick}
       />
       
-      {/* Version mobile uniquement - ne pas toucher */}
-      <div className="block md:hidden">
-        <CategoryContent 
-          isExpanded={isExpanded}
-          applications={applications}
-          onAddTool={onAddTool}
-        />
-      </div>
-
-      {/* Version desktop uniquement - style simplifié */}
       {isExpanded && applications.length > 0 && (
-        <div className="hidden md:block mt-4">
+        <div className="mt-4">
           <h3 className="text-xl font-medium text-gray-800 mb-4">
             Applications recommandées pour {name}
           </h3>
@@ -81,7 +70,7 @@ export const CategoryCard = ({
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="grid grid-cols-3 gap-4"
+            className="grid grid-cols-1 md:grid-cols-3 gap-4"
           >
             {applications.map((app) => (
               <div key={app.id} className="p-4">
