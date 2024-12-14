@@ -48,8 +48,8 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
         if (!preferences && location.pathname !== '/onboarding') {
           console.log("🆕 Première connexion, redirection vers onboarding");
           navigate('/onboarding', { replace: true });
-        } else if (preferences && (location.pathname === '/' || location.pathname === '/landing')) {
-          // Si l'utilisateur a des préférences et est sur la page d'accueil ou landing
+        } else if (preferences) {
+          // Si l'utilisateur a des préférences, rediriger vers le dashboard
           console.log("👉 Utilisateur existant, redirection vers le dashboard");
           navigate('/dashboard', { replace: true });
         }
