@@ -30,7 +30,7 @@ export function UserNav() {
           console.error("❌ Erreur lors de la vérification de la session:", error);
           if (mounted) {
             setIsSessionValid(false);
-            navigate("/auth", { replace: true });
+            await handleSignOut();
           }
           return;
         }
@@ -42,35 +42,32 @@ export function UserNav() {
           
           if (!hasValidSession) {
             console.log("🚫 Pas de session valide, redirection vers /landing");
-            navigate("/landing", { replace: true });
+            await handleSignOut();
           }
         }
       } catch (error) {
         console.error("❌ Erreur inattendue lors de la vérification de la session:", error);
         if (mounted) {
           setIsSessionValid(false);
-          navigate("/landing", { replace: true });
+          await handleSignOut();
         }
       }
     };
 
-    // Vérifier la session immédiatement
     checkSession();
 
-    // Écouter les changements d'état d'authentification
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("🔄 État de l'authentification changé:", event, "Session:", !!session);
+      console.log("🔄 État de l'authentification changé:", event);
       
       if (mounted) {
-        if (event === 'SIGNED_OUT') {
+        if (event === 'SIGNED_OUT' || !session) {
           console.log("👋 Utilisateur déconnecté, nettoyage et redirection...");
-          await clearAppCache();
           setIsSessionValid(false);
+          await clearAppCache();
           navigate("/landing", { replace: true });
         } else if (event === 'SIGNED_IN' && session) {
           console.log("🎉 Utilisateur connecté");
           setIsSessionValid(true);
-          navigate("/dashboard", { replace: true });
         }
       }
     });
@@ -102,8 +99,18 @@ export function UserNav() {
   const handleSignOut = async () => {
     console.log("🔄 Tentative de déconnexion...");
     try {
+      // Clear cache before sign out to prevent stale data
+      await clearAppCache();
+      
+      // Attempt to sign out
       const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      if (error) {
+        console.error("❌ Erreur lors de la déconnexion:", error);
+        // Even if there's an error, we want to clear the local session
+        setIsSessionValid(false);
+        navigate("/landing", { replace: true });
+        return;
+      }
 
       console.log("✅ Déconnexion réussie");
       toast({
@@ -113,11 +120,9 @@ export function UserNav() {
 
     } catch (error) {
       console.error("❌ Erreur lors de la déconnexion:", error);
-      toast({
-        title: "Erreur",
-        description: "Une erreur est survenue lors de la déconnexion",
-        variant: "destructive",
-      });
+      // Force navigation to landing page even if sign out fails
+      setIsSessionValid(false);
+      navigate("/landing", { replace: true });
     }
   };
 

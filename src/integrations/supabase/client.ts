@@ -6,11 +6,11 @@ export const supabase = createClient(
   {
     auth: {
       persistSession: true,
-      detectSessionInUrl: false,
+      detectSessionInUrl: true,
       autoRefreshToken: true,
       storage: localStorage,
       storageKey: 'supabase.auth.token',
-      flowType: 'implicit'
+      flowType: 'pkce'
     },
     global: {
       headers: {
@@ -20,7 +20,17 @@ export const supabase = createClient(
   }
 )
 
-// Ajouter des logs pour le debugging
+// Add logging for debugging
 supabase.auth.onAuthStateChange((event, session) => {
-  console.log('Auth state changed:', event, 'Session:', session);
+  console.log('Auth state changed:', event, 'Session:', session ? 'exists' : 'null');
+});
+
+// Add error handling for auth events
+supabase.auth.onError((error) => {
+  console.error('Auth error:', error);
+  if (error.message.includes('JWT')) {
+    console.log('JWT error detected, clearing local storage');
+    localStorage.clear();
+    window.location.href = '/landing';
+  }
 });
