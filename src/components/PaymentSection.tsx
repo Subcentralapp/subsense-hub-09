@@ -12,32 +12,15 @@ const PaymentSection = () => {
   const { invoices, isLoading, addInvoice, removeInvoice, fetchInvoices, updateInvoiceDetails } = useInvoiceStore();
 
   useEffect(() => {
-    console.log("PaymentSection - Fetching invoices...");
-    const loadInvoices = async () => {
-      try {
-        const timeoutId = setTimeout(() => {
-          console.error("PaymentSection - Timeout while fetching invoices");
-          toast({
-            title: "Erreur",
-            description: "Le chargement des factures prend trop de temps. Veuillez réessayer.",
-            variant: "destructive",
-          });
-        }, 10000); // 10 secondes timeout
-
-        await fetchInvoices();
-        clearTimeout(timeoutId);
-        console.log("PaymentSection - Invoices fetched successfully");
-      } catch (error) {
-        console.error("PaymentSection - Error fetching invoices:", error);
-        toast({
-          title: "Erreur",
-          description: "Impossible de charger les factures. Veuillez réessayer.",
-          variant: "destructive",
-        });
-      }
-    };
-
-    loadInvoices();
+    console.log("PaymentSection - Initializing...");
+    fetchInvoices().catch((error) => {
+      console.error("PaymentSection - Error fetching invoices:", error);
+      toast({
+        title: "Erreur",
+        description: "Impossible de charger les factures. Veuillez réessayer.",
+        variant: "destructive",
+      });
+    });
   }, [fetchInvoices, toast]);
 
   if (isLoading) {
