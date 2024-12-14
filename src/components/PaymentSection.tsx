@@ -6,22 +6,58 @@ import InvoiceUploader from "./payment/InvoiceUploader";
 import InvoiceList from "./payment/InvoiceList";
 import PaymentCharts from "./payment/PaymentCharts";
 import { useToast } from "@/components/ui/use-toast";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 const PaymentSection = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const { invoices, isLoading, addInvoice, removeInvoice, fetchInvoices, updateInvoiceDetails } = useInvoiceStore();
 
   useEffect(() => {
-    console.log("PaymentSection - Initializing...");
-    fetchInvoices().catch((error) => {
-      console.error("PaymentSection - Error fetching invoices:", error);
-      toast({
-        title: "Erreur",
-        description: "Impossible de charger les factures. Veuillez réessayer.",
-        variant: "destructive",
-      });
+    const checkSessionAndFetchData = async () => {
+      try {
+        console.log("PaymentSection - Vérification de la session...");
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+
+        if (sessionError) {
+          console.error("PaymentSection - Erreur de session:", sessionError);
+          throw sessionError;
+        }
+
+        if (!session) {
+          console.log("PaymentSection - Pas de session active, redirection...");
+          navigate("/identification");
+          return;
+        }
+
+        console.log("PaymentSection - Session valide, chargement des données...");
+        await fetchInvoices();
+      } catch (error) {
+        console.error("PaymentSection - Erreur:", error);
+        toast({
+          title: "Erreur de connexion",
+          description: "Votre session a expiré. Veuillez vous reconnecter.",
+          variant: "destructive",
+        });
+        navigate("/identification");
+      }
+    };
+
+    checkSessionAndFetchData();
+
+    // Écouter les changements d'état d'authentification
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("PaymentSection - Changement d'état d'authentification:", event);
+      if (event === 'SIGNED_OUT' || !session) {
+        navigate("/identification");
+      }
     });
-  }, [fetchInvoices, toast]);
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate, toast, fetchInvoices]);
 
   if (isLoading) {
     return (
