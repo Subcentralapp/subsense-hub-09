@@ -8,96 +8,48 @@ import { UserNav } from "./UserNav";
 import { PromoMessage } from "./header/PromoMessage";
 import { MobileMenu } from "./header/MobileMenu";
 import { AuthButtons } from "./header/AuthButtons";
-import { useToast } from "@/hooks/use-toast";
 
 export const Header = () => {
   const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
-  const { toast } = useToast();
 
   useEffect(() => {
-    let mounted = true;
-
     // Check current session on mount
     const checkUser = async () => {
       try {
-        console.log("🔍 Vérification initiale de la session...");
         const { data: { session }, error } = await supabase.auth.getSession();
-        
         if (error) {
-          console.error("❌ Erreur lors de la vérification de la session:", error);
-          if (mounted) {
-            setUser(null);
-            toast({
-              title: "Erreur de session",
-              description: "Impossible de vérifier votre session. Veuillez vous reconnecter.",
-              variant: "destructive",
-            });
-          }
-          return;
-        }
-
-        if (!session) {
-          console.log("⚠️ Pas de session active trouvée");
-          if (mounted) {
-            setUser(null);
-          }
-          return;
-        }
-
-        console.log("✅ Session active trouvée:", session.user.email);
-        if (mounted) {
-          setUser(session.user);
-        }
-      } catch (error) {
-        console.error("❌ Erreur inattendue lors de la vérification de la session:", error);
-        if (mounted) {
+          console.error("Erreur lors de la vérification de la session:", error);
           setUser(null);
-          toast({
-            title: "Erreur",
-            description: "Une erreur est survenue. Veuillez réessayer.",
-            variant: "destructive",
-          });
+          return;
         }
+        console.log("Session actuelle:", session);
+        setUser(session?.user || null);
+      } catch (error) {
+        console.error("Erreur lors de la vérification de la session:", error);
+        setUser(null);
       } finally {
-        if (mounted) {
-          setIsLoading(false);
-        }
+        setIsLoading(false);
       }
     };
     
     checkUser();
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log("🔄 État de l'authentification changé:", event);
-      
-      if (event === "SIGNED_IN" && session) {
-        console.log("✅ Utilisateur connecté:", session.user.email);
-        if (mounted) {
-          setUser(session.user);
-          navigate("/dashboard");
-        }
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed:", event);
+      if (event === "SIGNED_IN") {
+        console.log("User signed in:", session?.user);
+        setUser(session?.user);
       } else if (event === "SIGNED_OUT") {
-        console.log("👋 Utilisateur déconnecté");
-        if (mounted) {
-          setUser(null);
-          navigate("/landing", { replace: true });
-        }
-      } else if (event === "TOKEN_REFRESHED") {
-        console.log("🔄 Token rafraîchi");
-        if (mounted && session) {
-          setUser(session.user);
-        }
+        console.log("User signed out");
+        setUser(null);
+        navigate("/landing", { replace: true });
       }
     });
 
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
-  }, [navigate, toast]);
+    return () => subscription.unsubscribe();
+  }, [navigate]);
 
   if (isLoading) {
     return null;

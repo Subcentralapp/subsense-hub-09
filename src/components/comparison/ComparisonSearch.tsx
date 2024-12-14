@@ -1,136 +1,166 @@
-import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { Application } from "@/types/application";
-import { useToast } from "@/hooks/use-toast";
-import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Search, Loader2 } from "lucide-react";
+import { SearchDropdown } from "../search/SearchDropdown";
+import { Plus } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface ComparisonSearchProps {
-  onSelect: (apps: Application[]) => void;
+  searchTerms?: string[];
+  onSearchChange: (value: string, index: number) => void;
+  applications?: Application[];
+  onSelectApp: (app: Application, index: number) => void;
+  selectedApps: Application[];
+  isMobile?: boolean;
 }
 
-const ComparisonSearch = ({ onSelect }: ComparisonSearchProps) => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [applications, setApplications] = useState<Application[]>([]);
-  const [selectedApps, setSelectedApps] = useState<Application[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const { toast } = useToast();
-
-  useEffect(() => {
-    const fetchApplications = async () => {
-      try {
-        console.log("🔍 ComparisonSearch - Chargement des applications...");
-        const { data, error } = await supabase
-          .from("applications")
-          .select("*")
-          .order("NOM", { ascending: true });
-
-        if (error) {
-          console.error("❌ ComparisonSearch - Erreur lors du chargement:", error);
-          throw error;
-        }
-
-        // Convertir les données de la base de données au format Application
-        const formattedData: Application[] = data.map(app => ({
-          id: app.id,
-          name: app.NOM || '',
-          price: app.PRICE ? parseFloat(app.PRICE) : 0,
-          category: app.CATÉGORIE || null,
-          description: app.DESCRIPTION || null,
-          features: Array.isArray(app.CARACTÉRISTIQUES) ? app.CARACTÉRISTIQUES : [],
-          pros: app.AVANTAGES || null,
-          cons: app.INCONVÉNIENTS || null,
-          website_url: app["URL DU SITE WEB"] || null,
-          logo_url: app["URL DU LOGO"] || null,
-          rating: app.NOTE || null,
-          review: app.REVUE || null,
-          users_count: app["NOMBRE D'UTILISATEURS"] || null
-        }));
-
-        console.log(`✅ ComparisonSearch - ${formattedData.length || 0} applications chargées`);
-        setApplications(formattedData);
-      } catch (error) {
-        console.error("❌ ComparisonSearch - Erreur inattendue:", error);
-        toast({
-          title: "Erreur",
-          description: "Impossible de charger les applications",
-          variant: "destructive",
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchApplications();
-  }, [toast]);
-
-  const filteredApps = applications.filter(app => 
-    app.name?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const handleAppSelect = (app: Application) => {
-    console.log("📱 ComparisonSearch - Application sélectionnée:", app.name);
-    if (selectedApps.find(a => a.id === app.id)) {
-      setSelectedApps(prev => prev.filter(a => a.id !== app.id));
-    } else if (selectedApps.length < 3) {
-      setSelectedApps(prev => [...prev, app]);
-      if (selectedApps.length === 1) {
-        onSelect([...selectedApps, app]);
-      }
-    }
-  };
-
-  if (isLoading) {
+export const ComparisonSearch = ({
+  searchTerms = ['', '', ''],
+  onSearchChange,
+  applications,
+  onSelectApp,
+  selectedApps,
+  isMobile = false,
+}: ComparisonSearchProps) => {
+  if (isMobile) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="w-full space-y-3">
+        {[0, 1, 2].map((index) => (
+          <div 
+            key={index} 
+            className={`relative rounded-xl shadow-sm ${
+              selectedApps[index] 
+                ? 'bg-gradient-to-r from-primary/10 to-primary/5' 
+                : 'bg-white'
+            }`}
+          >
+            <div className="p-3">
+              {selectedApps[index] ? (
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    {selectedApps[index].logo_url ? (
+                      <img 
+                        src={selectedApps[index].logo_url}
+                        alt={`Logo ${selectedApps[index].name}`}
+                        className="w-10 h-10 rounded-lg object-contain bg-white shadow-sm border border-gray-100"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <span className="text-lg font-bold text-primary">
+                          {selectedApps[index].name.charAt(0)}
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-semibold text-gray-900 truncate">
+                        {selectedApps[index].name}
+                      </h3>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm text-gray-500">
+                          {selectedApps[index].category || 'Non catégorisé'}
+                        </p>
+                        {selectedApps[index].price && (
+                          <span className="text-sm font-medium text-primary">
+                            {selectedApps[index].price}€
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => onSearchChange('', index)}
+                    className="text-sm text-primary hover:text-primary/80 underline px-2"
+                  >
+                    Changer
+                  </button>
+                </div>
+              ) : (
+                <SearchDropdown
+                  searchTerm={searchTerms[index]}
+                  onSearchChange={(value) => onSearchChange(value, index)}
+                  filteredApps={applications?.filter(app => {
+                    const searchLower = searchTerms[index].toLowerCase();
+                    return (
+                      app.name?.toLowerCase().includes(searchLower) ||
+                      app.category?.toLowerCase().includes(searchLower) ||
+                      app.description?.toLowerCase().includes(searchLower)
+                    );
+                  })}
+                  onSelectApp={(app) => onSelectApp(app, index)}
+                  placeholder={`Application ${index + 1}`}
+                />
+              )}
+            </div>
+          </div>
+        ))}
       </div>
     );
   }
 
   return (
-    <Card className="p-6">
-      <div className="space-y-6">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-          <Input
-            type="text"
-            placeholder="Rechercher une application..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-10"
-          />
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredApps.map((app) => (
-            <Button
-              key={app.id}
-              variant={selectedApps.find(a => a.id === app.id) ? "default" : "outline"}
-              className="justify-start h-auto p-4"
-              onClick={() => handleAppSelect(app)}
-            >
-              <div className="flex items-center gap-3">
-                {app.logo_url && (
-                  <img 
-                    src={app.logo_url} 
-                    alt={app.name || "Logo"} 
-                    className="w-8 h-8 object-contain"
-                  />
-                )}
-                <div className="text-left">
-                  <p className="font-medium">{app.name}</p>
-                  <p className="text-sm text-muted-foreground">{app.category}</p>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {[0, 1, 2].map((index) => (
+        <motion.div 
+          key={index}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: index * 0.1 }}
+          className="relative"
+        >
+          <div className={`rounded-xl ${
+            selectedApps[index] 
+              ? 'bg-white shadow-lg border border-primary/20' 
+              : 'bg-neutral-light border-2 border-dashed border-gray-200 hover:border-primary/30 transition-all'
+          }`}>
+            <div className="p-4">
+              {selectedApps[index] ? (
+                <div className="flex items-center gap-4 mb-4">
+                  {selectedApps[index].logo_url ? (
+                    <img 
+                      src={selectedApps[index].logo_url}
+                      alt={`Logo ${selectedApps[index].name}`}
+                      className="w-12 h-12 rounded-lg object-contain bg-white shadow-sm border border-gray-100"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <span className="text-xl font-bold text-primary">
+                        {selectedApps[index].name.charAt(0)}
+                      </span>
+                    </div>
+                  )}
+                  <div>
+                    <h3 className="font-semibold text-gray-900">
+                      {selectedApps[index].name}
+                    </h3>
+                    <p className="text-sm text-gray-500">
+                      {selectedApps[index].category || 'Non catégorisé'}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            </Button>
-          ))}
-        </div>
-      </div>
-    </Card>
+              ) : (
+                <div className="text-center mb-4">
+                  <Plus className="h-8 w-8 text-primary/40 mx-auto mb-2" />
+                  <h3 className="font-medium text-gray-600">
+                    Application {index + 1}
+                  </h3>
+                </div>
+              )}
+              <SearchDropdown
+                searchTerm={searchTerms[index]}
+                onSearchChange={(value) => onSearchChange(value, index)}
+                filteredApps={applications?.filter(app => {
+                  const searchLower = searchTerms[index].toLowerCase();
+                  return (
+                    app.name?.toLowerCase().includes(searchLower) ||
+                    app.category?.toLowerCase().includes(searchLower) ||
+                    app.description?.toLowerCase().includes(searchLower)
+                  );
+                })}
+                onSelectApp={(app) => onSelectApp(app, index)}
+                placeholder={selectedApps[index] ? "Changer d'application" : "Rechercher une application"}
+              />
+            </div>
+          </div>
+        </motion.div>
+      ))}
+    </div>
   );
 };
-
-export default ComparisonSearch;
