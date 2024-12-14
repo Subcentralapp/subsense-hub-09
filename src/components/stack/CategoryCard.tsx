@@ -24,8 +24,11 @@ export const CategoryCard = ({
   const [isExpanded, setIsExpanded] = useState(false);
 
   const handleClick = () => {
-    setIsExpanded(!isExpanded);
-    onSelect();
+    const newExpandedState = !isExpanded;
+    setIsExpanded(newExpandedState);
+    if (newExpandedState !== isSelected) {
+      onSelect();
+    }
   };
 
   // Get applications from stackCategories instead of database
@@ -59,7 +62,7 @@ export const CategoryCard = ({
         onClick={handleClick}
       />
       
-      {(isExpanded || isSelected) && (
+      {isExpanded && (
         <ApplicationsList 
           applications={applications}
           onAddTool={onAddTool}
