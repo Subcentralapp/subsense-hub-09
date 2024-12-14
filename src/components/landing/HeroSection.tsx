@@ -11,14 +11,14 @@ export const HeroSection = () => {
       {/* Background decoration avec optimisation */}
       <div className="absolute inset-0 bg-grid-white/10 bg-[size:30px_30px] [mask-image:radial-gradient(white,transparent_85%)] will-change-auto" />
       
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 sm:pt-28 pb-16 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 sm:pt-20 pb-16 relative z-10">
         <div className="text-center lg:text-left lg:flex lg:items-center lg:gap-12">
-          <div className="lg:w-1/2 space-y-6">
+          <div className="lg:w-1/2 space-y-4">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
-              className="space-y-4 sm:space-y-6"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.2 }}
+              className="space-y-4"
             >
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-secondary leading-tight will-change-transform">
                 Gérez vos abonnements en toute simplicité
@@ -37,9 +37,9 @@ export const HeroSection = () => {
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, delay: 0.1 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.2 }}
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
             >
               <Button 
@@ -66,10 +66,10 @@ export const HeroSection = () => {
           </div>
 
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3, delay: 0.2 }}
-            className="lg:w-1/2 mt-8 lg:mt-0"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.2 }}
+            className="lg:w-1/2 mt-6 lg:mt-0"
           >
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-2xl blur-3xl" />
@@ -81,6 +81,7 @@ export const HeroSection = () => {
                     className="w-full h-full object-contain will-change-transform"
                     loading="eager"
                     decoding="async"
+                    fetchpriority="high"
                   />
                 </div>
               </div>
