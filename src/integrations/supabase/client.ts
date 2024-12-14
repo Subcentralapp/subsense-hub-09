@@ -23,12 +23,9 @@ export const supabase = createClient(
 // Add logging for debugging
 supabase.auth.onAuthStateChange((event, session) => {
   console.log('Auth state changed:', event, 'Session:', session ? 'exists' : 'null');
-});
-
-// Add error handling for auth events
-supabase.auth.onError((error) => {
-  console.error('Auth error:', error);
-  if (error.message.includes('JWT')) {
+  
+  // Handle JWT errors here instead of using onError
+  if (event === 'TOKEN_REFRESHED' && !session) {
     console.log('JWT error detected, clearing local storage');
     localStorage.clear();
     window.location.href = '/landing';
