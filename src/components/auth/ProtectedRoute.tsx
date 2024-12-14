@@ -42,11 +42,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
           throw preferencesError;
         }
 
-        console.log("✅ État de la session:", !!session);
-        console.log("📋 Préférences trouvées:", !!preferences);
-        
         setIsAuthenticated(true);
-        setIsLoading(false);
 
         // Rediriger vers l'onboarding uniquement si:
         // 1. L'utilisateur est authentifié
@@ -55,7 +51,13 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
         if (!preferences && location.pathname !== '/onboarding') {
           console.log("🆕 Première connexion, redirection vers onboarding");
           navigate('/onboarding', { replace: true });
+        } else if (location.pathname === '/') {
+          // Si l'utilisateur a des préférences et est sur la page racine, rediriger vers le dashboard
+          console.log("👉 Redirection vers le dashboard");
+          navigate('/dashboard', { replace: true });
         }
+
+        setIsLoading(false);
       } catch (error) {
         console.error("❌ Erreur inattendue:", error);
         setIsAuthenticated(false);
@@ -80,13 +82,17 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
         setIsAuthenticated(true);
         
-        // Rediriger vers l'onboarding uniquement pour les nouveaux utilisateurs
         if (!preferences && location.pathname !== '/onboarding') {
           console.log("🆕 Nouvel utilisateur connecté, redirection vers onboarding");
           navigate('/onboarding', { replace: true });
+        } else {
+          // Si l'utilisateur a des préférences, rediriger vers le dashboard
+          console.log("👉 Utilisateur existant, redirection vers le dashboard");
+          navigate('/dashboard', { replace: true });
         }
       } else if (event === 'SIGNED_OUT') {
         setIsAuthenticated(false);
+        navigate('/landing', { replace: true });
       }
       
       setIsLoading(false);
