@@ -8,7 +8,9 @@ export const supabase = createClient(
       persistSession: true,
       detectSessionInUrl: false,
       autoRefreshToken: true,
-      storage: localStorage
+      storage: localStorage,
+      storageKey: 'supabase.auth.token',
+      flowType: 'implicit'
     },
     global: {
       headers: {
@@ -17,3 +19,8 @@ export const supabase = createClient(
     },
   }
 )
+
+// Ajouter des logs pour le debugging
+supabase.auth.onAuthStateChange((event, session) => {
+  console.log('Auth state changed:', event, 'Session:', session);
+});
