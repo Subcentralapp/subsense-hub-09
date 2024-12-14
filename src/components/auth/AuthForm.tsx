@@ -125,7 +125,7 @@ const AuthForm = () => {
               },
             }}
             providers={["google"]}
-            redirectTo="https://qhidxbdxcymhuyquyqgk.supabase.co/auth/v1/callback"
+            redirectTo={window.location.origin}
             localization={{
               variables: {
                 sign_in: {
@@ -167,7 +167,7 @@ const AuthForm = () => {
               },
             }}
             providers={["google"]}
-            redirectTo="https://qhidxbdxcymhuyquyqgk.supabase.co/auth/v1/callback"
+            redirectTo={window.location.origin}
             localization={{
               variables: {
                 sign_up: {
