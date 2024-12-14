@@ -1,11 +1,9 @@
-import { Card } from "@/components/ui/card";
-import { motion } from "framer-motion";
 import { useState } from "react";
-import { ApplicationCard } from "./ApplicationCard";
-import { Application } from "@/types/application";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { Plus } from "lucide-react";
+import { Application } from "@/types/application";
+import { CategoryHeader } from "./CategoryHeader";
+import { ApplicationsList } from "./ApplicationsList";
 
 interface CategoryCardProps {
   name: string;
@@ -16,7 +14,14 @@ interface CategoryCardProps {
   onAddTool?: (app: Application) => void;
 }
 
-export const CategoryCard = ({ name, description, color, isSelected, onSelect, onAddTool }: CategoryCardProps) => {
+export const CategoryCard = ({ 
+  name, 
+  description, 
+  color, 
+  isSelected, 
+  onSelect, 
+  onAddTool 
+}: CategoryCardProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const { data: applications } = useQuery({
@@ -61,43 +66,19 @@ export const CategoryCard = ({ name, description, color, isSelected, onSelect, o
 
   return (
     <div className="w-full">
-      <motion.div
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-      >
-        <Card
-          className={`p-4 cursor-pointer ${color} transition-all ${
-            isSelected || isExpanded
-              ? 'border-2 border-primary shadow-lg' 
-              : 'border-2 border-transparent hover:border-primary/20'
-          }`}
-          onClick={handleClick}
-        >
-          <h3 className="font-semibold text-gray-900">{name}</h3>
-          <p className="text-sm text-gray-600">{description}</p>
-        </Card>
-      </motion.div>
-
-      {(isExpanded || isSelected) && applications && applications.length > 0 && (
-        <motion.div
-          initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: "auto" }}
-          exit={{ opacity: 0, height: 0 }}
-          className="mt-2 space-y-2 pl-4"
-        >
-          {applications.map((app) => (
-            <ApplicationCard
-              key={app.id}
-              app={app}
-              onAdd={() => {
-                console.log('Add application:', app.name);
-                if (onAddTool) {
-                  onAddTool(app);
-                }
-              }}
-            />
-          ))}
-        </motion.div>
+      <CategoryHeader
+        name={name}
+        description={description}
+        color={color}
+        isSelected={isSelected}
+        onClick={handleClick}
+      />
+      
+      {(isExpanded || isSelected) && (
+        <ApplicationsList 
+          applications={applications || []}
+          onAddTool={onAddTool}
+        />
       )}
     </div>
   );
