@@ -4,6 +4,7 @@ import { CategoryHeader } from "@/components/stack/CategoryHeader";
 import { CategoryContent } from "./CategoryContent";
 import { stackCategories } from "@/data/stackSuggestions";
 import { ApplicationCard } from "../ApplicationCard";
+import { motion } from "framer-motion";
 
 interface CategoryCardProps {
   name: string;
