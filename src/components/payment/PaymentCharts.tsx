@@ -5,7 +5,7 @@ import { CategoryChart } from "./charts/CategoryChart";
 
 const PaymentCharts = () => {
   const { data } = useQuery({
-    queryKey: ['subscriptions'],
+    queryKey: ['payment-charts-subscriptions'],
     queryFn: async () => {
       console.log("PaymentCharts - Fetching subscriptions...");
       const { data: { user } } = await supabase.auth.getUser();
@@ -27,14 +27,18 @@ const PaymentCharts = () => {
       console.log("PaymentCharts - Fetched subscriptions:", data);
       return { subscriptions: data || [] };
     },
-    initialData: { subscriptions: [] }
+    initialData: { subscriptions: [] },
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true
   });
 
   // S'assurer que subscriptions est toujours un tableau
   const subscriptions = Array.isArray(data?.subscriptions) ? data.subscriptions : [];
 
   const currentMonthTotal = subscriptions.reduce((total, sub) => total + Number(sub.price), 0);
-  const previousMonthTotal = currentMonthTotal * 1.2;
+  const previousMonthTotal = currentMonthTotal * 1.2; // Simulation pour l'exemple
   const savings = previousMonthTotal - currentMonthTotal;
 
   // Grouper les dépenses par catégorie avec typage explicite

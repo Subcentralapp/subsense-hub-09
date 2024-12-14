@@ -4,7 +4,7 @@ import { Subscription } from "@/types/subscription";
 
 export const useStatsData = () => {
   return useQuery({
-    queryKey: ['subscriptions'],
+    queryKey: ['stats-subscriptions'],
     queryFn: async () => {
       console.log("Fetching subscriptions for stats...");
       const { data: { user } } = await supabase.auth.getUser();
@@ -27,6 +27,10 @@ export const useStatsData = () => {
       console.log("Fetched subscriptions for stats:", data);
       return { subscriptions: data || [] };
     },
-    initialData: { subscriptions: [] }
+    initialData: { subscriptions: [] },
+    staleTime: 0,
+    gcTime: 0,
+    refetchOnMount: true,
+    refetchOnWindowFocus: true
   });
 };

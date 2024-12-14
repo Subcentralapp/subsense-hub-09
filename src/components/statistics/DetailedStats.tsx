@@ -4,7 +4,7 @@ import { StatsExport } from "./StatsExport";
 import { StatsCard } from "./StatsCard";
 
 const DetailedStats = () => {
-  const { data } = useStatsData();
+  const { data, isLoading } = useStatsData();
   
   // S'assurer que data.subscriptions est un tableau
   const subscriptions = Array.isArray(data?.subscriptions) ? data.subscriptions : [];
@@ -22,6 +22,17 @@ const DetailedStats = () => {
     totalSubscriptions: subscriptions.length,
     trialSubscriptions: subscriptions.filter(sub => sub.is_trial).length,
   };
+
+  if (isLoading) {
+    return (
+      <Card className="p-6 bg-white/80 backdrop-blur-md border border-neutral-light shadow-lg">
+        <div className="animate-pulse space-y-4">
+          <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+          <div className="h-8 bg-gray-200 rounded w-1/2"></div>
+        </div>
+      </Card>
+    );
+  }
 
   return (
     <Card className="p-6 bg-white/80 backdrop-blur-md border border-neutral-light shadow-lg space-y-6">
