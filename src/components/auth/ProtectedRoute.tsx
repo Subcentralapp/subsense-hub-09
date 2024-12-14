@@ -9,15 +9,15 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const [shouldRedirectToOnboarding, setShouldRedirectToOnboarding] = useState<boolean | null>(null);
 
   useEffect(() => {
-    console.log("ProtectedRoute - Checking authentication...");
     let mounted = true;
 
     const checkAuth = async () => {
       try {
+        console.log("🔍 ProtectedRoute - Vérification initiale de la session...");
         const { data: { session }, error: sessionError } = await supabase.auth.getSession();
         
         if (sessionError) {
-          console.error("Session check error:", sessionError);
+          console.error("❌ Erreur lors de la vérification de la session:", sessionError);
           if (mounted) {
             setIsAuthenticated(false);
             setIsLoading(false);
@@ -26,7 +26,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
         }
 
         if (!session) {
-          console.log("No session found, redirecting to identification");
+          console.log("🚫 Pas de session trouvée, redirection vers /landing");
           if (mounted) {
             setIsAuthenticated(false);
             setIsLoading(false);
@@ -34,7 +34,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
           return;
         }
 
-        console.log("Session found, checking preferences");
+        // Si nous avons une session, vérifions les préférences
         const { data: preferences, error: preferencesError } = await supabase
           .from('user_preferences')
           .select('*')
@@ -42,20 +42,20 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
           .single();
 
         if (preferencesError && preferencesError.code !== 'PGRST116') {
-          console.error("Error checking preferences:", preferencesError);
+          console.error("❌ Erreur lors de la vérification des préférences:", preferencesError);
         }
 
         if (mounted) {
           setIsAuthenticated(true);
           setShouldRedirectToOnboarding(!preferences);
           setIsLoading(false);
-          console.log("Authentication check complete", {
+          console.log("✅ Vérification d'authentification terminée", {
             isAuthenticated: true,
             shouldRedirectToOnboarding: !preferences
           });
         }
       } catch (error) {
-        console.error("Error in checkAuth:", error);
+        console.error("❌ Erreur dans checkAuth:", error);
         if (mounted) {
           setIsAuthenticated(false);
           setIsLoading(false);
@@ -63,31 +63,43 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
       }
     };
 
+    // Vérification initiale
     checkAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      console.log("Auth state changed:", _event, session?.user?.id);
-      if (mounted) {
-        if (!session) {
+    // Écouter les changements d'état d'authentification
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("🔄 État d'authentification changé:", event);
+      
+      if (!session) {
+        console.log("👋 Session terminée, redirection vers /landing");
+        if (mounted) {
           setIsAuthenticated(false);
           setShouldRedirectToOnboarding(null);
           setIsLoading(false);
-          return;
         }
+        return;
+      }
 
-        const { data: preferences, error: preferencesError } = await supabase
-          .from('user_preferences')
-          .select('*')
-          .eq('id', session.user.id)
-          .single();
+      // Vérifier les préférences si nous avons une session
+      const { data: preferences, error: preferencesError } = await supabase
+        .from('user_preferences')
+        .select('*')
+        .eq('id', session.user.id)
+        .single();
 
-        if (preferencesError && preferencesError.code !== 'PGRST116') {
-          console.error("Error checking preferences:", preferencesError);
-        }
+      if (preferencesError && preferencesError.code !== 'PGRST116') {
+        console.error("❌ Erreur lors de la vérification des préférences:", preferencesError);
+      }
 
+      if (mounted) {
         setIsAuthenticated(true);
         setShouldRedirectToOnboarding(!preferences);
         setIsLoading(false);
+        console.log("✅ Mise à jour de l'état d'authentification", {
+          event,
+          isAuthenticated: true,
+          shouldRedirectToOnboarding: !preferences
+        });
       }
     });
 
@@ -102,18 +114,13 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
   }
 
   if (!isAuthenticated) {
-    console.log("Not authenticated, redirecting to identification");
-    return <Navigate to="/identification" replace />;
+    console.log("🚪 Non authentifié, redirection vers /landing");
+    return <Navigate to="/landing" replace />;
   }
 
-  if (shouldRedirectToOnboarding && window.location.pathname !== '/onboarding') {
-    console.log("Redirecting to onboarding");
+  if (shouldRedirectToOnboarding) {
+    console.log("🆕 Redirection vers l'onboarding");
     return <Navigate to="/onboarding" replace />;
-  }
-
-  if (shouldRedirectToOnboarding === false && window.location.pathname === '/onboarding') {
-    console.log("Redirecting to dashboard from onboarding");
-    return <Navigate to="/dashboard" replace />;
   }
 
   return <>{children}</>;
