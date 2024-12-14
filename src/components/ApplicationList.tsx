@@ -99,15 +99,11 @@ const ApplicationList = () => {
 
       console.log("✅ Subscription added successfully:", data);
 
-      // Mise à jour optimiste du cache
-      queryClient.setQueryData(["subscriptions"], (oldData: any) => {
-        if (!oldData) return { subscriptions: [data], total: 1, totalPages: 1 };
-        return {
-          ...oldData,
-          subscriptions: [data, ...(oldData.subscriptions || [])],
-          total: (oldData.total || 0) + 1,
-        };
-      });
+      // Invalider toutes les requêtes liées aux abonnements
+      await queryClient.invalidateQueries({ queryKey: ["subscriptions"] });
+      await queryClient.invalidateQueries({ queryKey: ["dashboard-subscriptions"] });
+      await queryClient.invalidateQueries({ queryKey: ["stats-subscriptions"] });
+      await queryClient.invalidateQueries({ queryKey: ["upcomingPayments"] });
 
       logPerformance({
         endpoint: "addSubscription",
