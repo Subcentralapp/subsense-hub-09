@@ -113,7 +113,7 @@ const AuthForm = () => {
         },
       },
     },
-    providers: ["google"],
+    providers: [{ id: 'google', name: 'Google' }],
     redirectTo: `${window.location.origin}/auth/callback`,
   };
 
