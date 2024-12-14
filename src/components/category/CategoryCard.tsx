@@ -63,7 +63,7 @@ export const CategoryCard = ({
         onClick={handleClick}
       />
       
-      {/* Version mobile uniquement */}
+      {/* Version mobile uniquement - ne pas toucher */}
       <div className="block md:hidden">
         <CategoryContent 
           isExpanded={isExpanded}
@@ -72,7 +72,7 @@ export const CategoryCard = ({
         />
       </div>
 
-      {/* Version desktop uniquement */}
+      {/* Version desktop uniquement - style simplifié */}
       {isExpanded && applications.length > 0 && (
         <div className="hidden md:block mt-4">
           <h3 className="text-xl font-medium text-gray-800 mb-4">
@@ -85,16 +85,23 @@ export const CategoryCard = ({
             className="grid grid-cols-3 gap-4"
           >
             {applications.map((app) => (
-              <ApplicationCard
-                key={app.id}
-                app={app}
-                onAdd={() => {
-                  console.log('Add application:', app.name);
-                  if (onAddTool) {
-                    onAddTool(app);
-                  }
-                }}
-              />
+              <div key={app.id} className="p-4">
+                <h4 className="font-medium text-gray-900">{app.name}</h4>
+                <p className="text-sm text-gray-500">
+                  {app.price ? `${app.price}€/mois` : 'Gratuit'}
+                </p>
+                <button
+                  onClick={() => {
+                    console.log('Add application:', app.name);
+                    if (onAddTool) {
+                      onAddTool(app);
+                    }
+                  }}
+                  className="mt-2 text-primary hover:text-primary/80"
+                >
+                  Ajouter l'abonnement
+                </button>
+              </div>
             ))}
           </motion.div>
         </div>
