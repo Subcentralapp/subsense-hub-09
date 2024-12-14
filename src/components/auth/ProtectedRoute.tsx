@@ -44,16 +44,13 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
         setIsAuthenticated(true);
 
-        // Rediriger vers l'onboarding uniquement si:
-        // 1. L'utilisateur est authentifié
-        // 2. N'a pas encore de préférences
-        // 3. N'est pas déjà sur la page d'onboarding
+        // Si l'utilisateur n'a pas de préférences et n'est pas sur la page d'onboarding
         if (!preferences && location.pathname !== '/onboarding') {
           console.log("🆕 Première connexion, redirection vers onboarding");
           navigate('/onboarding', { replace: true });
-        } else if (location.pathname === '/') {
-          // Si l'utilisateur a des préférences et est sur la page racine, rediriger vers le dashboard
-          console.log("👉 Redirection vers le dashboard");
+        } else if (preferences && (location.pathname === '/' || location.pathname === '/landing')) {
+          // Si l'utilisateur a des préférences et est sur la page d'accueil ou landing
+          console.log("👉 Utilisateur existant, redirection vers le dashboard");
           navigate('/dashboard', { replace: true });
         }
 
@@ -86,7 +83,6 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
           console.log("🆕 Nouvel utilisateur connecté, redirection vers onboarding");
           navigate('/onboarding', { replace: true });
         } else {
-          // Si l'utilisateur a des préférences, rediriger vers le dashboard
           console.log("👉 Utilisateur existant, redirection vers le dashboard");
           navigate('/dashboard', { replace: true });
         }
