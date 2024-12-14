@@ -24,8 +24,8 @@ const queryClient = new QueryClient({
 
 // Add global timeout handler for all queries
 const originalFetch = window.fetch;
-window.fetch = async (...args) => {
-  const timeoutPromise = new Promise((_, reject) => {
+window.fetch = async (...args): Promise<Response> => {
+  const timeoutPromise = new Promise<never>((_, reject) => {
     setTimeout(() => {
       reject(new Error('Request timeout'));
     }, 10000); // 10 seconds timeout
@@ -36,7 +36,7 @@ window.fetch = async (...args) => {
       originalFetch(...args),
       timeoutPromise
     ]);
-    return result;
+    return result as Response;
   } catch (error) {
     console.error('Fetch error:', error);
     throw error;
