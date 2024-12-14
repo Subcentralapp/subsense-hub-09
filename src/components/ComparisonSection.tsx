@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Application } from "@/types/application";
-import { Loader2, Sparkles } from "lucide-react";
+import { Loader2, Sparkles, Shield, Zap, Award } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { motion } from "framer-motion";
 import { ComparisonResult } from "./comparison/ComparisonResult";
