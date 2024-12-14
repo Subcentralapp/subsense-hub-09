@@ -45,8 +45,8 @@ const ApplicationList = () => {
         throw error;
       }
     },
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
     refetchOnWindowFocus: false,
     refetchOnMount: true,
     retry: 2
@@ -104,8 +104,8 @@ const ApplicationList = () => {
         if (!oldData) return { subscriptions: [data], total: 1, totalPages: 1 };
         return {
           ...oldData,
-          subscriptions: [data, ...oldData.subscriptions],
-          total: oldData.total + 1,
+          subscriptions: [data, ...(oldData.subscriptions || [])],
+          total: (oldData.total || 0) + 1,
         };
       });
 
