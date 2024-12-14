@@ -37,14 +37,14 @@ export const useAuthRedirect = () => {
         throw error;
       }
 
-      // Si l'utilisateur n'a jamais vu l'onboarding (pas de préférences)
+      // Si l'utilisateur n'a pas encore fait l'onboarding (pas de préférences)
       if (!preferences) {
         console.log("🆕 Première connexion, redirection vers onboarding");
         navigate("/onboarding", { replace: true });
         return;
       }
 
-      // Dans tous les autres cas (préférences existantes ou onboarding ignoré)
+      // Dans tous les autres cas (préférences existantes)
       console.log("👉 Redirection vers le tableau de bord");
       navigate("/dashboard", { replace: true });
     } catch (error) {
@@ -73,6 +73,9 @@ export const useAuthRedirect = () => {
         const { data: { session } } = await supabase.auth.getSession();
         if (session) {
           await checkUserPreferences(session.user.id, session.user.email_confirmed_at);
+        } else {
+          // Si pas de session, rediriger vers la page de connexion
+          navigate("/landing", { replace: true });
         }
       } catch (error) {
         console.error("❌ Erreur lors de la vérification du statut d'authentification:", error);
@@ -92,8 +95,8 @@ export const useAuthRedirect = () => {
       console.log("🔄 Changement d'état d'authentification:", event, session);
       if (event === 'SIGNED_IN' && session) {
         await checkUserPreferences(session.user.id, session.user.email_confirmed_at);
-      } else if (event === 'USER_UPDATED' && session) {
-        await checkUserPreferences(session.user.id, session.user.email_confirmed_at);
+      } else if (event === 'SIGNED_OUT') {
+        navigate("/landing", { replace: true });
       }
     });
 
