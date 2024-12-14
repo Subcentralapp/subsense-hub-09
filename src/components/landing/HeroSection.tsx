@@ -81,7 +81,7 @@ export const HeroSection = () => {
                     className="w-full h-full object-contain will-change-transform"
                     loading="eager"
                     decoding="async"
-                    fetchpriority="high"
+                    fetchPriority="high"
                   />
                 </div>
               </div>
