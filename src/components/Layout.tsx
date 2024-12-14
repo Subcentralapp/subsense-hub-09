@@ -1,4 +1,5 @@
 import { Header } from "./Header";
+import { Footer } from "./Footer";
 
 export const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -7,6 +8,7 @@ export const Layout = ({ children }: { children: React.ReactNode }) => {
       <main className="flex-1 pt-16">
         {children}
       </main>
+      <Footer />
     </div>
   );
 };
