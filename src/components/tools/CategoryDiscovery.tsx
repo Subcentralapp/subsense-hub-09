@@ -4,7 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { ApplicationCard } from '../ApplicationCard';
 import { Button } from '../ui/button';
 import { motion } from 'framer-motion';
-import { Search, Filter } from 'lucide-react';
+import { Search } from 'lucide-react';
 import { Input } from '../ui/input';
 
 const categories = [
@@ -149,6 +149,7 @@ export const CategoryDiscovery = () => {
                   onAdd={() => {
                     console.log('Add application:', app.name);
                   }}
+                  buttonText="discover"
                 />
               ))}
             </div>

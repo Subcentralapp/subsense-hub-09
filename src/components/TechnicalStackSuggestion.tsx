@@ -21,7 +21,6 @@ export const TechnicalStackSuggestion = () => {
     );
   };
 
-  // Trouver les applications recommandées pour la catégorie sélectionnée
   const recommendedApps = selectedCategory
     ? stackCategories
         .find(cat => cat.name === selectedCategory)
@@ -93,6 +92,7 @@ export const TechnicalStackSuggestion = () => {
                 key={`${app.name}-${index}`}
                 app={app}
                 onAdd={() => handleAddTool(app)}
+                buttonText="add"
               />
             ))}
           </div>

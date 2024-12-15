@@ -7,9 +7,10 @@ import { ApplicationHeader } from './application/ApplicationHeader';
 interface ApplicationCardProps {
   app: Application;
   onAdd: (app: Application) => void;
+  buttonText?: 'add' | 'discover';
 }
 
-export const ApplicationCard = ({ app, onAdd }: ApplicationCardProps) => {
+export const ApplicationCard = ({ app, onAdd, buttonText = 'add' }: ApplicationCardProps) => {
   const [logoError, setLogoError] = useState(false);
   const logoUrl = app.logo_url || (logoError ? null : getClearbitLogoUrl(app.name || '', app.website_url));
 
@@ -45,7 +46,7 @@ export const ApplicationCard = ({ app, onAdd }: ApplicationCardProps) => {
           size="sm"
           className="w-full bg-primary text-white hover:bg-primary/90"
         >
-          Ajouter
+          {buttonText === 'add' ? 'Ajouter' : 'Découvrir'}
         </Button>
       </div>
     </div>
