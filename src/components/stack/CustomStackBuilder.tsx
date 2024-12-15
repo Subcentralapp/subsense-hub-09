@@ -35,7 +35,7 @@ export const CustomStackBuilder = ({ selectedTools, onRemoveTool }: CustomStackB
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between gap-2 mb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
         <div className="flex items-center gap-2">
           <Zap className="h-5 w-5 text-primary" />
           <h3 className="text-lg font-medium">Stack Technique Personnalisée</h3>
@@ -43,7 +43,7 @@ export const CustomStackBuilder = ({ selectedTools, onRemoveTool }: CustomStackB
         
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button variant="outline" className="gap-2">
+            <Button variant="outline" className="w-full sm:w-auto gap-2">
               <Plus className="h-4 w-4" />
               Je n'ai pas trouvé mon app
             </Button>
