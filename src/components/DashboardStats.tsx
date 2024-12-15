@@ -47,7 +47,6 @@ const DashboardStats = () => {
               description: "Votre session a expiré. Veuillez vous reconnecter.",
               variant: "destructive",
             });
-            // Déconnexion explicite en cas d'erreur de session
             await supabase.auth.signOut();
             navigate("/identification");
           }
@@ -69,10 +68,8 @@ const DashboardStats = () => {
     retry: 1
   });
 
-  // S'assurer que subscriptions est toujours un tableau
   const subscriptions = Array.isArray(data?.subscriptions) ? data.subscriptions : [];
 
-  // Calculate statistics
   const monthlyTotal = subscriptions.reduce((sum, sub) => sum + Number(sub.price), 0);
   const yearlyTotal = monthlyTotal * 12;
   const subscriptionCount = subscriptions.length;
@@ -143,7 +140,7 @@ const DashboardStats = () => {
           </div>
           <div className="p-5">
             <p className="text-sm font-medium text-gray-500 text-center">Plus Coûteux</p>
-            <p className="text-xl font-bold text-primary mt-2 truncate text-center group-hover:scale-105 transition-transform">
+            <p className="text-xl sm:text-lg md:text-xl font-bold text-primary mt-2 truncate text-center group-hover:scale-105 transition-transform px-1">
               {mostExpensive}
             </p>
             <div className="mt-3 text-xs text-gray-500 flex items-center justify-center gap-1">

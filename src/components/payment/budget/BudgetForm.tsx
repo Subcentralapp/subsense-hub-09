@@ -31,7 +31,6 @@ export const BudgetForm = () => {
         throw new Error("Le montant doit être un nombre positif");
       }
 
-      // Utilisation de date-fns pour obtenir le début et la fin du mois actuel
       const currentDate = new Date();
       const startDate = startOfMonth(currentDate);
       const endDate = endOfMonth(currentDate);
@@ -41,7 +40,6 @@ export const BudgetForm = () => {
         endDate: endDate.toISOString()
       });
 
-      // Suppression de l'ancien budget pour le mois en cours
       const { error: deleteError } = await supabase
         .from('budgets')
         .delete()
@@ -54,7 +52,6 @@ export const BudgetForm = () => {
         throw deleteError;
       }
 
-      // Insertion du nouveau budget
       const { data: insertedBudget, error: insertError } = await supabase
         .from('budgets')
         .insert({
@@ -73,7 +70,6 @@ export const BudgetForm = () => {
 
       console.log("Budget inséré avec succès:", insertedBudget);
 
-      // Invalidation du cache pour forcer le rechargement des données
       await queryClient.invalidateQueries({ queryKey: ['current-budget'] });
       await queryClient.invalidateQueries({ queryKey: ['monthly-expenses'] });
 
@@ -96,18 +92,18 @@ export const BudgetForm = () => {
   };
 
   return (
-    <div className="flex gap-2">
+    <div className="flex flex-col sm:flex-row gap-2">
       <div className="relative flex-1">
         <Input
           type="number"
           value={newBudget}
           onChange={(e) => setNewBudget(e.target.value)}
           placeholder="Définir un nouveau budget"
-          className="pr-8"
+          className="pr-8 text-sm sm:text-base"
         />
         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">€</span>
       </div>
-      <Button onClick={handleSetBudget} disabled={isLoading}>
+      <Button onClick={handleSetBudget} disabled={isLoading} className="text-sm sm:text-base whitespace-nowrap">
         {isLoading ? "Mise à jour..." : "Mettre à jour"}
       </Button>
     </div>
