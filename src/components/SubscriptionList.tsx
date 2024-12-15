@@ -1,7 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { SubscriptionHeader } from "./subscription/SubscriptionHeader";
 import ApplicationList from "./ApplicationList";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { SubscriptionEditDialog } from "./subscription/SubscriptionEditDialog";
 import { useSubscriptions } from "@/hooks/useSubscriptions";
 import { SubscriptionContent } from "./subscription/SubscriptionContent";
@@ -9,11 +9,28 @@ import { Subscription } from "@/types/subscription";
 import { Button } from "./ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Skeleton } from "./ui/skeleton";
+import { Alert, AlertDescription } from "./ui/alert";
+import { Link } from "react-router-dom";
 
 const SubscriptionList = () => {
   const [editingSubscription, setEditingSubscription] = useState<Subscription | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const { subscriptions, isLoading, error, refetch, handleDelete, totalPages } = useSubscriptions(currentPage);
+
+  const hasSimilarApps = useMemo(() => {
+    if (!subscriptions) return false;
+    
+    // Créer un objet qui regroupe les abonnements par catégorie
+    const categoryCounts = subscriptions.reduce((acc: Record<string, number>, sub) => {
+      if (sub.category) {
+        acc[sub.category] = (acc[sub.category] || 0) + 1;
+      }
+      return acc;
+    }, {});
+
+    // Vérifier s'il existe au moins une catégorie avec plus d'une application
+    return Object.values(categoryCounts).some(count => count > 1);
+  }, [subscriptions]);
 
   const handleEdit = (subscription: Subscription) => {
     console.log("Editing subscription:", subscription);
@@ -36,6 +53,19 @@ const SubscriptionList = () => {
 
   return (
     <div className="space-y-4">
+      {hasSimilarApps && (
+        <Alert variant="warning" className="bg-orange-50 text-orange-800 border-orange-200">
+          <AlertDescription className="flex flex-col sm:flex-row gap-2 items-start sm:items-center justify-between">
+            <span>Vous possédez des applications similaires, des économies sont possibles.</span>
+            <Link to="/dashboard/compare">
+              <Button variant="outline" size="sm" className="border-orange-200 hover:bg-orange-100">
+                Comparer mes applications
+              </Button>
+            </Link>
+          </AlertDescription>
+        </Alert>
+      )}
+
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <SubscriptionHeader />
         <ApplicationList />
