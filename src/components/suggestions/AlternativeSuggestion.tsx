@@ -1,4 +1,4 @@
-import { AlertCircle, ExternalLink } from "lucide-react";
+import { AlertCircle, ExternalLink, Check } from "lucide-react";
 import { Application } from "@/types/application";
 import { Button } from "@/components/ui/button";
 
