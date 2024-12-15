@@ -1,28 +1,20 @@
-import { BadgeDollarSign, ChevronDown } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { ChevronDown, ChevronUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface SavingsBadgeProps {
   amount: number;
-  isOpen?: boolean;
+  isOpen: boolean;
 }
 
 export const SavingsBadge = ({ amount, isOpen }: SavingsBadgeProps) => {
   return (
-    <Badge 
-      className={cn(
-        "w-full justify-between bg-orange-500/10 text-orange-600 hover:bg-orange-500/20 transition-colors",
-        "flex items-center gap-1 cursor-pointer py-2 group-hover:bg-orange-500/15"
+    <div className="flex items-center justify-between w-full px-3 py-2 text-sm bg-orange-50 hover:bg-orange-100/80 text-orange-700 rounded-lg transition-colors">
+      <span>Économisez {amount.toFixed(2)}€/mois</span>
+      {isOpen ? (
+        <ChevronUp className="h-4 w-4" />
+      ) : (
+        <ChevronDown className="h-4 w-4" />
       )}
-    >
-      <div className="flex items-center gap-1">
-        <BadgeDollarSign className="h-3 w-3" />
-        <span>Économie potentielle : {amount.toFixed(2)}€/mois</span>
-      </div>
-      <ChevronDown className={cn(
-        "h-3 w-3 transition-transform duration-200",
-        isOpen && "transform rotate-180"
-      )} />
-    </Badge>
+    </div>
   );
 };

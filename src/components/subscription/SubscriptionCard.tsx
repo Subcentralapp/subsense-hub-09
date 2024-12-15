@@ -33,68 +33,9 @@ export const SubscriptionCard = ({
   useEffect(() => {
     const findAlternatives = async () => {
       try {
-        console.log("Searching for alternatives for:", subscription.name, "in category:", subscription.category);
+        console.log("Searching for alternatives in applications table for:", subscription.name);
         
-        // D'abord, cherchons d'autres abonnements dans la même catégorie
-        const { data: userSubs } = await supabase
-          .from('subscriptions')
-          .select('*')
-          .eq('category', subscription.category)
-          .neq('id', subscription.id);
-
-        if (userSubs && userSubs.length > 0) {
-          console.log("Found other subscriptions in same category:", userSubs);
-          
-          // Créer l'objet currentApp
-          const currentApp: Application = {
-            id: subscription.id,
-            name: subscription.name,
-            price: subscription.price,
-            category: subscription.category || '',
-            description: subscription.description || '',
-            website_url: null,
-            logo_url: null,
-            features: [],
-            pros: null,
-            cons: null,
-            rating: null,
-            review: null,
-            users_count: null
-          };
-
-          // Trouver l'abonnement le moins cher parmi ceux de la même catégorie
-          const cheapestSub = userSubs.reduce((min, sub) => 
-            sub.price < min.price ? sub : min
-          , userSubs[0]);
-
-          const alternativeApp: Application = {
-            id: cheapestSub.id,
-            name: cheapestSub.name,
-            price: cheapestSub.price,
-            category: cheapestSub.category || '',
-            description: cheapestSub.description || '',
-            website_url: null,
-            logo_url: null,
-            features: [],
-            pros: null,
-            cons: null,
-            rating: null,
-            review: null,
-            users_count: null
-          };
-
-          const savingsAmount = subscription.price - cheapestSub.price;
-          
-          console.log("Setting alternative with savings:", savingsAmount);
-          setAlternative({
-            currentApp,
-            alternativeApp,
-            savingsAmount
-          });
-          return;
-        }
-
-        // Si pas d'autres abonnements dans la même catégorie, chercher des alternatives dans la base applications
+        // Chercher des alternatives dans la base applications
         const { data: similarApps } = await supabase
           .from('applications')
           .select('*')
