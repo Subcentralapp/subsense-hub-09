@@ -53,19 +53,6 @@ const SubscriptionList = () => {
 
   return (
     <div className="space-y-4">
-      {hasSimilarApps && (
-        <Alert className="bg-orange-50 text-orange-800 border-orange-200">
-          <AlertDescription className="flex flex-col sm:flex-row gap-2 items-start sm:items-center justify-between">
-            <span>Vous possédez des applications similaires, des économies sont possibles.</span>
-            <Link to="/dashboard/compare">
-              <Button variant="outline" size="sm" className="border-orange-200 hover:bg-orange-100">
-                Comparer mes applications
-              </Button>
-            </Link>
-          </AlertDescription>
-        </Alert>
-      )}
-
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <SubscriptionHeader />
         <ApplicationList />
@@ -124,6 +111,19 @@ const SubscriptionList = () => {
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
+      )}
+
+      {hasSimilarApps && (
+        <Alert className="bg-orange-50 text-orange-800 border-orange-200">
+          <AlertDescription className="flex flex-col sm:flex-row gap-2 items-start sm:items-center justify-between">
+            <span>Vous possédez des applications similaires, des économies sont possibles.</span>
+            <Link to="/dashboard/compare">
+              <Button variant="outline" size="sm" className="border-orange-200 hover:bg-orange-100">
+                Comparer mes applications
+              </Button>
+            </Link>
+          </AlertDescription>
+        </Alert>
       )}
 
       <SubscriptionEditDialog
