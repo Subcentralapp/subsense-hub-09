@@ -3,15 +3,15 @@ import { QueryClient } from "@tanstack/react-query";
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      // Retry failed requests only once
-      retry: 1,
-      // Don't refetch on window focus for better performance
+      // Augmenter le staleTime pour réduire les requêtes inutiles
+      staleTime: 10 * 60 * 1000, // 10 minutes au lieu de 5
+      // Garder les données en cache plus longtemps
+      gcTime: 60 * 60 * 1000, // 1 heure au lieu de 30 minutes
+      // Désactiver le refetch automatique sur la fenêtre focus pour les données qui changent peu
       refetchOnWindowFocus: false,
-      // Cache data for 5 minutes by default
-      staleTime: 5 * 60 * 1000,
-      // Keep unused data in cache for 30 minutes
-      gcTime: 30 * 60 * 1000,
-      // Add default error handling in meta
+      // Réduire le nombre de tentatives en cas d'échec
+      retry: 1,
+      // Ajouter une gestion d'erreur par défaut
       meta: {
         errorHandler: (error: Error) => {
           console.error("Query error:", error);
@@ -19,9 +19,9 @@ export const queryClient = new QueryClient({
       }
     },
     mutations: {
-      // Retry failed mutations once
+      // Optimiser les mutations
       retry: 1,
-      // Add default error handling in meta
+      // Ajouter une gestion d'erreur par défaut pour les mutations
       meta: {
         errorHandler: (error: Error) => {
           console.error("Mutation error:", error);
@@ -31,12 +31,12 @@ export const queryClient = new QueryClient({
   },
 });
 
-// Prefetch helper function
+// Préchargement optimisé des requêtes importantes
 export const prefetchQueries = async () => {
   console.log("Prefetching important queries...");
   
   try {
-    // Prefetch common queries
+    // Précharger les requêtes communes avec un staleTime plus long
     await Promise.all([
       queryClient.prefetchQuery({
         queryKey: ['subscriptions'],
@@ -44,6 +44,7 @@ export const prefetchQueries = async () => {
           console.log("Prefetching subscriptions...");
           return [];
         },
+        staleTime: 30 * 60 * 1000, // 30 minutes pour les données qui changent peu
       }),
       queryClient.prefetchQuery({
         queryKey: ['applications'],
@@ -51,6 +52,7 @@ export const prefetchQueries = async () => {
           console.log("Prefetching applications...");
           return [];
         },
+        staleTime: 60 * 60 * 1000, // 1 heure pour les données statiques
       })
     ]);
     
