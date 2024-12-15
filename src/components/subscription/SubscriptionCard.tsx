@@ -47,8 +47,8 @@ export const SubscriptionCard = ({
             id: similarApps[0].id,
             name: similarApps[0].NOM || '',
             price: parseFloat(similarApps[0].PRICE || '0'),
-            category: similarApps[0].CATÉGORIE || null,
-            description: similarApps[0].DESCRIPTION || null,
+            category: similarApps[0].CATÉGORIE || '',
+            description: similarApps[0].DESCRIPTION || '',
             website_url: similarApps[0]["URL DU SITE WEB"] || null,
             logo_url: similarApps[0]["URL DU LOGO"] || null,
             features: Array.isArray(similarApps[0].CARACTÉRISTIQUES) 
@@ -65,8 +65,8 @@ export const SubscriptionCard = ({
             id: 0,
             name: subscription.name,
             price: subscription.price,
-            category: subscription.category || null,
-            description: subscription.description || null,
+            category: subscription.category || '',
+            description: subscription.description || '',
             website_url: null,
             logo_url: null,
             features: [],
@@ -99,7 +99,7 @@ export const SubscriptionCard = ({
   }, [subscription, initialAlternative]);
 
   return (
-    <div className="group relative p-6 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02] hover:bg-gradient-to-r hover:from-primary/5 hover:to-transparent">
+    <div className="group relative p-6 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300">
       <div className="space-y-4">
         <div className="flex items-start justify-between">
           <SubscriptionHeader 
@@ -139,7 +139,7 @@ export const SubscriptionCard = ({
                 />
               </button>
             </CollapsibleTrigger>
-            <CollapsibleContent className="mt-3 animate-fade-in">
+            <CollapsibleContent className="mt-3">
               <AlternativeSuggestion
                 currentApp={alternative.currentApp}
                 alternativeApp={alternative.alternativeApp}

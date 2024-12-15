@@ -11,8 +11,8 @@ export const SavingsBadge = ({ amount, isOpen }: SavingsBadgeProps) => {
   return (
     <Badge 
       className={cn(
-        "w-full justify-between bg-green-500/10 text-green-500 hover:bg-green-500/20 transition-colors",
-        "flex items-center gap-1 cursor-pointer py-2 group-hover:bg-green-500/15"
+        "w-full justify-between bg-orange-500/10 text-orange-600 hover:bg-orange-500/20 transition-colors",
+        "flex items-center gap-1 cursor-pointer py-2 group-hover:bg-orange-500/15"
       )}
     >
       <div className="flex items-center gap-1">
