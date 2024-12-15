@@ -3,11 +3,12 @@ import { Application } from "@/types/application";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { SavingsBadge } from "../badges/SavingsBadge";
 import { AlternativeSuggestion } from "../suggestions/AlternativeSuggestion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { TrialBadge } from "./components/TrialBadge";
 import { SubscriptionHeader } from "./components/SubscriptionHeader";
 import { SubscriptionActions } from "./components/SubscriptionActions";
 import { SubscriptionProgress } from "./SubscriptionProgress";
+import { supabase } from "@/integrations/supabase/client";
 
 interface SubscriptionCardProps {
   subscription: Subscription;
@@ -23,10 +24,62 @@ interface SubscriptionCardProps {
 export const SubscriptionCard = ({ 
   subscription, 
   onEdit, 
-  onDelete, 
-  alternative 
+  onDelete,
+  alternative: initialAlternative 
 }: SubscriptionCardProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [alternative, setAlternative] = useState(initialAlternative);
+
+  useEffect(() => {
+    const findAlternatives = async () => {
+      try {
+        // Rechercher des applications similaires dans la même catégorie
+        const { data: similarApps } = await supabase
+          .from('applications')
+          .select('*')
+          .eq('CATÉGORIE', subscription.category)
+          .lt('PRICE', subscription.price)
+          .order('PRICE', { ascending: true })
+          .limit(1);
+
+        if (similarApps && similarApps.length > 0) {
+          const alternativeApp = {
+            id: similarApps[0].id,
+            name: similarApps[0].NOM,
+            price: parseFloat(similarApps[0].PRICE),
+            category: similarApps[0].CATÉGORIE,
+            description: similarApps[0].DESCRIPTION,
+            website_url: similarApps[0]["URL DU SITE WEB"],
+            logo_url: similarApps[0]["URL DU LOGO"],
+          };
+
+          const currentApp = {
+            id: 0,
+            name: subscription.name,
+            price: subscription.price,
+            category: subscription.category,
+            description: subscription.description,
+          };
+
+          const savingsAmount = subscription.price - alternativeApp.price;
+
+          if (savingsAmount > 0) {
+            setAlternative({
+              currentApp,
+              alternativeApp,
+              savingsAmount
+            });
+          }
+        }
+      } catch (error) {
+        console.error("Erreur lors de la recherche d'alternatives:", error);
+      }
+    };
+
+    if (!initialAlternative && subscription.category) {
+      findAlternatives();
+    }
+  }, [subscription, initialAlternative]);
 
   return (
     <div className="group relative p-6 bg-white rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02] hover:bg-gradient-to-r hover:from-primary/5 hover:to-transparent">
