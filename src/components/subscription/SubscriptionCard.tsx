@@ -33,7 +33,7 @@ export const SubscriptionCard = ({
   useEffect(() => {
     const findAlternatives = async () => {
       try {
-        // Rechercher des applications similaires dans la même catégorie
+        console.log("Searching for alternatives for:", subscription.name);
         const { data: similarApps } = await supabase
           .from('applications')
           .select('*')
@@ -43,27 +43,44 @@ export const SubscriptionCard = ({
           .limit(1);
 
         if (similarApps && similarApps.length > 0) {
-          const alternativeApp = {
+          const alternativeApp: Application = {
             id: similarApps[0].id,
-            name: similarApps[0].NOM,
-            price: parseFloat(similarApps[0].PRICE),
-            category: similarApps[0].CATÉGORIE,
-            description: similarApps[0].DESCRIPTION,
-            website_url: similarApps[0]["URL DU SITE WEB"],
-            logo_url: similarApps[0]["URL DU LOGO"],
+            name: similarApps[0].NOM || '',
+            price: parseFloat(similarApps[0].PRICE || '0'),
+            category: similarApps[0].CATÉGORIE || null,
+            description: similarApps[0].DESCRIPTION || null,
+            website_url: similarApps[0]["URL DU SITE WEB"] || null,
+            logo_url: similarApps[0]["URL DU LOGO"] || null,
+            features: Array.isArray(similarApps[0].CARACTÉRISTIQUES) 
+              ? similarApps[0].CARACTÉRISTIQUES.map(String)
+              : [],
+            pros: similarApps[0].AVANTAGES || null,
+            cons: similarApps[0].INCONVÉNIENTS || null,
+            rating: similarApps[0].NOTE || null,
+            review: similarApps[0].REVUE || null,
+            users_count: similarApps[0]["NOMBRE D'UTILISATEURS"] || null
           };
 
-          const currentApp = {
+          const currentApp: Application = {
             id: 0,
             name: subscription.name,
             price: subscription.price,
-            category: subscription.category,
-            description: subscription.description,
+            category: subscription.category || null,
+            description: subscription.description || null,
+            website_url: null,
+            logo_url: null,
+            features: [],
+            pros: null,
+            cons: null,
+            rating: null,
+            review: null,
+            users_count: null
           };
 
           const savingsAmount = subscription.price - alternativeApp.price;
 
           if (savingsAmount > 0) {
+            console.log("Found alternative with savings:", savingsAmount);
             setAlternative({
               currentApp,
               alternativeApp,
