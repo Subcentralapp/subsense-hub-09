@@ -29,7 +29,7 @@ const SubscriptionList = () => {
     }, {});
 
     // Vérifier s'il existe au moins une catégorie avec plus d'une application
-    return Object.values(categoryCounts).some(count => count > 1);
+    return Object.values(categoryCounts).some((count: number) => count > 1);
   }, [subscriptions]);
 
   const handleEdit = (subscription: Subscription) => {
@@ -54,7 +54,7 @@ const SubscriptionList = () => {
   return (
     <div className="space-y-4">
       {hasSimilarApps && (
-        <Alert variant="warning" className="bg-orange-50 text-orange-800 border-orange-200">
+        <Alert className="bg-orange-50 text-orange-800 border-orange-200">
           <AlertDescription className="flex flex-col sm:flex-row gap-2 items-start sm:items-center justify-between">
             <span>Vous possédez des applications similaires, des économies sont possibles.</span>
             <Link to="/dashboard/compare">
