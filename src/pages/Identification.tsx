@@ -101,7 +101,6 @@ const Identification = () => {
                     },
                   },
                 }}
-                providers={["google"]}
                 localization={{
                   variables: {
                     sign_in: {
@@ -111,7 +110,6 @@ const Identification = () => {
                       password_input_placeholder: "Votre mot de passe",
                       button_label: "Se connecter",
                       loading_button_label: "Connexion en cours...",
-                      social_provider_text: "Continuer avec {{provider}}",
                       link_text: "Vous avez déjà un compte ? Connectez-vous",
                     },
                     forgotten_password: {

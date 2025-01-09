@@ -28,11 +28,6 @@ export const AuthFormContainer = () => {
           description: "Vous êtes maintenant connecté.",
         });
         navigate("/dashboard");
-      } else if (event === 'USER_DELETED') {
-        toast({
-          title: "Compte supprimé",
-          description: "Votre compte a été supprimé avec succès.",
-        });
       } else if (event === 'PASSWORD_RECOVERY') {
         toast({
           title: "Récupération du mot de passe",
@@ -62,7 +57,6 @@ export const AuthFormContainer = () => {
           },
         }}
         theme="light"
-        providers={["google"]}
         redirectTo={window.location.origin}
         localization={{
           variables: {
@@ -73,7 +67,6 @@ export const AuthFormContainer = () => {
               password_input_placeholder: "Votre mot de passe",
               button_label: "Se connecter",
               loading_button_label: "Connexion en cours...",
-              social_provider_text: "Continuer avec {{provider}}",
               link_text: "Vous avez déjà un compte ? Connectez-vous",
             },
             forgotten_password: {
@@ -92,7 +85,6 @@ export const AuthFormContainer = () => {
               password_input_placeholder: "Votre mot de passe",
               button_label: "S'inscrire",
               loading_button_label: "Inscription en cours...",
-              social_provider_text: "Continuer avec {{provider}}",
               link_text: "Vous n'avez pas de compte ? Inscrivez-vous",
             },
           },
