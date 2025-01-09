@@ -19,14 +19,25 @@ export const AuthFormContainer = () => {
 
     checkSession();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log("Auth state changed:", event, session);
-      if (event === "SIGNED_IN") {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("État d'authentification changé:", event, session);
+      
+      if (event === 'SIGNED_IN') {
         toast({
           title: "Connexion réussie",
           description: "Vous êtes maintenant connecté.",
         });
         navigate("/dashboard");
+      } else if (event === 'USER_DELETED') {
+        toast({
+          title: "Compte supprimé",
+          description: "Votre compte a été supprimé avec succès.",
+        });
+      } else if (event === 'PASSWORD_RECOVERY') {
+        toast({
+          title: "Récupération du mot de passe",
+          description: "Consultez votre boîte mail pour réinitialiser votre mot de passe.",
+        });
       }
     });
 
@@ -72,6 +83,7 @@ export const AuthFormContainer = () => {
               button_label: "Envoyer les instructions",
               loading_button_label: "Envoi des instructions en cours...",
               link_text: "Mot de passe oublié ?",
+              confirmation_text: "Vérifiez vos emails pour réinitialiser votre mot de passe",
             },
             sign_up: {
               email_label: "Adresse email",
@@ -84,6 +96,21 @@ export const AuthFormContainer = () => {
               link_text: "Vous n'avez pas de compte ? Inscrivez-vous",
             },
           },
+        }}
+        messages={{
+          "Invalid login credentials": "Identifiants de connexion invalides",
+          "Invalid email or password": "Email ou mot de passe invalide",
+          "Email not confirmed": "Email non confirmé",
+          "User not found": "Utilisateur non trouvé",
+          "Email already registered": "Cet email est déjà enregistré",
+          "Password should be at least 6 characters": "Le mot de passe doit contenir au moins 6 caractères",
+          "Invalid email format": "Format d'email invalide",
+          "Password reset failed": "La réinitialisation du mot de passe a échoué",
+          "New password should be different from the old password": "Le nouveau mot de passe doit être différent de l'ancien",
+          "Password reset email sent": "Email de réinitialisation envoyé",
+          "User already registered": "Cet utilisateur existe déjà",
+          "Something went wrong": "Une erreur est survenue",
+          "Please try again": "Veuillez réessayer",
         }}
       />
     </div>
