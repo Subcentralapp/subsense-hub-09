@@ -90,22 +90,22 @@ export const AuthFormContainer = () => {
               loading_button_label: "Inscription en cours...",
               link_text: "Vous n'avez pas de compte ? Inscrivez-vous",
             },
-            error_messages: {
-              "Invalid login credentials": "Identifiants de connexion invalides",
-              "Invalid email or password": "Email ou mot de passe invalide",
-              "Email not confirmed": "Email non confirmé",
-              "User not found": "Utilisateur non trouvé",
-              "Email already registered": "Cet email est déjà enregistré",
-              "Password should be at least 6 characters": "Le mot de passe doit contenir au moins 6 caractères",
-              "Invalid email format": "Format d'email invalide",
-              "Password reset failed": "La réinitialisation du mot de passe a échoué",
-              "New password should be different from the old password": "Le nouveau mot de passe doit être différent de l'ancien",
-              "Password reset email sent": "Email de réinitialisation envoyé",
-              "User already registered": "Cet utilisateur existe déjà",
-              "Something went wrong": "Une erreur est survenue",
-              "Please try again": "Veuillez réessayer",
-            }
           },
+          messages: {
+            "Invalid login credentials": "Identifiants de connexion invalides",
+            "Invalid email or password": "Email ou mot de passe invalide",
+            "Email not confirmed": "Email non confirmé",
+            "User not found": "Utilisateur non trouvé",
+            "Email already registered": "Cet email est déjà enregistré",
+            "Password should be at least 6 characters": "Le mot de passe doit contenir au moins 6 caractères",
+            "Invalid email format": "Format d'email invalide",
+            "Password reset failed": "La réinitialisation du mot de passe a échoué",
+            "New password should be different from the old password": "Le nouveau mot de passe doit être différent de l'ancien",
+            "Password reset email sent": "Email de réinitialisation envoyé",
+            "User already registered": "Cet utilisateur existe déjà",
+            "Something went wrong": "Une erreur est survenue",
+            "Please try again": "Veuillez réessayer",
+          }
         }}
       />
     </div>
