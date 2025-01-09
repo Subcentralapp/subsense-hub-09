@@ -56,6 +56,7 @@ export const AuthFormContainer = () => {
             },
           },
         }}
+        providers={[]}
         theme="light"
         redirectTo={window.location.origin}
         localization={{
