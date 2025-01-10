@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
+import { translateAuthError } from "@/utils/authErrorTranslations";
 
 const formSchema = z.object({
   email: z.string().email("Email invalide"),
@@ -44,7 +45,10 @@ export function SignInForm() {
         password: values.password,
       });
 
-      if (error) throw error;
+      if (error) {
+        console.error("❌ Erreur de connexion:", error);
+        throw error;
+      }
 
       console.log("✅ Connexion réussie, redirection vers le dashboard...");
       toast({
@@ -52,15 +56,12 @@ export function SignInForm() {
         description: "Vous êtes maintenant connecté",
       });
 
-      // Redirection vers le dashboard après une connexion réussie
       navigate("/dashboard");
     } catch (error: any) {
       console.error("❌ Erreur de connexion:", error);
       toast({
         title: "Erreur de connexion",
-        description: error.message === "Invalid login credentials"
-          ? "Email ou mot de passe incorrect"
-          : error.message,
+        description: translateAuthError(error.message),
         variant: "destructive",
       });
     } finally {
