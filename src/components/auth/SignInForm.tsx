@@ -5,6 +5,7 @@ import { z } from "zod";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import {
   Form,
   FormControl,
@@ -24,6 +25,7 @@ const formSchema = z.object({
 export function SignInForm() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -37,22 +39,28 @@ export function SignInForm() {
     console.log("🔑 Tentative de connexion...");
     setIsLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: values.email,
         password: values.password,
       });
 
       if (error) throw error;
 
+      console.log("✅ Connexion réussie, redirection vers le dashboard...");
       toast({
         title: "Connexion réussie",
         description: "Vous êtes maintenant connecté",
       });
+
+      // Redirection vers le dashboard après une connexion réussie
+      navigate("/dashboard");
     } catch (error: any) {
       console.error("❌ Erreur de connexion:", error);
       toast({
         title: "Erreur de connexion",
-        description: error.message,
+        description: error.message === "Invalid login credentials"
+          ? "Email ou mot de passe incorrect"
+          : error.message,
         variant: "destructive",
       });
     } finally {
@@ -75,6 +83,7 @@ export function SignInForm() {
                   type="email"
                   placeholder="exemple@email.com"
                   disabled={isLoading}
+                  className="bg-white"
                 />
               </FormControl>
               <FormMessage />
@@ -94,6 +103,7 @@ export function SignInForm() {
                   type="password"
                   placeholder="••••••••"
                   disabled={isLoading}
+                  className="bg-white"
                 />
               </FormControl>
               <FormMessage />

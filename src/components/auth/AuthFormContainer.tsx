@@ -1,11 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { CustomSignUpForm } from "./CustomSignUpForm";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { SignInForm } from "./SignInForm";
+import { supabase } from "@/integrations/supabase/client";
 
 export const AuthFormContainer = () => {
   const [activeTab, setActiveTab] = useState("signin");
   const [emailSent, setEmailSent] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log("🔄 État d'authentification changé:", event);
+      if (event === 'SIGNED_IN' && session) {
+        console.log("✅ Utilisateur connecté:", session.user);
+        navigate("/dashboard");
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   const handleEmailSent = (email: string) => {
     setEmailSent(email);
@@ -13,7 +30,7 @@ export const AuthFormContainer = () => {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full max-w-md mx-auto">
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-2 mb-8">
           <TabsTrigger value="signin">Connexion</TabsTrigger>
